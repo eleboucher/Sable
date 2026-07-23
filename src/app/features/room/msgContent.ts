@@ -25,6 +25,7 @@ import type { GifData } from '$components/emoji-board/types';
 import { encodeBlurHashAsync } from '$utils/blurHash';
 import { scaleYDimension } from '$utils/common';
 import { createLogger } from '$utils/debug';
+import { fetchMediaBlob } from '$utils/mediaTransport';
 import {
   MATRIX_UNSTABLE_BLUR_HASH_PROPERTY_NAME,
   MATRIX_UNSTABLE_SPOILER_PROPERTY_NAME,
@@ -262,11 +263,20 @@ export const getGifMsgContent = async (
   if (!mxcUrl.startsWith('mxc://')) return undefined;
 
   const proxyUrl = mxcUrlToHttp(mx, mxcUrl, true);
-  const [imgError, imgEl] = await to(loadImageElement(proxyUrl ?? gif.url, 'anonymous'));
-  if (imgError) {
+  let imgEl: HTMLImageElement | undefined;
+  try {
+    if (proxyUrl) {
+      const blob = await fetchMediaBlob(proxyUrl);
+      const objectUrl = URL.createObjectURL(blob);
+      imgEl = await loadImageElement(objectUrl);
+      URL.revokeObjectURL(objectUrl);
+    } else {
+      imgEl = await loadImageElement(gif.url, 'anonymous');
+    }
+  } catch (e) {
     log.warn(
-      'Failed to load image element anonymously for blurhash, falling back to basic metadata:',
-      imgError
+      'Failed to load image element for blurhash, falling back to basic metadata:',
+      e
     );
   }
 
