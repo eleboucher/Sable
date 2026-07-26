@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { color, Text } from 'folds';
+import { color, Text } from '$components/ui';
 import { ShieldWarningIcon } from '@phosphor-icons/react';
 import { useOpenSettings } from '$features/settings';
 import { useIsUnverified, useUnverifiedDevices } from '$pages/client/sidebar/UserMenuTab';

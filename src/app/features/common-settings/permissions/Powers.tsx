@@ -1,8 +1,19 @@
 import type { MouseEventHandler, ReactNode } from 'react';
 import { useState } from 'react';
 import FocusTrap from 'focus-trap-react';
-import type { RectCords } from 'folds';
-import { Box, Button, Chip, Text, PopOut, Menu, Scroll, toRem, config, color } from 'folds';
+import type { RectCords } from '$components/ui';
+import {
+  Box,
+  Button,
+  Chip,
+  Text,
+  PopOut,
+  Menu,
+  Scroll,
+  toRem,
+  config,
+  color,
+} from '$components/ui';
 import { SequenceCard, SequenceCardStyle } from '$components/sequence-card';
 import { getPowers, usePowerLevelTags } from '$hooks/usePowerLevelTags';
 import { SettingTile } from '$components/setting-tile';

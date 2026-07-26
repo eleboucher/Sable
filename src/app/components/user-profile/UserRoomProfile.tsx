@@ -1,4 +1,4 @@
-import { Box, Button, color, config, Menu, MenuItem, Scroll, Text, toRem } from 'folds';
+import { Box, Button, color, config, Menu, MenuItem, Scroll, Text, toRem } from '$components/ui';
 import type { CSSProperties, SyntheticEvent } from 'react';
 import { useCallback, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';

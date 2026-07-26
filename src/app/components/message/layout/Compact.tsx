@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { Box, as } from 'folds';
+import { Box, as } from '$components/ui';
 import * as css from './layout.css';
 
 type CompactLayoutProps = {

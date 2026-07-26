@@ -1,4 +1,4 @@
-import { Box, IconButton, Scroll, Text } from 'folds';
+import { Box, IconButton, Scroll, Text } from '$components/ui';
 import { ArrowLeft, Info, Lightbulb, composerIcon, sizedIcon } from '$components/icons/phosphor';
 import { useAtomValue } from 'jotai';
 import { useClientConfig } from '$hooks/useClientConfig';

@@ -1,5 +1,5 @@
 import type { MouseEventHandler } from 'react';
-import { Box, Button, Chip, config, Menu, Text, toRem } from 'folds';
+import { Box, Button, Chip, config, Menu, Text, toRem } from '$components/ui';
 import { CaretDown, CaretUp, sizedIcon } from '$components/icons/phosphor';
 import { ResponsiveMenu } from '$components/ResponsiveMenu';
 import { useMenuAnchor } from '$hooks/useMenuAnchor';

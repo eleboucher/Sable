@@ -1,5 +1,15 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Box, IconButton, Menu, MenuItem, Text, config, Line, Spinner, toRem } from 'folds';
+import {
+  Box,
+  IconButton,
+  Menu,
+  MenuItem,
+  Text,
+  config,
+  Line,
+  Spinner,
+  toRem,
+} from '$components/ui';
 import type { HierarchyItem } from '$hooks/useSpaceHierarchy';
 import { useMatrixClient } from '$hooks/useMatrixClient';
 import type { MSpaceChildContent } from '$types/matrix/room';

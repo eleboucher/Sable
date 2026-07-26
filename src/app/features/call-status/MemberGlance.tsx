@@ -1,4 +1,4 @@
-import { Box, config, Text } from 'folds';
+import { Box, config, Text } from '$components/ui';
 import type { CallMembership } from '$types/matrix-sdk';
 import type { Room } from '$types/matrix-sdk';
 import { UserAvatar } from '../../components/user-avatar';

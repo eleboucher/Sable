@@ -7,7 +7,7 @@ import type {
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import dayjs from 'dayjs';
 import { useAtomValue, useSetAtom } from 'jotai';
-import type { RectCords } from 'folds';
+import type { RectCords } from '$components/ui';
 import {
   Box,
   Button,
@@ -22,7 +22,7 @@ import {
   Switch,
   Text,
   toRem,
-} from 'folds';
+} from '$components/ui';
 import {
   ArrowUp,
   composerIcon,

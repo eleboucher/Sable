@@ -1,4 +1,4 @@
-import type { RectCords } from 'folds';
+import type { RectCords } from '$components/ui';
 import {
   Box,
   Button,
@@ -10,7 +10,7 @@ import {
   PopOut,
   Spinner,
   Text,
-} from 'folds';
+} from '$components/ui';
 import type { MatrixClient } from '$types/matrix-sdk';
 import { HttpApiEvent } from '$types/matrix-sdk';
 import FocusTrap from 'focus-trap-react';

@@ -1,6 +1,6 @@
 import classNames from 'classnames';
-import type { Position } from 'folds';
-import { as, Avatar, Text, Tooltip, TooltipProvider, toRem } from 'folds';
+import type { Position } from '$components/ui';
+import { as, Avatar, Text, Tooltip, TooltipProvider, toRem } from '$components/ui';
 import type { ComponentProps, ReactNode, RefCallback } from 'react';
 import { mobileOrTablet } from '$utils/user-agent';
 import * as css from './Sidebar.css';

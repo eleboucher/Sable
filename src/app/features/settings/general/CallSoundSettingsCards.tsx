@@ -1,4 +1,5 @@
-import { Box, Button, Icon, Icons, Spinner, Text } from 'folds';
+import { Box, Button, Spinner, Text } from '$components/ui';
+import { ArrowUp, X, sizedIcon, type PhosphorIcon } from '$components/icons/phosphor';
 import { SequenceCard, SequenceCardStyle } from '$components/sequence-card';
 import { SettingTile } from '$components/setting-tile';
 import {
@@ -64,7 +65,7 @@ export function CustomToneSettingsCard({
   previewActions: {
     label: string;
     tone: PreviewTone;
-    icon: (typeof Icons)[keyof typeof Icons];
+    icon: PhosphorIcon;
   }[];
   onImport: () => void;
   onPreview: (tone: PreviewTone) => void;
@@ -86,7 +87,7 @@ export function CustomToneSettingsCard({
               fill="Soft"
               size="300"
               radii="300"
-              before={<Icon src={Icons.ArrowTop} size="100" />}
+              before={sizedIcon(ArrowUp, '100')}
               onClick={onImport}
             >
               <Text size="B300">Import</Text>
@@ -99,11 +100,7 @@ export function CustomToneSettingsCard({
                 size="300"
                 radii="300"
                 before={
-                  previewing ? (
-                    <Spinner variant="Secondary" size="100" />
-                  ) : (
-                    <Icon src={icon} size="100" />
-                  )
+                  previewing ? <Spinner variant="Secondary" size="100" /> : sizedIcon(icon, '100')
                 }
                 onClick={() => onPreview(tone)}
                 disabled={previewing}
@@ -116,7 +113,7 @@ export function CustomToneSettingsCard({
               fill="Soft"
               size="300"
               radii="300"
-              before={<Icon src={Icons.Cross} size="100" />}
+              before={sizedIcon(X, '100')}
               onClick={onReset}
               disabled={!hasCustomTone}
             >

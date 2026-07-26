@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { Box, Text, config } from 'folds';
+import { Box, Text, config } from '$components/ui';
 import { Check, sizedIcon } from '$components/icons/phosphor';
 import { SequenceCard } from '$components/sequence-card';
 import { SettingTile } from '$components/setting-tile';

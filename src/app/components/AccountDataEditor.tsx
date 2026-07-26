@@ -10,7 +10,7 @@ import {
   Chip,
   Scroll,
   config,
-} from 'folds';
+} from '$components/ui';
 import { ArrowLeft, composerIcon, sizedIcon, X } from '$components/icons/phosphor';
 import type { MatrixError } from '$types/matrix-sdk';
 import { Cursor } from '$plugins/text-area';
@@ -22,7 +22,7 @@ import { useTextAreaCodeEditor } from '$hooks/useTextAreaCodeEditor';
 import { Page, PageHeader } from './page';
 import { SequenceCard } from './sequence-card';
 import { TextViewerContent } from './text-viewer';
-import { Button } from '$components/button';
+import { Button } from '$components/ui';
 
 const EDITOR_INTENT_SPACE_COUNT = 2;
 

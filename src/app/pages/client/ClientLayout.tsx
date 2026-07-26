@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { Box } from 'folds';
+import { Box } from '$components/ui';
 import { matchPath, useLocation } from 'react-router-dom';
 import { ScreenSize, useScreenSizeContext } from '$hooks/useScreenSize';
 import { SETTINGS_PATH } from '../paths';

@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { Box, Scroll, Line, as, TooltipProvider, Tooltip, Text, IconButton } from 'folds';
+import { Box, Scroll, Line, as, TooltipProvider, Tooltip, Text, IconButton } from '$components/ui';
 import classNames from 'classnames';
 import { sizedIcon, Image, type PhosphorIcon } from '$components/icons/phosphor';
 import * as css from './styles.css';

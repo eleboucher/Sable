@@ -1,6 +1,6 @@
 import type { ComponentProps } from 'react';
 import { forwardRef } from 'react';
-import { IconButton, Input, config } from 'folds';
+import { IconButton, Input, config } from '$components/ui';
 import { Eye, EyeSlash, sizedIcon } from '$components/icons/phosphor';
 import { UseStateProvider } from '$components/UseStateProvider';
 

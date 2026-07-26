@@ -1,6 +1,6 @@
 import type { ChangeEventHandler, KeyboardEventHandler } from 'react';
 import { type MouseEventHandler, useEffect, useMemo, useState } from 'react';
-import { Box, Chip, config, Input, Switch, Text, toRem } from 'folds';
+import { Box, Chip, config, Input, Switch, Text, toRem } from '$components/ui';
 import { CaretDown, menuIcon } from '$components/icons/phosphor';
 import { isKeyHotkey } from 'is-hotkey';
 

@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { Box, Text, Scroll, Switch, Button } from 'folds';
+import { Box, Text, Scroll, Switch, Button } from '$components/ui';
 import { PageContent, SettingsSectionPage } from '$components/page';
 import { SequenceCard, SequenceCardStyle } from '$components/sequence-card';
 import { SettingTile } from '$components/setting-tile';

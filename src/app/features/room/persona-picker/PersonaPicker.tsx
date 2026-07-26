@@ -33,7 +33,7 @@ import {
   Text,
   toRem,
   Badge,
-} from 'folds';
+} from '$components/ui';
 import type { MatrixClient } from 'matrix-js-sdk';
 import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
 import * as css from './PersonaPicker.css.ts';

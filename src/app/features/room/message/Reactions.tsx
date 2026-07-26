@@ -13,7 +13,7 @@ import {
   as,
   toRem,
   type RectCords,
-} from 'folds';
+} from '$components/ui';
 import classNames from 'classnames';
 import type { Room } from '$types/matrix-sdk';
 import { type Relations } from '$types/matrix-sdk';

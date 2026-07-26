@@ -1,4 +1,4 @@
-import { Box, config, toRem } from 'folds';
+import { Box, config, toRem } from '$components/ui';
 import { InboxTab } from './InboxTab';
 import { NavigateTab } from './NavigateTab';
 import { SettingsTab } from './SettingsTab';

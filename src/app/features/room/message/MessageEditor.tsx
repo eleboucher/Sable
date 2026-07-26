@@ -1,7 +1,7 @@
 import type { KeyboardEventHandler, MouseEventHandler, ReactNode } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAtomValue } from 'jotai';
-import type { RectCords } from 'folds';
+import type { RectCords } from '$components/ui';
 import {
   Box,
   Chip,
@@ -13,7 +13,7 @@ import {
   Text,
   as,
   config,
-} from 'folds';
+} from '$components/ui';
 import { composerIcon, Smiley } from '$components/icons/phosphor';
 import { Editor, Transforms } from 'slate';
 import { ReactEditor } from 'slate-react';

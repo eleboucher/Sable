@@ -1,5 +1,15 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
-import { Avatar, Badge, Box, Chip, IconButton, Scroll, Spinner, Text, config } from 'folds';
+import {
+  Avatar,
+  Badge,
+  Box,
+  Chip,
+  IconButton,
+  Scroll,
+  Spinner,
+  Text,
+  config,
+} from '$components/ui';
 import { useAtom, useAtomValue } from 'jotai';
 import {
   ArrowLeft,
@@ -71,7 +81,7 @@ import { CustomAccountDataEvent } from '$types/matrix/accountData';
 import { updateInviteList } from '$state/updateInvites';
 import { useDismissedInviteList } from '$hooks/useDismissedInvites';
 import { ModalOverlay } from '$components/modal-overlay/ModalOverlay';
-import { Button } from '$components/button';
+import { Button } from '$components/ui';
 
 const COMPACT_CARD_WIDTH = 548;
 

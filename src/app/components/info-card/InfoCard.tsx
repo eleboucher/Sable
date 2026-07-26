@@ -1,5 +1,5 @@
-import type { ContainerColor } from 'folds';
-import { Box, Text } from 'folds';
+import type { ContainerColor } from '$components/ui';
+import { Box, Text } from '$components/ui';
 import type { ReactNode } from 'react';
 import classNames from 'classnames';
 import { BreakWord } from '$styles/Text.css';

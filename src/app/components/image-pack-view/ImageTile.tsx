@@ -1,6 +1,6 @@
 import type { FormEventHandler, ReactNode } from 'react';
 import { useMemo, useState } from 'react';
-import { Badge, Box, Button, Chip, Input, Text } from 'folds';
+import { Badge, Box, Button, Chip, Input, Text } from '$components/ui';
 import { sizedIcon, Trash } from '$components/icons/phosphor';
 import { mxcUrlToHttp } from '$utils/matrix';
 import type { ImageUsage } from '$plugins/custom-emoji';

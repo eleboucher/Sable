@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo } from 'react';
-import { config, Box, Text } from 'folds';
+import { config, Box, Text } from '$components/ui';
 import type { MatrixError } from '$types/matrix-sdk';
 import { useMatrixClient } from '$hooks/useMatrixClient';
 import { AsyncStatus, useAsyncCallback } from '$hooks/useAsyncCallback';
@@ -7,7 +7,7 @@ import { getJoinedSpaceChildrenSummary, getRecursiveSpaceLeaveOrder } from '$uti
 import { rateLimitedActions } from '$utils/matrix';
 import { PromptDialog } from '$components/modal-overlay/PromptDialog';
 import { AsyncError } from '$components/AsyncError';
-import { Button } from '$components/button';
+import { Button } from '$components/ui';
 
 type LeaveSpacePromptProps = {
   roomId: string;

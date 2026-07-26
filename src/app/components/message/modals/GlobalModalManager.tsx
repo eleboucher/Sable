@@ -1,5 +1,5 @@
 import { useAtom } from 'jotai';
-import { Overlay, OverlayBackdrop, OverlayCenter, Box, Modal } from 'folds';
+import { Overlay, OverlayBackdrop, OverlayCenter, Box, Modal } from '$components/ui';
 import FocusTrap from 'focus-trap-react';
 import { stopPropagation } from '$utils/keyboard';
 import { useDismissOnBack } from '$utils/androidBack';

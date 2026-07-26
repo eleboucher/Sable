@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { useCallback, useEffect, useMemo } from 'react';
-import { Box, Spinner } from 'folds';
+import { Box, Spinner } from '$components/ui';
 import type { IThumbnailContent } from '$types/matrix/common';
 import { useMatrixClient } from '$hooks/useMatrixClient';
 import { AsyncStatus, useAsyncCallback } from '$hooks/useAsyncCallback';

@@ -1,6 +1,6 @@
 import type { MouseEventHandler } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Avatar, Box, Chip, Header, IconButton, Scroll, Text, config, toRem } from 'folds';
+import { Avatar, Box, Chip, Header, IconButton, Scroll, Text, config, toRem } from '$components/ui';
 import {
   ArrowLeft,
   CaretUp,

@@ -1,4 +1,4 @@
-import { Box, Text, toRem, config } from 'folds';
+import { Box, Text, toRem, config } from '$components/ui';
 import { Warning, sizedIcon } from '$components/icons/phosphor';
 
 type ThemeThirdPartyBannerProps = {

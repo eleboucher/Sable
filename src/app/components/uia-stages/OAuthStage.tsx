@@ -1,4 +1,4 @@
-import { Box, Button, color, config, Dialog, Header, IconButton, Text } from 'folds';
+import { Box, Button, color, config, Dialog, Header, IconButton, Text } from '$components/ui';
 import { Warning, composerIcon, sizedIcon, X } from '$components/icons/phosphor';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { isTauri } from '@tauri-apps/api/core';

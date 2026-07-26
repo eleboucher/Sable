@@ -1,6 +1,6 @@
 import type { FormEventHandler, MouseEventHandler } from 'react';
 import { useCallback, useMemo, useState } from 'react';
-import type { RectCords } from 'folds';
+import type { RectCords } from '$components/ui';
 import {
   Box,
   Text,
@@ -16,7 +16,7 @@ import {
   toRem,
   TooltipProvider,
   Tooltip,
-} from 'folds';
+} from '$components/ui';
 import {
   ArrowLeft,
   chipIcon,

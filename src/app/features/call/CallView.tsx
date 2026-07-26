@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState, type RefObject } from 'react';
-import { Badge, Box, color, Header, Scroll, Text, toRem } from 'folds';
+import { Badge, Box, color, Header, Scroll, Text, toRem } from '$components/ui';
 import { useAtomValue } from 'jotai';
 import { ContainerColor } from '$styles/ContainerColor.css';
 import { useRoom } from '$hooks/useRoom';

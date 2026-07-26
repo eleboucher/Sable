@@ -1,4 +1,15 @@
-import { Avatar, Badge, Box, Chip, config, Menu, MenuItem, Scroll, Text, toRem } from 'folds';
+import {
+  Avatar,
+  Badge,
+  Box,
+  Chip,
+  config,
+  Menu,
+  MenuItem,
+  Scroll,
+  Text,
+  toRem,
+} from '$components/ui';
 import { CaretDown, CaretUp, sizedIcon, userFallbackIcon } from '$components/icons/phosphor';
 import type { CallMembership } from '$types/matrix-sdk';
 import type { Room } from '$types/matrix-sdk';

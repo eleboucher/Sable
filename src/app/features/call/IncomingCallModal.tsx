@@ -1,4 +1,15 @@
-import { Avatar, Box, Button, color, Dialog, Header, IconButton, Text, config, toRem } from 'folds';
+import {
+  Avatar,
+  Box,
+  Button,
+  color,
+  Dialog,
+  Header,
+  IconButton,
+  Text,
+  config,
+  toRem,
+} from '$components/ui';
 import { useMemo, type KeyboardEvent as ReactKeyboardEvent } from 'react';
 import type { Room } from '$types/matrix-sdk';
 import { useMatrixClient } from '$hooks/useMatrixClient';

@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Box, Button, Dialog, Text, color, config } from 'folds';
+import { Box, Button, Dialog, Text, color, config } from '$components/ui';
 import type { ClientConfig } from '$hooks/useClientConfig';
 import { takePreloadedConfig } from '$utils/preload';
 import { trimTrailingSlash } from '$utils/common';

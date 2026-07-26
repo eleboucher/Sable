@@ -5,7 +5,7 @@ import type { HTMLReactParserOptions } from 'html-react-parser';
 import { attributesToProps, domToReact, Element, Text as DOMText } from 'html-react-parser';
 import type { MatrixClient } from '$types/matrix-sdk';
 import classNames from 'classnames';
-import { Box, Chip, config, Header, IconButton, Scroll, Text, toRem } from 'folds';
+import { Box, Chip, config, Header, IconButton, Scroll, Text, toRem } from '$components/ui';
 import {
   CaretDown,
   CaretUp,

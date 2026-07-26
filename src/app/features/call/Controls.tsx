@@ -1,4 +1,4 @@
-import { IconButton, Line, Text, Tooltip, TooltipProvider } from 'folds';
+import { IconButton, Line, Text, Tooltip, TooltipProvider } from '$components/ui';
 import {
   ChatCircle,
   Headphones,

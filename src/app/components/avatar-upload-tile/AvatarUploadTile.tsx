@@ -1,5 +1,5 @@
 import { type ReactNode, useCallback, useMemo, useState } from 'react';
-import { Box, Text, Button, Modal } from 'folds';
+import { Box, Text, Button, Modal } from '$components/ui';
 import { SettingTile } from '$components/setting-tile';
 import { useObjectURL } from '$hooks/useObjectURL';
 import type { UploadSuccess } from '$state/upload';

@@ -1,6 +1,6 @@
 import type { ChangeEvent } from 'react';
 import { useState, useEffect } from 'react';
-import { Input } from 'folds';
+import { Input } from '$components/ui';
 import { SettingTile } from '$components/setting-tile';
 import type { PronounSet } from '$utils/pronouns';
 import { parsePronounsInput } from '$utils/pronouns';

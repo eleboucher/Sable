@@ -12,7 +12,7 @@ import {
   Spinner,
   Text,
   toRem,
-} from 'folds';
+} from '$components/ui';
 import { CaretDown, menuIcon, profileIcon, X } from '$components/icons/phosphor';
 import type { CSSProperties } from 'react';
 import { useCallback, useState } from 'react';

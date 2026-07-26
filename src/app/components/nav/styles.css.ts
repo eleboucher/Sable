@@ -2,8 +2,8 @@ import type { ComplexStyleRule } from '@vanilla-extract/css';
 import { createVar, style } from '@vanilla-extract/css';
 import type { RecipeVariants } from '@vanilla-extract/recipes';
 import { recipe } from '@vanilla-extract/recipes';
-import type { ContainerColor } from 'folds';
-import { DefaultReset, Disabled, RadiiVariant, color, config, toRem } from 'folds';
+import type { ContainerColor } from '$components/ui/theme';
+import { DefaultReset, Disabled, RadiiVariant, color, config, toRem } from '$components/ui/theme';
 
 export const NavCategory = style([
   DefaultReset,

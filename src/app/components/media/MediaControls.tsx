@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { Box, as } from 'folds';
+import { Box, as } from '$components/ui';
 
 export type MediaControlProps = {
   before?: ReactNode;

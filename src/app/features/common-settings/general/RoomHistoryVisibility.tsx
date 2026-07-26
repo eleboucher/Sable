@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react';
-import { Button, Spinner, Text } from 'folds';
+import { Button, Spinner, Text } from '$components/ui';
 import { CaretDown, menuIcon } from '$components/icons/phosphor';
 import type { RoomHistoryVisibilityEventContent, StateEvents } from '$types/matrix-sdk';
 import { HistoryVisibility, EventType } from '$types/matrix-sdk';

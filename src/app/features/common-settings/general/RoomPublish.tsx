@@ -1,4 +1,4 @@
-import { Box, Spinner, Switch } from 'folds';
+import { Box, Spinner, Switch } from '$components/ui';
 import type { RoomJoinRulesEventContent } from '$types/matrix-sdk';
 import { JoinRule, EventType } from '$types/matrix-sdk';
 import { SequenceCard, SequenceCardStyle } from '$components/sequence-card';

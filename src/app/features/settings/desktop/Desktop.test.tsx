@@ -2,7 +2,7 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { SequenceCardStyle } from '$components/sequence-card';
 import type { ReactNode } from 'react';
 import { describe, expect, it, vi } from 'vitest';
-import type * as Folds from 'folds';
+import type * as UI from '$components/ui';
 import { ScreenSize, ScreenSizeProvider } from '$hooks/useScreenSize';
 import { Desktop } from './Desktop';
 
@@ -54,8 +54,8 @@ vi.mock('$components/page', () => ({
   SettingsSectionPage: ({ children }: { children: ReactNode }) => <section>{children}</section>,
 }));
 
-vi.mock('folds', async () => {
-  const actual = await vi.importActual<typeof Folds>('folds');
+vi.mock('$components/ui', async () => {
+  const actual = await vi.importActual<typeof UI>('$components/ui');
   return {
     ...actual,
     Switch: ({

@@ -13,7 +13,7 @@ import {
   as,
   color,
   toRem,
-} from 'folds';
+} from '$components/ui';
 import type { MatrixError, Room, IHierarchyRoom } from '$types/matrix-sdk';
 import { JoinRule, KnownMembership } from '$types/matrix-sdk';
 import { RoomAvatar, RoomIcon } from '$components/room-avatar';

@@ -1,6 +1,6 @@
 import { style } from '@vanilla-extract/css';
 import { recipe } from '@vanilla-extract/recipes';
-import { config } from 'folds';
+import { config } from '$components/ui/theme';
 
 export const RoomCoverHeaderContainer = style({ width: '100%', position: 'relative' });
 export const RoomCoverNavContainer = style({

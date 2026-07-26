@@ -15,7 +15,7 @@ import {
   Text,
   config,
   toRem,
-} from 'folds';
+} from '$components/ui';
 import {
   CaretUp,
   Checks,

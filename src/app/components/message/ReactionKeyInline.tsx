@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Text } from 'folds';
+import { Text } from '$components/ui';
 import type { MatrixClient } from '$types/matrix-sdk';
 import { menuIcon, Warning } from '$components/icons/phosphor';
 import { scaleSystemEmoji } from '$plugins/react-custom-html-parser';

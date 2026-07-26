@@ -1,6 +1,6 @@
 import type { ChangeEventHandler, FormEventHandler } from 'react';
 import { useCallback, useState } from 'react';
-import { Box, Button, Chip, IconButton, Input, Spinner, Text, config } from 'folds';
+import { Box, Button, Chip, IconButton, Input, Spinner, Text, config } from '$components/ui';
 import { menuIcon, X } from '$components/icons/phosphor';
 import { SequenceCard, SequenceCardStyle } from '$components/sequence-card';
 import { SettingTile } from '$components/setting-tile';

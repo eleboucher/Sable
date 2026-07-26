@@ -1,4 +1,4 @@
-import { Box, Text, as, color, config } from 'folds';
+import { Box, Text, as, color, config } from '$components/ui';
 import type { MatrixClient } from '$types/matrix-sdk';
 
 import { Lock, timelineIcon, Trash, Warning, X } from '$components/icons/phosphor';

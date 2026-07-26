@@ -1,5 +1,5 @@
 import FocusTrap from 'focus-trap-react';
-import { config, Menu, MenuItem, Text } from 'folds';
+import { config, Menu, MenuItem, Text } from '$components/ui';
 import { stopPropagation } from '$utils/keyboard';
 
 type MemberMenuItem = {

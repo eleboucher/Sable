@@ -1,5 +1,15 @@
 import { useState, useEffect } from 'react';
-import { Box, Button, Chip, config, Input, Spinner, Text, TextArea, Checkbox } from 'folds';
+import {
+  Box,
+  Button,
+  Chip,
+  config,
+  Input,
+  Spinner,
+  Text,
+  TextArea,
+  Checkbox,
+} from '$components/ui';
 import { ArrowRight, chipIcon } from '$components/icons/phosphor';
 import * as Sentry from '@sentry/react';
 import { getDebugLogger } from '$utils/debugLogger';

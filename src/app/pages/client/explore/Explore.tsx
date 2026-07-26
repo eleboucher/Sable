@@ -1,7 +1,18 @@
 import type { FormEventHandler, MouseEventHandler } from 'react';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Avatar, Box, Button, Dialog, Header, IconButton, Input, Text, color, config } from 'folds';
+import {
+  Avatar,
+  Box,
+  Button,
+  Dialog,
+  Header,
+  IconButton,
+  Input,
+  Text,
+  color,
+  config,
+} from '$components/ui';
 import {
   Compass,
   HardDrives,

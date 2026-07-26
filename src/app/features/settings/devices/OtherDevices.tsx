@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import { isTauri } from '@tauri-apps/api/core';
-import { Box, Button, config, Menu, Spinner, Text } from 'folds';
+import { Box, Button, config, Menu, Spinner, Text } from '$components/ui';
 import type { AuthDict, IAuthData, IMyDevice, MatrixError, UIAFlow } from '$types/matrix-sdk';
 import { SequenceCard, SequenceCardStyle } from '$components/sequence-card';
 import { ActionUIA, ActionUIAFlowsLoader } from '$components/ActionUIA';

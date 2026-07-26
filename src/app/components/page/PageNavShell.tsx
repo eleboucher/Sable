@@ -1,5 +1,5 @@
 import type { Dispatch, ReactNode, SetStateAction } from 'react';
-import { Box, toRem } from 'folds';
+import { Box, toRem } from '$components/ui';
 import { PageNav } from '$components/page';
 import { SidebarResizer } from '$pages/client/sidebar/SidebarResizer';
 import { UserQuickTools } from '$pages/client/sidebar/UserQuickTools';

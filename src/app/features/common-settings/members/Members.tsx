@@ -1,7 +1,18 @@
 import type { ChangeEventHandler, MouseEventHandler } from 'react';
 import { useCallback, useMemo, useRef, useState } from 'react';
-import type { RectCords } from 'folds';
-import { Box, Chip, config, IconButton, Input, PopOut, Scroll, Spinner, Text, toRem } from 'folds';
+import type { RectCords } from '$components/ui';
+import {
+  Box,
+  Chip,
+  config,
+  IconButton,
+  Input,
+  PopOut,
+  Scroll,
+  Spinner,
+  Text,
+  toRem,
+} from '$components/ui';
 import {
   ArrowsDownUp,
   CaretUp,

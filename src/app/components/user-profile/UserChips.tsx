@@ -16,7 +16,7 @@ import {
   Box,
   Scroll,
   Avatar,
-} from 'folds';
+} from '$components/ui';
 import {
   CaretDown,
   Check,

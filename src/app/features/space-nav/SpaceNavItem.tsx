@@ -1,6 +1,6 @@
 import type { MouseEventHandler } from 'react';
 import type { Room } from '$types/matrix-sdk';
-import { Box, Text, config, Avatar } from 'folds';
+import { Box, Text, config, Avatar } from '$components/ui';
 import { useNavigate } from 'react-router-dom';
 import { NavButton, NavItem, NavItemContent } from '$components/nav';
 import { useRoomName } from '$hooks/useRoomMeta';

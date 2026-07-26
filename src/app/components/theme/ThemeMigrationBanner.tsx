@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from 'react';
-import { Box, Button, config, Dialog, Header, IconButton, Text } from 'folds';
+import { Box, Button, config, Dialog, Header, IconButton, Text } from '$components/ui';
 import { sizedIcon, X } from '$components/icons/phosphor';
 import { useStore } from 'jotai/react';
 

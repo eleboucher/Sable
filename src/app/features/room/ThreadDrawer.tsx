@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Box, Header, IconButton, Scroll, Spinner, Text, config, toRem } from 'folds';
+import { Box, Header, IconButton, Scroll, Spinner, Text, config, toRem } from '$components/ui';
 import { Chats, composerIcon, X } from '$components/icons/phosphor';
 import type { IEvent, Room, CryptoBackend } from '$types/matrix-sdk';
 import {

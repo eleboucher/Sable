@@ -1,4 +1,4 @@
-import { as, Badge, Text } from 'folds';
+import { as, Badge, Text } from '$components/ui';
 
 export const ServerBadge = as<
   'div',

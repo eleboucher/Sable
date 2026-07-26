@@ -1,6 +1,6 @@
 import type { MouseEventHandler, ReactNode } from 'react';
 import { useCallback } from 'react';
-import { Text } from 'folds';
+import { Text } from '$components/ui';
 import type { MatrixEvent, Room } from '$types/matrix-sdk';
 import type { IMemberContent } from '$types/matrix/room';
 import {

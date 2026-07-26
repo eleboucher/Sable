@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { color, Text, Dialog, Header, config, Box, IconButton } from 'folds';
+import { color, Text, Dialog, Header, config, Box, IconButton } from '$components/ui';
 import { composerIcon, X } from '$components/icons/phosphor';
 import type { MatrixError, RoomTombstoneEventContent } from '$types/matrix-sdk';
 import { Method, EventType } from '$types/matrix-sdk';
@@ -24,7 +24,7 @@ import { useRoomCreators } from '$hooks/useRoomCreators';
 import { BreakWord } from '$styles/Text.css';
 import { creatorsSupported } from '$utils/roomSupport';
 import { ModalOverlay } from '$components/modal-overlay/ModalOverlay';
-import { Button } from '$components/button';
+import { Button } from '$components/ui';
 
 function RoomUpgradeDialog({ requestClose }: { requestClose: () => void }) {
   const mx = useMatrixClient();

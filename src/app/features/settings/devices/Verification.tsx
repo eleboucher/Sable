@@ -1,7 +1,7 @@
 import type { MouseEventHandler } from 'react';
 import { useCallback, useState } from 'react';
 import { isTauri } from '@tauri-apps/api/core';
-import type { RectCords } from 'folds';
+import type { RectCords } from '$components/ui';
 import {
   Badge,
   Box,
@@ -14,7 +14,7 @@ import {
   PopOut,
   Menu,
   MenuItem,
-} from 'folds';
+} from '$components/ui';
 import { DotsThreeOutlineVerticalIcon, menuIcon, X } from '$components/icons/phosphor';
 import FocusTrap from 'focus-trap-react';
 import type { CryptoApi, VerificationRequest } from '$types/matrix-sdk';

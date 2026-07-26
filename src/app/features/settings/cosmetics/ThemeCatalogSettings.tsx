@@ -16,7 +16,7 @@ import {
   Text,
   config,
   toRem,
-} from 'folds';
+} from '$components/ui';
 import { Check, Download, Link, menuIcon, Star } from '$components/icons/phosphor';
 import { useClientConfig } from '$hooks/useClientConfig';
 import { ThemeKind } from '$hooks/useTheme';

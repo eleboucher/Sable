@@ -15,7 +15,7 @@ import { NotificationCountType, RoomEvent, ThreadEvent, EventType } from '$types
 
 import type { HTMLReactParserOptions } from 'html-react-parser';
 import type { Opts as LinkifyOpts } from 'linkifyjs';
-import { Box, Chip, Avatar, Text, config, toRem } from 'folds';
+import { Box, Chip, Avatar, Text, config, toRem } from '$components/ui';
 import {
   Code,
   Hash,

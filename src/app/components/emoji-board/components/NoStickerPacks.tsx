@@ -1,4 +1,4 @@
-import { Box, config, Text, toRem } from 'folds';
+import { Box, config, Text, toRem } from '$components/ui';
 import { dropzoneIcon, Sticker } from '$components/icons/phosphor';
 import { useOpenRoomSettings } from '$state/hooks/roomSettings.ts';
 import { useRoomOptionally } from '$hooks/useRoom.ts';

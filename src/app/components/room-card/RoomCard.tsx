@@ -2,7 +2,19 @@ import type { ReactNode } from 'react';
 import { useCallback, useRef, useState } from 'react';
 import type { MatrixError, Room } from '$types/matrix-sdk';
 import { JoinRule, EventType, RoomType } from '$types/matrix-sdk';
-import { Avatar, Badge, Box, Button, Dialog, Spinner, Text, as, color, config, toRem } from 'folds';
+import {
+  Avatar,
+  Badge,
+  Box,
+  Button,
+  Dialog,
+  Spinner,
+  Text,
+  as,
+  color,
+  config,
+  toRem,
+} from '$components/ui';
 import classNames from 'classnames';
 import { userFallbackIcon } from '$components/icons/phosphor';
 import { getMxIdLocalPart, mxcUrlToHttp } from '$utils/matrix';

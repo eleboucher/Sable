@@ -1,7 +1,7 @@
 import { SidebarAvatar, SidebarItem, SidebarItemTooltip } from '$components/sidebar';
 import { ListMagnifyingGlassIcon } from '@phosphor-icons/react';
 import { getPhosphorIconSize } from '$components/icons/phosphor';
-import { Text, Box, color } from 'folds';
+import { Text, Box, color } from '$components/ui';
 import { getNavigatePath } from '$pages/pathUtils';
 import { useOpenShallowRoute } from '$pages/client/useShallowRoute';
 import { useNavigateSelected } from '$hooks/router/useRouteSelected';

@@ -14,7 +14,7 @@ import {
   Scroll,
   Text,
   toRem,
-} from 'folds';
+} from '$components/ui';
 import { MagnifyingGlass, X, composerIcon, menuIcon } from '$components/icons/phosphor';
 import type { ChangeEventHandler, KeyboardEventHandler, MouseEventHandler } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';

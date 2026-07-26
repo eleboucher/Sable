@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Button, Text } from 'folds';
+import { Button, Text } from '$components/ui';
 import { CaretDown, sizedIcon } from '$components/icons/phosphor';
 import { ImageUsage } from '$plugins/custom-emoji';
 import {

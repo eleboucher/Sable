@@ -1,4 +1,4 @@
-import { Chip, config, Menu, MenuItem, Text } from 'folds';
+import { Chip, config, Menu, MenuItem, Text } from '$components/ui';
 import { CaretDown, profileIcon } from '$components/icons/phosphor';
 import type { CSSProperties } from 'react';
 import { useRoomCreatorsTag } from '$hooks/useRoomCreatorsTag';

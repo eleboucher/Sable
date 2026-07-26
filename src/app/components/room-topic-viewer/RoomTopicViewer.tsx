@@ -1,4 +1,4 @@
-import { as, Box, Header, IconButton, Modal, Scroll, Text } from 'folds';
+import { as, Box, Header, IconButton, Modal, Scroll, Text } from '$components/ui';
 import { composerIcon, X } from '$components/icons/phosphor';
 import classNames from 'classnames';
 import Linkify from 'linkify-react';

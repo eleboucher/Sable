@@ -145,9 +145,6 @@ importers:
       focus-trap-react:
         specifier: ^12.0.3
         version: 12.0.3(@types/react-dom@18.3.7(@types/react@18.3.31))(@types/react@18.3.31)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      folds:
-        specifier: ^2.6.2
-        version: 2.6.2(@vanilla-extract/css@1.21.1)(@vanilla-extract/recipes@0.5.7(@vanilla-extract/css@1.21.1))(classnames@2.5.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       framer-motion:
         specifier: ^12.42.2
         version: 12.42.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -3907,15 +3904,6 @@ packages:
 
   focus-trap@8.2.2:
     resolution: {integrity: sha512-qV0g8hRYBqgACcFOH3f9wXc4zPKhr/0z9RI2a6ZijZ72EeBi4g8oBy8zAWuUR1TsMpOzwpUMFvjdasrC41Joug==}
-
-  folds@2.6.2:
-    resolution: {integrity: sha512-1HemxxSnBm8/U5kq1pDQrFkpltWgQN90DmWCZWkZb7D2pe8BhOJSwIRLjk9WxHcw6nn69oz2XNYIXtSw0LvX1w==}
-    peerDependencies:
-      '@vanilla-extract/css': 1.9.2
-      '@vanilla-extract/recipes': 0.3.0
-      classnames: 2.3.2
-      react: 17.0.0
-      react-dom: 17.0.0
 
   for-each@0.3.5:
     resolution: {integrity: sha512-dKx12eRCVIzqCxFGplyFKJMPvLEWgmNtUrpTiJIR5u97zEhRG8ySrtboPHZXx7daLxQVrl643cTzbab2tkQjxg==}
@@ -9119,14 +9107,6 @@ snapshots:
   focus-trap@8.2.2:
     dependencies:
       tabbable: 6.5.0
-
-  folds@2.6.2(@vanilla-extract/css@1.21.1)(@vanilla-extract/recipes@0.5.7(@vanilla-extract/css@1.21.1))(classnames@2.5.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
-    dependencies:
-      '@vanilla-extract/css': 1.21.1
-      '@vanilla-extract/recipes': 0.5.7(@vanilla-extract/css@1.21.1)
-      classnames: 2.5.1
-      react: 18.3.1
-      react-dom: 18.3.1(react@18.3.1)
 
   for-each@0.3.5:
     dependencies:

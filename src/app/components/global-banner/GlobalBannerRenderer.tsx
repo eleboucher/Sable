@@ -1,6 +1,6 @@
 import { useAtomValue } from 'jotai';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { Box, Button, Text } from 'folds';
+import { Box, Button, Text } from '$components/ui';
 import { sizedIcon } from '$components/icons/phosphor';
 import { globalBannersAtom } from '$state/globalBanners';
 import * as css from './GlobalBannerRenderer.css';

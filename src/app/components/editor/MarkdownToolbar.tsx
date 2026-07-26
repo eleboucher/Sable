@@ -1,5 +1,5 @@
 import FocusTrap from 'focus-trap-react';
-import type { RectCords } from 'folds';
+import type { RectCords } from '$components/ui';
 import {
   Badge,
   Box,
@@ -13,7 +13,7 @@ import {
   Tooltip,
   TooltipProvider,
   toRem,
-} from 'folds';
+} from '$components/ui';
 import type { MouseEventHandler, ReactNode } from 'react';
 import { useEffect, useState } from 'react';
 import { useSetting } from '$state/hooks/settings';

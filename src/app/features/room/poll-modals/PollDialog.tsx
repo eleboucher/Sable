@@ -10,7 +10,7 @@ import {
   Switch,
   color,
   Scroll,
-} from 'folds';
+} from '$components/ui';
 import { chipIcon, composerIcon, ListBullets, Minus, X } from '$components/icons/phosphor';
 import type { ChangeEventHandler, KeyboardEventHandler } from 'react';
 import { useCallback, useRef, useState } from 'react';

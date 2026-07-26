@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Box, Button, config, Text, Input, IconButton } from 'folds';
+import { Box, Button, config, Text, Input, IconButton } from '$components/ui';
 import { menuIcon, X } from '$components/icons/phosphor';
 import { HexColorPicker } from 'react-colorful';
 import { SettingTile } from '$components/setting-tile';

@@ -1,6 +1,6 @@
 import { useAtom } from 'jotai';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Box, IconButton, Text } from 'folds';
+import { Box, IconButton, Text } from '$components/ui';
 import { sizedIcon, X } from '$components/icons/phosphor';
 import { createLogger } from '$utils/debug';
 import type { InAppBannerNotification } from '$state/sessions';

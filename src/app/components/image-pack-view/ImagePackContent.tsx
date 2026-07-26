@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { as, Box, Text, config, Button, Menu, Spinner } from 'folds';
+import { as, Box, Text, config, Button, Menu, Spinner } from '$components/ui';
 import type { ImagePack, ImageUsage, PackContent, PackImage } from '$plugins/custom-emoji';
 import { PackImageReader, packMetaEqual, PackMetaReader } from '$plugins/custom-emoji';
 import { useMediaAuthentication } from '$hooks/useMediaAuthentication';

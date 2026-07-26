@@ -1,4 +1,4 @@
-import { Box, color, config, Input, Switch, Text } from 'folds';
+import { Box, color, config, Input, Switch, Text } from '$components/ui';
 import { sizedIcon, Warning } from '$components/icons/phosphor';
 import type { FormEventHandler } from 'react';
 import { useCallback, useState } from 'react';
@@ -15,7 +15,7 @@ import { createRoomEncryptionState } from '$components/create-room';
 import { useAlive } from '$hooks/useAlive';
 import { getDirectRoomPath } from '$pages/pathUtils';
 import { ErrorCode } from '../../cs-errorcode';
-import { Button } from '$components/button';
+import { Button } from '$components/ui';
 
 type CreateChatProps = {
   defaultUserId?: string;

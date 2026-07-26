@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { KeyboardEvent as ReactKeyboardEvent } from 'react';
-import { Box, Button, Scroll, Text, config } from 'folds';
+import { Box, Button, Scroll, Text, config } from '$components/ui';
 import { PageContent, SettingsSectionPage } from '$components/page';
 import { SequenceCard, SequenceCardStyle } from '$components/sequence-card';
 import { SettingTile } from '$components/setting-tile';

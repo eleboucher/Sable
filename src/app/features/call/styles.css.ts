@@ -1,5 +1,5 @@
 import { style } from '@vanilla-extract/css';
-import { config, toRem } from 'folds';
+import { config, toRem } from '$components/ui/theme';
 import { MOBILE_BREAKPOINT } from '../../hooks/useScreenSize';
 
 export const CallViewContent = style({

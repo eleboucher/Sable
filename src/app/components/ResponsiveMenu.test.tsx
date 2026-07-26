@@ -3,11 +3,11 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, render, screen } from '@testing-library/react';
 import { ScreenSize, ScreenSizeProvider } from '$hooks/useScreenSize';
 import { ResponsiveMenu } from './ResponsiveMenu';
-import type { RectCords } from 'folds';
+import type { RectCords } from '$components/ui';
 
 // ── Mocks ───────────────────────────────────────────────────────────────────
 
-vi.mock('folds', () => ({
+vi.mock('$components/ui', () => ({
   Box: ({ children, direction }: any) => (
     <div data-testid="box" data-direction={direction}>
       {children}

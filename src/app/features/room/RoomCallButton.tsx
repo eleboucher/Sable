@@ -1,4 +1,4 @@
-import { IconButton, TooltipProvider, Tooltip, Text } from 'folds';
+import { IconButton, TooltipProvider, Tooltip, Text } from '$components/ui';
 import { composerIcon, Phone, VideoCamera } from '$components/icons/phosphor';
 import { useAtomValue } from 'jotai';
 import type { Room } from '$types/matrix-sdk';

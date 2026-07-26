@@ -1,6 +1,6 @@
 import type { MouseEventHandler, ReactNode } from 'react';
 import { useCallback, useRef, useState } from 'react';
-import type { RectCords } from 'folds';
+import type { RectCords } from '$components/ui';
 import {
   Box,
   Avatar,
@@ -14,7 +14,7 @@ import {
   config,
   Menu,
   MenuItem,
-} from 'folds';
+} from '$components/ui';
 import classNames from 'classnames';
 import type { MatrixError, Room, IHierarchyRoom } from '$types/matrix-sdk';
 import type { HierarchyItem } from '$hooks/useSpaceHierarchy';

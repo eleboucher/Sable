@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Box, Header, IconButton, Spinner, Text } from 'folds';
+import { Box, Header, IconButton, Spinner, Text } from '$components/ui';
 import { composerIcon, X } from '$components/icons/phosphor';
 import type { Room } from '$types/matrix-sdk';
 

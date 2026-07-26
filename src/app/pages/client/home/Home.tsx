@@ -1,6 +1,6 @@
 import { forwardRef, useCallback, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Avatar, Box, Button, MenuItem, Text, toRem } from 'folds';
+import { Avatar, Box, Button, MenuItem, Text, toRem } from '$components/ui';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { useAtom, useAtomValue } from 'jotai';
 import { factoryRoomIdByActivity, factoryRoomIdByAtoZ } from '$utils/sort';

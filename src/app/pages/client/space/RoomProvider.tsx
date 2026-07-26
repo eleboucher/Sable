@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { Spinner } from 'folds';
+import { Spinner } from '$components/ui';
 import { useParams } from 'react-router-dom';
 import { useAtom, useAtomValue } from 'jotai';
 import { useResolvedRoomIdOrAlias } from '$hooks/router/useResolvedRoomId';

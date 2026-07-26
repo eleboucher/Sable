@@ -1,6 +1,6 @@
 import type { ChangeEventHandler } from 'react';
 import { useRef } from 'react';
-import { Input, Chip, Text } from 'folds';
+import { Input, Chip, Text } from '$components/ui';
 import { mobileOrTablet } from '$utils/user-agent';
 import { ArrowRight, sizedIcon, MagnifyingGlass } from '$components/icons/phosphor';
 import { EmojiBoardTab } from '../types';

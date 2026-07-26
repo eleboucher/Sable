@@ -11,7 +11,7 @@ import {
   config,
   Button,
   Spinner,
-} from 'folds';
+} from '$components/ui';
 import { menuIcon, X } from '$components/icons/phosphor';
 import { PageContent, SettingsSectionPage } from '$components/page';
 import { SequenceCard, SequenceCardStyle } from '$components/sequence-card';

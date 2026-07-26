@@ -16,7 +16,7 @@ import {
   color,
   config,
   toRem,
-} from 'folds';
+} from '$components/ui';
 import {
   Eye,
   EyeSlash,

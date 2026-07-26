@@ -1,4 +1,4 @@
-import { Avatar, Text } from 'folds';
+import { Avatar, Text } from '$components/ui';
 import { useRoomAvatar, useRoomName, useRoomTopic } from '$hooks/useRoomMeta';
 import { useSpace } from '$hooks/useSpace';
 import { useMatrixClient } from '$hooks/useMatrixClient';

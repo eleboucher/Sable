@@ -1,5 +1,5 @@
 import type { CSSProperties, ReactNode } from 'react';
-import { Box, Badge, toRem, Text } from 'folds';
+import { Box, Badge, toRem, Text } from '$components/ui';
 import { useSetting } from '$state/hooks/settings';
 import { settingsAtom } from '$state/settings';
 

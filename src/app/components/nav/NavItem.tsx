@@ -2,7 +2,7 @@ import classNames from 'classnames';
 import type { ComponentProps } from 'react';
 import { forwardRef } from 'react';
 import { Link } from 'react-router-dom';
-import { as } from 'folds';
+import { as } from '$components/ui';
 import * as css from './styles.css';
 
 export const NavItem = as<'div', { highlight?: boolean } & css.RoomSelectorVariants>(

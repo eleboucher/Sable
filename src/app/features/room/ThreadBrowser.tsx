@@ -1,6 +1,17 @@
 import type { ChangeEventHandler, MouseEventHandler } from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Box, Header, IconButton, Input, Scroll, Spinner, Text, config, Chip, toRem } from 'folds';
+import {
+  Box,
+  Header,
+  IconButton,
+  Input,
+  Scroll,
+  Spinner,
+  Text,
+  config,
+  Chip,
+  toRem,
+} from '$components/ui';
 import type { EventTimelineSet, MatrixEvent, Room, Thread } from '$types/matrix-sdk';
 import { NotificationCountType, RoomEvent, ThreadEvent } from '$types/matrix-sdk';
 import { useAtomValue } from 'jotai';

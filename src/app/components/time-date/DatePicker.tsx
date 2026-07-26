@@ -1,5 +1,5 @@
 import { forwardRef } from 'react';
-import { Menu, Box, Text, Chip } from 'folds';
+import { Menu, Box, Text, Chip } from '$components/ui';
 import dayjs from 'dayjs';
 import { dateFor, daysInMonth, daysToMs } from '$utils/time';
 import * as css from './styles.css';

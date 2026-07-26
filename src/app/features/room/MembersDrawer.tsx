@@ -16,7 +16,7 @@ import {
   TooltipProvider,
   config,
   toRem,
-} from 'folds';
+} from '$components/ui';
 import type { MatrixClient, Room, RoomMember } from '$types/matrix-sdk';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import classNames from 'classnames';

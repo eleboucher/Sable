@@ -1,4 +1,4 @@
-import { AvatarImage as FoldsAvatarImage } from 'folds';
+import { AvatarImage as FoldsAvatarImage } from '$components/ui';
 import type { ReactEventHandler } from 'react';
 import { useState } from 'react';
 import bgColorImg from '$utils/bgColorImg';

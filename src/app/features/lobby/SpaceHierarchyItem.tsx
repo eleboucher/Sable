@@ -1,7 +1,7 @@
 import type { MouseEventHandler } from 'react';
 import { forwardRef, useEffect, useMemo } from 'react';
 import type { Room, IHierarchyRoom } from '$types/matrix-sdk';
-import { Box, config, Text } from 'folds';
+import { Box, config, Text } from '$components/ui';
 import type {
   HierarchyItem,
   HierarchyItemRoom,

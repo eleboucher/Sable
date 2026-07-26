@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { useCallback, useEffect } from 'react';
-import { Box, Chip, Header, Scroll, Spinner, Text, color } from 'folds';
+import { Box, Chip, Header, Scroll, Spinner, Text, color } from '$components/ui';
 import {
   Outlet,
   generatePath,

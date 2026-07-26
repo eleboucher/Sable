@@ -1,6 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
-import { Box, config, Text } from 'folds';
+import { Box, config, Text } from '$components/ui';
 import { AnimatePresence, motion, useReducedMotion, type Variants } from 'framer-motion';
 import { type TitlebarStatusView } from '$state/titlebarStatus';
 import { ContainerColor } from '$styles/ContainerColor.css';

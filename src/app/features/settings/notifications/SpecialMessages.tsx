@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import type { IPushRules } from '$types/matrix-sdk';
 import { ConditionKind, PushRuleKind, RuleId, EventType } from '$types/matrix-sdk';
-import { Box, Text, Badge } from 'folds';
+import { Box, Text, Badge } from '$components/ui';
 import { useAccountData } from '$hooks/useAccountData';
 
 import { SequenceCard, SequenceCardStyle } from '$components/sequence-card';

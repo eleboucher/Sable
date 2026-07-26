@@ -1,4 +1,4 @@
-import { Box, Text, Scroll } from 'folds';
+import { Box, Text, Scroll } from '$components/ui';
 import { menuIcon, Warning } from '$components/icons/phosphor';
 import { PageContent, SettingsSectionPage } from '$components/page';
 import { InfoCard } from '$components/info-card';

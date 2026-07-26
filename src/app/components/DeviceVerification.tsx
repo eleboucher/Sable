@@ -2,7 +2,7 @@ import type { ShowSasCallbacks, VerificationRequest, Verifier } from '$types/mat
 import { VerificationPhase, VerificationMethod } from '$types/matrix-sdk';
 import type { CSSProperties } from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Box, config, Dialog, Header, IconButton, Spinner, Text } from 'folds';
+import { Box, config, Dialog, Header, IconButton, Spinner, Text } from '$components/ui';
 import { composerIcon, X } from '$components/icons/phosphor';
 import * as Sentry from '@sentry/react';
 import {
@@ -14,7 +14,7 @@ import {
 import { AsyncStatus, useAsyncCallback } from '$hooks/useAsyncCallback';
 import { ContainerColor } from '$styles/ContainerColor.css';
 import { ModalOverlay } from '$components/modal-overlay/ModalOverlay';
-import { Button } from '$components/button';
+import { Button } from '$components/ui';
 
 const DialogHeaderStyles: CSSProperties = {
   padding: `0 ${config.space.S200} 0 ${config.space.S400}`,

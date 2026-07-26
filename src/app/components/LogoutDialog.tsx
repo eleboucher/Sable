@@ -1,5 +1,5 @@
 import { forwardRef, useCallback } from 'react';
-import { Dialog, Header, config, Box, Text } from 'folds';
+import { Dialog, Header, config, Box, Text } from '$components/ui';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { logoutClient } from '$client/initMatrix';
 import { activeSessionIdAtom, sessionsAtom } from '$state/sessions';
@@ -12,7 +12,7 @@ import {
 } from '$hooks/useDeviceVerificationStatus';
 import { InfoCard } from './info-card';
 import { AsyncError } from '$components/AsyncError';
-import { Button } from '$components/button';
+import { Button } from '$components/ui';
 
 type LogoutDialogProps = {
   handleClose: () => void;

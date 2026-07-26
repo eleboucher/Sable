@@ -2,7 +2,7 @@ import { SequenceCard, SequenceCardStyle } from '$components/sequence-card';
 import { SettingTile } from '$components/setting-tile';
 import { useSetting } from '$state/hooks/settings';
 import { settingsAtom } from '$state/settings';
-import { Box, Switch, Text } from 'folds';
+import { Box, Switch, Text } from '$components/ui';
 
 export function PKCompatSettings() {
   const [usePKCompat, setUsePKCompat] = useSetting(settingsAtom, 'pkCompat');

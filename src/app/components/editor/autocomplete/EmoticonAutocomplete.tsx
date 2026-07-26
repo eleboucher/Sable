@@ -1,7 +1,7 @@
 import type { KeyboardEvent as ReactKeyboardEvent, MouseEvent as ReactMouseEvent } from 'react';
 import { useEffect, useMemo } from 'react';
 import type { Editor } from 'slate';
-import { Box, MenuItem, Text, toRem } from 'folds';
+import { Box, MenuItem, Text, toRem } from '$components/ui';
 import type { Room } from '$types/matrix-sdk';
 
 import { useMatrixClient } from '$hooks/useMatrixClient';

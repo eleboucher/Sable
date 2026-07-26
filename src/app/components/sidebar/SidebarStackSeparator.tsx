@@ -1,4 +1,4 @@
-import { Line, toRem } from 'folds';
+import { Line, toRem } from '$components/ui';
 
 export function SidebarStackSeparator() {
   return (

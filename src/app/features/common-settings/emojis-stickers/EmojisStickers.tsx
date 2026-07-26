@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Box, Scroll } from 'folds';
+import { Box, Scroll } from '$components/ui';
 import { PageContent, SettingsSectionPage } from '$components/page';
 import type { ImagePack } from '$plugins/custom-emoji';
 import { ImagePackView } from '$components/image-pack-view';

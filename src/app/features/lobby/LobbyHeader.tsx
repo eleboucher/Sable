@@ -11,7 +11,7 @@ import {
   TooltipProvider,
   config,
   toRem,
-} from 'folds';
+} from '$components/ui';
 import { ResponsiveMenu } from '$components/ResponsiveMenu';
 import { useMenuAnchor } from '$hooks/useMenuAnchor';
 import { PageHeader } from '$components/page';

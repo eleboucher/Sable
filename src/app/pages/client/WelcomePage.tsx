@@ -1,4 +1,4 @@
-import { Box, Button, Text, config, toRem } from 'folds';
+import { Box, Button, Text, config, toRem } from '$components/ui';
 import { Code, Heart, menuIcon } from '$components/icons/phosphor';
 import { Page, PageHero, PageHeroSection } from '$components/page';
 import LogoSVG from '$public/res/svg/logo.svg';

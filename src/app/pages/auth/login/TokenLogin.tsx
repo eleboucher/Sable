@@ -1,4 +1,13 @@
-import { Box, Overlay, OverlayBackdrop, OverlayCenter, Spinner, Text, color, config } from 'folds';
+import {
+  Box,
+  Overlay,
+  OverlayBackdrop,
+  OverlayCenter,
+  Spinner,
+  Text,
+  color,
+  config,
+} from '$components/ui';
 import { sizedIcon, Warning } from '$components/icons/phosphor';
 import { useCallback, useEffect } from 'react';
 import type { MatrixError } from '$types/matrix-sdk';

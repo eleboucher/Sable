@@ -1,5 +1,5 @@
 import { style } from '@vanilla-extract/css';
-import { color, config, toRem } from 'folds';
+import { color, config, toRem } from '$components/ui/theme';
 
 export const PollEvent = style({
   backgroundColor: color.Background.Container,

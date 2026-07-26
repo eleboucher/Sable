@@ -1,6 +1,6 @@
 import type { FormEventHandler, MouseEventHandler, RefObject } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import type { RectCords } from 'folds';
+import type { RectCords } from '$components/ui';
 import {
   Box,
   Button,
@@ -16,7 +16,7 @@ import {
   Text,
   config,
   toRem,
-} from 'folds';
+} from '$components/ui';
 import {
   ArrowLeft,
   CaretDown,

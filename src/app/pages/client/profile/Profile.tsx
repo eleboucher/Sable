@@ -1,4 +1,4 @@
-import { Box, Text, color, config, IconButton, Menu, Line, MenuItem } from 'folds';
+import { Box, Text, color, config, IconButton, Menu, Line, MenuItem } from '$components/ui';
 import { GearSix, menuIcon, sizedIcon } from '$components/icons/phosphor';
 import { PageNavHeader } from '$components/page';
 import { SidebarPanel } from '$components/page/SidebarPanel';

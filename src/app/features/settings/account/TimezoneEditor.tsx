@@ -1,6 +1,6 @@
 import type { ChangeEvent } from 'react';
 import { useMemo, useState, useEffect } from 'react';
-import { Box, IconButton, Button, Input, Text } from 'folds';
+import { Box, IconButton, Button, Input, Text } from '$components/ui';
 import { menuIcon, X } from '$components/icons/phosphor';
 import { SettingTile } from '$components/setting-tile';
 

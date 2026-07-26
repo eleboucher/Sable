@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
-import { configClass, varsClass } from 'folds';
+import { configClass, varsClass } from '$components/ui';
 import {
   DarkTheme,
   LightTheme,

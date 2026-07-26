@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { createPortal } from 'react-dom';
-import { Box, Button, Dialog, Header, IconButton, Text, config } from 'folds';
+import { Box, Button, Dialog, Header, IconButton, Text, config } from '$components/ui';
 import { composerIcon, X } from '$components/icons/phosphor';
 import { ModalOverlay } from '$components/modal-overlay/ModalOverlay';
 import type { ConfirmRequest } from './confirm';

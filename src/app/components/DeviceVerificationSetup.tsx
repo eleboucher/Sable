@@ -1,6 +1,6 @@
 import type { FormEventHandler } from 'react';
 import { forwardRef, useCallback, useState } from 'react';
-import { Dialog, Header, Box, Text, IconButton, config, Chip } from 'folds';
+import { Dialog, Header, Box, Text, IconButton, config, Chip } from '$components/ui';
 import { AsyncError } from '$components/AsyncError';
 import { composerIcon, X } from '$components/icons/phosphor';
 import { saveFileToDevice } from '$utils/download';
@@ -16,7 +16,7 @@ import { useAlive } from '$hooks/useAlive';
 import { PasswordInput } from './password-input';
 import { ActionUIA, ActionUIAFlowsLoader } from './ActionUIA';
 import { UseStateProvider } from './UseStateProvider';
-import { Button } from '$components/button';
+import { Button } from '$components/ui';
 
 type UIACallback<T> = (
   authDict: AuthDict | null

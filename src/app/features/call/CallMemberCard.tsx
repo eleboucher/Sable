@@ -1,6 +1,6 @@
 import type { CallMembership } from '$types/matrix-sdk';
 import { useState } from 'react';
-import { Avatar, Box, Text } from 'folds';
+import { Avatar, Box, Text } from '$components/ui';
 import {
   CaretDown,
   CaretUp,

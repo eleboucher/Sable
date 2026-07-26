@@ -13,7 +13,7 @@ import {
   Spinner,
   Text,
   toRem,
-} from 'folds';
+} from '$components/ui';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { createLogger } from '$utils/debug';
 import { useRoomPinnedEvents } from '$hooks/useRoomPinnedEvents';

@@ -1,4 +1,4 @@
-import { Badge, Text } from 'folds';
+import { Badge, Text } from '$components/ui';
 import { useCallback } from 'react';
 import type { StateEvents } from '$types/matrix-sdk';
 import { SequenceCard, SequenceCardStyle } from '$components/sequence-card';
@@ -12,7 +12,7 @@ import type { RoomPermissionsAPI } from '$hooks/useRoomPermissions';
 import { EventType } from '$types/matrix-sdk';
 import { confirm } from '$components/confirm/confirm';
 import { AsyncError } from '$components/AsyncError';
-import { Button } from '$components/button';
+import { Button } from '$components/ui';
 
 const ROOM_ENC_ALGO = 'm.megolm.v1.aes-sha2';
 

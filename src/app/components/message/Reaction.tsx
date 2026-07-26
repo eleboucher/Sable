@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Box, Text, as } from 'folds';
+import { Box, Text, as } from '$components/ui';
 import { sizedIcon, Warning } from '$components/icons/phosphor';
 import classNames from 'classnames';
 import type { MatrixClient, MatrixEvent, Room } from '$types/matrix-sdk';

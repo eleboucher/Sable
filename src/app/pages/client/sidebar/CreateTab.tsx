@@ -1,7 +1,7 @@
 import type { MouseEventHandler } from 'react';
 import { useState } from 'react';
-import type { RectCords } from 'folds';
-import { Box, config, Menu, PopOut, Text } from 'folds';
+import type { RectCords } from '$components/ui';
+import { Box, config, Menu, PopOut, Text } from '$components/ui';
 import FocusTrap from 'focus-trap-react';
 import { useNavigate } from 'react-router-dom';
 import { SidebarAvatar, SidebarItemLeft, SidebarItemTooltip } from '$components/sidebar';

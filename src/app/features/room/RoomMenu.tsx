@@ -1,5 +1,5 @@
 import { forwardRef } from 'react';
-import { Box, Text, Menu, MenuItem, toRem, config, Line, Spinner } from 'folds';
+import { Box, Text, Menu, MenuItem, toRem, config, Line, Spinner } from '$components/ui';
 import type { Room } from '$types/matrix-sdk';
 
 import {

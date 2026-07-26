@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { Box } from 'folds';
+import { Box } from '$components/ui';
 
 type SidebarContentProps = {
   scrollable: ReactNode;

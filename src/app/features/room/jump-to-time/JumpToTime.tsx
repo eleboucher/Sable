@@ -2,7 +2,7 @@ import type { MouseEventHandler } from 'react';
 import { useCallback, useMemo, useState } from 'react';
 import FocusTrap from 'focus-trap-react';
 import { CaretDown, chipIcon, composerIcon, X } from '$components/icons/phosphor';
-import type { RectCords } from 'folds';
+import type { RectCords } from '$components/ui';
 import {
   Dialog,
   Header,
@@ -15,7 +15,7 @@ import {
   Spinner,
   Chip,
   PopOut,
-} from 'folds';
+} from '$components/ui';
 import type { MatrixError } from '$types/matrix-sdk';
 import { Direction, EventType } from '$types/matrix-sdk';
 import { useMatrixClient } from '$hooks/useMatrixClient';

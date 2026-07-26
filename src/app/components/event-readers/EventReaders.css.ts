@@ -1,5 +1,5 @@
 import { style } from '@vanilla-extract/css';
-import { DefaultReset, config } from 'folds';
+import { DefaultReset, config } from '$components/ui/theme';
 
 export const EventReaders = style([
   DefaultReset,

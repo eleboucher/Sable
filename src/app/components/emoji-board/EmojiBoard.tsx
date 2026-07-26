@@ -6,7 +6,7 @@ import type {
   RefObject,
 } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Box, config, Scroll } from 'folds';
+import { Box, config, Scroll } from '$components/ui';
 import { ClockCounterClockwise } from '$components/icons/phosphor';
 import FocusTrap from 'focus-trap-react';
 import { isKeyHotkey } from 'is-hotkey';

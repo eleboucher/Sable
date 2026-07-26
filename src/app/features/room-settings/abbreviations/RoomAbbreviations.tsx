@@ -1,7 +1,17 @@
 import type { FormEventHandler } from 'react';
 import { useCallback, useMemo } from 'react';
 import { useAtomValue } from 'jotai';
-import { Box, Button, Chip, IconButton, Input, Scroll, Spinner, Text, config } from 'folds';
+import {
+  Box,
+  Button,
+  Chip,
+  IconButton,
+  Input,
+  Scroll,
+  Spinner,
+  Text,
+  config,
+} from '$components/ui';
 import { menuIcon, Trash } from '$components/icons/phosphor';
 import { PageContent, SettingsSectionPage } from '$components/page';
 import { SequenceCard, SequenceCardStyle } from '$components/sequence-card';

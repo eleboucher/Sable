@@ -10,7 +10,7 @@ import {
   useNavigationType,
 } from 'react-router-dom';
 import { describe, expect, it, vi } from 'vitest';
-import { Text } from 'folds';
+import { Text } from '$components/ui';
 import { SequenceCard } from '$components/sequence-card';
 import { SettingTile } from '$components/setting-tile';
 import { ClientConfigProvider } from '$hooks/useClientConfig';

@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { useAtomValue, useSetAtom } from 'jotai';
-import type { Position, RectCords } from 'folds';
+import type { Position, RectCords } from '$components/ui';
 import type { UserProfile } from '$hooks/useUserProfile';
 import type { UserRoomProfileState } from '$state/userRoomProfile';
 import { userRoomProfileAtom } from '$state/userRoomProfile';

@@ -1,4 +1,4 @@
-import { Dialog, Text, Box, Button, config } from 'folds';
+import { Dialog, Text, Box, Button, config } from '$components/ui';
 import { AuthType } from '$types/matrix-sdk';
 import ReCAPTCHA from 'react-google-recaptcha';
 import type { StageComponentProps } from './types';

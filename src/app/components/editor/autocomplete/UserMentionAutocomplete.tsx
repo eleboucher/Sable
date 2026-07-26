@@ -1,7 +1,7 @@
 import type { KeyboardEvent as ReactKeyboardEvent, MouseEvent as ReactMouseEvent } from 'react';
 import { useCallback, useEffect } from 'react';
 import type { Editor } from 'slate';
-import { Avatar, MenuItem, Text } from 'folds';
+import { Avatar, MenuItem, Text } from '$components/ui';
 import { userFallbackIcon } from '$components/icons/phosphor';
 import type { MatrixClient, Room, RoomMember } from '$types/matrix-sdk';
 

@@ -1,5 +1,5 @@
 import { style } from '@vanilla-extract/css';
-import { DefaultReset, color, config } from 'folds';
+import { DefaultReset, color, config } from '$components/ui/theme';
 
 export const EventHistory = style([
   DefaultReset,

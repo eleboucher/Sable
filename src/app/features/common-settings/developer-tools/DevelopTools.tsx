@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useAtomValue } from 'jotai';
-import { Box, Text, Scroll, Switch, Button, MenuItem, config, color } from 'folds';
+import { Box, Text, Scroll, Switch, Button, MenuItem, config, color } from '$components/ui';
 import {
   CaretDown,
   CaretRight,

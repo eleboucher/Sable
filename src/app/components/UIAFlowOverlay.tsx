@@ -9,7 +9,7 @@ import {
   Tooltip,
   Chip,
   IconButton,
-} from 'folds';
+} from '$components/ui';
 import { sizedIcon, X } from '$components/icons/phosphor';
 import FocusTrap from 'focus-trap-react';
 

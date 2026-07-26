@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { as } from 'folds';
+import { as } from '$components/ui';
 import * as css from './Sidebar.css';
 
 export const SidebarStack = as<'div'>(

@@ -1,5 +1,5 @@
 import { useAtomValue } from 'jotai';
-import { Box, Text, as, config } from 'folds';
+import { Box, Text, as, config } from '$components/ui';
 import { Checks, menuIcon } from '$components/icons/phosphor';
 import type { Room } from '$types/matrix-sdk';
 import classNames from 'classnames';

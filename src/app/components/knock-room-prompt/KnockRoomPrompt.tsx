@@ -1,6 +1,6 @@
 import type { FormEventHandler } from 'react';
 import { useCallback, useEffect } from 'react';
-import { config, Box, Text, Input } from 'folds';
+import { config, Box, Text, Input } from '$components/ui';
 import type { MatrixError } from '$types/matrix-sdk';
 
 import { useMatrixClient } from '$hooks/useMatrixClient';
@@ -8,7 +8,7 @@ import { AsyncStatus, useAsyncCallback } from '$hooks/useAsyncCallback';
 import { createDebugLogger } from '$utils/debugLogger';
 import { PromptDialog } from '$components/modal-overlay/PromptDialog';
 import { AsyncError } from '$components/AsyncError';
-import { Button } from '$components/button';
+import { Button } from '$components/ui';
 
 const debugLog = createDebugLogger('KnockRoomPrompt');
 

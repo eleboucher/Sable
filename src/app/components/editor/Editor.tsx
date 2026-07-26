@@ -5,7 +5,7 @@ import type {
   ReactNode,
 } from 'react';
 import { forwardRef, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { Box, Scroll, Text } from 'folds';
+import { Box, Scroll, Text } from '$components/ui';
 import type { Descendant, Editor } from 'slate';
 import { Node, createEditor } from 'slate';
 import type { RenderLeafProps, RenderElementProps, RenderPlaceholderProps } from 'slate-react';

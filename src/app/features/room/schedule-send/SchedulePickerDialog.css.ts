@@ -1,5 +1,5 @@
 import { style } from '@vanilla-extract/css';
-import { config, toRem } from 'folds';
+import { config, toRem } from '$components/ui/theme';
 
 export const SplitSendButton = style({
   borderRadius: `${config.radii.R300} 0 0 ${config.radii.R300}`,

@@ -1,4 +1,4 @@
-import { Avatar, Box, Text } from 'folds';
+import { Avatar, Box, Text } from '$components/ui';
 import { userFallbackIcon } from '$components/icons/phosphor';
 import type { MouseEventHandler } from 'react';
 import { useAtomValue } from 'jotai';

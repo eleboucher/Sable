@@ -1,6 +1,6 @@
-import { Box, Text, color, config } from 'folds';
+import { Box, Text, color, config } from '$components/ui';
 import { PromptDialog } from '$components/modal-overlay/PromptDialog';
-import { Button } from '$components/button';
+import { Button } from '$components/ui';
 
 type DirectInvitePromptProps = {
   onCancel: () => void;

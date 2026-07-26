@@ -1,4 +1,4 @@
-import { color, Box, Text, Avatar, Chip } from 'folds';
+import { color, Box, Text, Avatar, Chip } from '$components/ui';
 import type { MatrixClient } from '$types/matrix-sdk';
 import { useCallback, useMemo } from 'react';
 import { nameInitials } from '$utils/common';

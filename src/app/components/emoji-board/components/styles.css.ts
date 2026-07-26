@@ -1,6 +1,6 @@
 import { style } from '@vanilla-extract/css';
 import { recipe } from '@vanilla-extract/recipes';
-import { toRem, color, config, DefaultReset, FocusOutline } from 'folds';
+import { toRem, color, config, DefaultReset, FocusOutline } from '$components/ui/theme';
 
 /**
  * Layout

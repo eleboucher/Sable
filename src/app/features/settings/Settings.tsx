@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import type { ComponentType, ReactNode } from 'react';
 import { DesktopIcon, type IconProps } from '@phosphor-icons/react';
-import { Avatar, Box, Button, config, Text } from 'folds';
+import { Avatar, Box, Button, config, Text } from '$components/ui';
 import { ScreenSize, useScreenSizeContext } from '$hooks/useScreenSize';
 import { useUserProfile } from '$hooks/useUserProfile';
 import { useMatrixClient } from '$hooks/useMatrixClient';

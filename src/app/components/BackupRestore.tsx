@@ -2,7 +2,7 @@ import type { MouseEventHandler } from 'react';
 import { useCallback, useState } from 'react';
 import { useAtom } from 'jotai';
 import type { CryptoApi, KeyBackupInfo } from '$types/matrix-sdk';
-import type { RectCords } from 'folds';
+import type { RectCords } from '$components/ui';
 import {
   Badge,
   Box,
@@ -16,7 +16,7 @@ import {
   ProgressBar,
   Spinner,
   Text,
-} from 'folds';
+} from '$components/ui';
 import FocusTrap from 'focus-trap-react';
 import { BackupProgressStatus, backupRestoreProgressAtom } from '$state/backupRestore';
 import { AsyncStatus, useAsyncCallback } from '$hooks/useAsyncCallback';

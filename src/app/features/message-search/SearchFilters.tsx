@@ -1,6 +1,6 @@
 import type { ChangeEventHandler, MouseEventHandler } from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import type { RectCords } from 'folds';
+import type { RectCords } from '$components/ui';
 import {
   Box,
   Chip,
@@ -16,7 +16,7 @@ import {
   Button,
   Input,
   Badge,
-} from 'folds';
+} from '$components/ui';
 import FocusTrap from 'focus-trap-react';
 import { ResponsiveMenu } from '$components/ResponsiveMenu';
 import { useMenuAnchor } from '$hooks/useMenuAnchor';

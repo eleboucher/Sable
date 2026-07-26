@@ -1,4 +1,4 @@
-import { Box, color, config, Menu, MenuItem } from 'folds';
+import { Box, color, config, Menu, MenuItem } from '$components/ui';
 import type { MatrixClient } from '$types/matrix-sdk';
 import type { PackImageReader } from '$plugins/custom-emoji';
 import type { IEmoji } from '$plugins/emoji';

@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { Box, color, config, Dialog, Header, IconButton, Text } from 'folds';
+import { Box, color, config, Dialog, Header, IconButton, Text } from '$components/ui';
 import { menuIcon, X } from '$components/icons/phosphor';
 import { ModalOverlay } from '$components/modal-overlay/ModalOverlay';
 import { useAtom } from 'jotai';
@@ -14,7 +14,7 @@ import { disableNativePush } from './NotificationTransport';
 import { disableUnifiedPush } from './UnifiedPushNotifications';
 import { SettingTile } from '../../../components/setting-tile';
 import { isTauri } from '@tauri-apps/api/core';
-import { Button } from '$components/button';
+import { Button } from '$components/ui';
 
 type ConfirmDeregisterDialogProps = {
   onClose: () => void;

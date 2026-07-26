@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { as } from 'folds';
+import { as } from '$components/ui';
 import classNames from 'classnames';
 import * as css from './styles.css';
 

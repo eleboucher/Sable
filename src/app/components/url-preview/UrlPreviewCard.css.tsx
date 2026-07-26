@@ -1,6 +1,6 @@
 import { style } from '@vanilla-extract/css';
 import { recipe } from '@vanilla-extract/recipes';
-import { DefaultReset, color, config, toRem } from 'folds';
+import { DefaultReset, color, config, toRem } from '$components/ui/theme';
 
 export const UrlPreviewAudio = style([
   DefaultReset,

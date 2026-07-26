@@ -1,4 +1,4 @@
-import { Box } from 'folds';
+import { Box } from '$components/ui';
 import type { ReactNode } from 'react';
 import { MessageLayout } from '$state/settings';
 import { BubbleLayout, CompactLayout, ModernLayout } from '$components/message/layout';

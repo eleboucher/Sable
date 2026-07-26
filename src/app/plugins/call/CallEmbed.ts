@@ -12,7 +12,7 @@ import { CallWidgetDriver } from './CallWidgetDriver';
 import { trimTrailingSlash } from '../../utils/common';
 import { getWindowOrigin } from '../../utils/platform';
 import type { ElementCallThemeKind, ElementMediaStateDetail } from './types';
-import { color, config } from 'folds';
+import { color, config } from '$components/ui';
 import { ElementCallIntent, ElementWidgetActions } from './types';
 import { CallControl } from './CallControl';
 import { CallControlState } from './CallControlState';

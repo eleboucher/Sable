@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { useEffect, useRef, useState } from 'react';
 import FocusTrap from 'focus-trap-react';
 import { isKeyHotkey } from 'is-hotkey';
-import { Header, Menu, Scroll, config } from 'folds';
+import { Header, Menu, Scroll, config } from '$components/ui';
 
 import { preventScrollWithArrowKey, stopPropagation } from '$utils/keyboard';
 import { useAlive } from '$hooks/useAlive';

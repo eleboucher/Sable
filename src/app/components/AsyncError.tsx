@@ -1,4 +1,4 @@
-import { Text, color } from 'folds';
+import { Text, color } from '$components/ui';
 import type { AsyncState } from '$hooks/useAsyncCallback';
 import { AsyncStatus } from '$hooks/useAsyncCallback';
 

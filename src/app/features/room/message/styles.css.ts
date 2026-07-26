@@ -1,5 +1,5 @@
 import { style } from '@vanilla-extract/css';
-import { DefaultReset, FocusOutline, color, config, toRem } from 'folds';
+import { DefaultReset, FocusOutline, color, config, toRem } from '$components/ui/theme';
 
 export const MessageBase = style({
   position: 'relative',

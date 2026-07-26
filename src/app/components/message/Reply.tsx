@@ -1,4 +1,4 @@
-import { Box, Chip, Text, as, color, toRem } from 'folds';
+import { Box, Chip, Text, as, color, toRem } from '$components/ui';
 import type { EventTimelineSet, IMentions, Room } from '$types/matrix-sdk';
 import { EventType, MsgType } from '$types/matrix-sdk';
 import type { MouseEventHandler, ReactNode } from 'react';

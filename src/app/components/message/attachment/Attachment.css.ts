@@ -1,7 +1,7 @@
 import { style } from '@vanilla-extract/css';
 import type { RecipeVariants } from '@vanilla-extract/recipes';
 import { recipe } from '@vanilla-extract/recipes';
-import { DefaultReset, color, config, toRem } from 'folds';
+import { DefaultReset, color, config, toRem } from '$components/ui/theme';
 
 export const Attachment = recipe({
   base: {

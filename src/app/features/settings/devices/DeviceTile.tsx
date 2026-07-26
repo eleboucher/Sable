@@ -1,6 +1,6 @@
 import type { FormEventHandler, ReactNode } from 'react';
 import { useCallback, useEffect, useState } from 'react';
-import { Box, Text, IconButton, Chip, Input, Button, color, Spinner, toRem } from 'folds';
+import { Box, Text, IconButton, Chip, Input, Button, color, Spinner, toRem } from '$components/ui';
 import { CaretDown, CaretRight, chipIcon, Trash } from '$components/icons/phosphor';
 import type { CryptoApi, IMyDevice, MatrixError } from '$types/matrix-sdk';
 import { SettingTile } from '$components/setting-tile';

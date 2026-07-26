@@ -2,7 +2,7 @@ import type { MouseEventHandler } from 'react';
 import { useMemo } from 'react';
 import type { Room } from '$types/matrix-sdk';
 import { JoinRule, MatrixEvent, RelationType } from '$types/matrix-sdk';
-import { Avatar, Box, Chip, Header, Text, config } from 'folds';
+import { Avatar, Box, Chip, Header, Text, config } from '$components/ui';
 import { RoomAvatar, RoomIcon } from '$components/room-avatar';
 import { MessagePreview, useRoomMessagePreviewRenderer } from '$components/message-preview';
 import { SequenceCard } from '$components/sequence-card';

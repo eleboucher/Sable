@@ -1,6 +1,6 @@
 import type { RefObject } from 'react';
 import { useEffect, useMemo, useRef } from 'react';
-import { Text, Box, config, Spinner, IconButton, Line, toRem } from 'folds';
+import { Text, Box, config, Spinner, IconButton, Line, toRem } from '$components/ui';
 import { CaretUp, ChatCircle, dropzoneIcon, sizedIcon, Info } from '$components/icons/phosphor';
 import { useAtomValue } from 'jotai';
 import { useVirtualizer } from '@tanstack/react-virtual';

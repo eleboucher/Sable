@@ -1,4 +1,4 @@
-import { Box, Text } from 'folds';
+import { Box, Text } from '$components/ui';
 import * as css from './styles.css';
 
 export function AuthFooter() {

@@ -1,6 +1,6 @@
 import type { FormEventHandler, MouseEventHandler, ReactNode } from 'react';
 import { useCallback, useState } from 'react';
-import type { RectCords } from 'folds';
+import type { RectCords } from '$components/ui';
 import {
   Box,
   Button,
@@ -15,7 +15,7 @@ import {
   Spinner,
   Text,
   config,
-} from 'folds';
+} from '$components/ui';
 import { sizedIcon, Info } from '$components/icons/phosphor';
 import FocusTrap from 'focus-trap-react';
 import { Link } from 'react-router-dom';

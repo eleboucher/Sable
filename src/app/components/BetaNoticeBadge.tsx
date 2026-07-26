@@ -1,4 +1,4 @@
-import { TooltipProvider, Tooltip, Box, Text, Badge, toRem } from 'folds';
+import { TooltipProvider, Tooltip, Box, Text, Badge, toRem } from '$components/ui';
 
 export function BetaNoticeBadge() {
   return (

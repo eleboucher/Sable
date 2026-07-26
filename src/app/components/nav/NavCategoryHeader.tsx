@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import classNames from 'classnames';
-import { Header, as } from 'folds';
+import { Header, as } from '$components/ui';
 import * as css from './styles.css';
 
 type NavCategoryHeaderProps = {

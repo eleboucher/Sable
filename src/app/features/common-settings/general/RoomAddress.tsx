@@ -12,7 +12,7 @@ import {
   Spinner,
   Text,
   toRem,
-} from 'folds';
+} from '$components/ui';
 import { CaretDown, CaretUp, menuIcon } from '$components/icons/phosphor';
 import type { MatrixError } from '$types/matrix-sdk';
 import { SettingTile } from '$components/setting-tile';

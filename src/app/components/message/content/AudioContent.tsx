@@ -1,7 +1,7 @@
 /* oxlint-disable jsx-a11y/media-has-caption */
 import type { ReactNode } from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Badge, Chip, IconButton, ProgressBar, Spinner, Text, toRem } from 'folds';
+import { Badge, Chip, IconButton, ProgressBar, Spinner, Text, toRem } from '$components/ui';
 import { sizedIcon, Pause, Play, SpeakerHigh, SpeakerSlash } from '$components/icons/phosphor';
 import { isTauri } from '@tauri-apps/api/core';
 import type { EncryptedAttachmentInfo } from 'browser-encrypt-attachment';

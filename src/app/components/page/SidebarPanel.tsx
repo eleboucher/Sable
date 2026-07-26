@@ -1,4 +1,4 @@
-import { Box, Text, color, config, toRem } from 'folds';
+import { Box, Text, color, config, toRem } from '$components/ui';
 import { SquaresFour, sizedIcon } from '$components/icons/phosphor';
 import { useSidebarWidth } from '$hooks/useSidebarWidth';
 import { SidebarResizer } from '$pages/client/sidebar/SidebarResizer';

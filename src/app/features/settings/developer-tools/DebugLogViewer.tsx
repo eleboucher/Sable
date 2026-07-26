@@ -1,8 +1,8 @@
 import type { MouseEventHandler } from 'react';
 import { useEffect, useState, useCallback, useMemo } from 'react';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
-import type { RectCords } from 'folds';
-import { Box, Text, Button, color, config, Badge, Menu, MenuItem, PopOut } from 'folds';
+import type { RectCords } from '$components/ui';
+import { Box, Text, Button, color, config, Badge, Menu, MenuItem, PopOut } from '$components/ui';
 import { SequenceCard, SequenceCardStyle } from '$components/sequence-card';
 
 import { debugLoggerEnabledAtom, debugLogsAtom, clearDebugLogsAtom } from '$state/debugLogger';

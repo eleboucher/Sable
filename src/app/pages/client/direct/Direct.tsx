@@ -1,6 +1,6 @@
 import { forwardRef, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAtom, useAtomValue } from 'jotai';
-import { Avatar, Box, Button, Text, toRem } from 'folds';
+import { Avatar, Box, Button, Text, toRem } from '$components/ui';
 import {
   At,
   dropzoneIcon,

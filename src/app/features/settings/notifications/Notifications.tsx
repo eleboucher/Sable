@@ -1,4 +1,4 @@
-import { Box, Scroll } from 'folds';
+import { Box, Scroll } from '$components/ui';
 import { PageContent, SettingsSectionPage } from '$components/page';
 import { SystemNotification } from './SystemNotification';
 import { AllMessagesNotifications } from './AllMessages';

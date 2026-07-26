@@ -1,4 +1,4 @@
-import type { RectCords } from 'folds';
+import type { RectCords } from '$components/ui';
 import {
   Box,
   Button,
@@ -12,7 +12,7 @@ import {
   Scroll,
   Text,
   toRem,
-} from 'folds';
+} from '$components/ui';
 import { Plus, X, sizedIcon } from '$components/icons/phosphor';
 import { isKeyHotkey } from 'is-hotkey';
 import FocusTrap from 'focus-trap-react';

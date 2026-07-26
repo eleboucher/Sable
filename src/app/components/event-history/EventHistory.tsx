@@ -11,7 +11,7 @@ import {
   as,
   color,
   config,
-} from 'folds';
+} from '$components/ui';
 import type { IContent, MatrixEvent, Room } from '$types/matrix-sdk';
 import { getAvatarUrl, getMemberDisplayName } from '$utils/room/display';
 import { getMxIdLocalPart } from '$utils/matrix';

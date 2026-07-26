@@ -1,4 +1,4 @@
-import { as, Chip, IconButton, Text } from 'folds';
+import { as, Chip, IconButton, Text } from '$components/ui';
 import classNames from 'classnames';
 import { CaretDown, CaretRight, chipCaretIcon } from '$components/icons/phosphor';
 import * as css from './styles.css';

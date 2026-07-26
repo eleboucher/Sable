@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { Box, Text, Button, MenuItem } from 'folds';
+import { Box, Text, Button, MenuItem } from '$components/ui';
 import {
   CaretDown,
   CaretRight,

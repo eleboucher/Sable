@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { Box, Text, Scroll } from 'folds';
+import { Box, Text, Scroll } from '$components/ui';
 import { CutoutCard } from '$components/cutout-card';
 import * as css from './styles.css';
 

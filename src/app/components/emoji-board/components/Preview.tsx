@@ -1,4 +1,4 @@
-import { Box, Text } from 'folds';
+import { Box, Text } from '$components/ui';
 import type { Atom } from 'jotai';
 import { atom, useAtomValue } from 'jotai';
 import { useMatrixClient } from '$hooks/useMatrixClient';

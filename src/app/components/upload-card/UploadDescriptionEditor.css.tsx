@@ -1,5 +1,5 @@
 import { style, globalStyle } from '@vanilla-extract/css';
-import { config } from 'folds';
+import { config } from '$components/ui/theme';
 
 export const DescriptionEditorContainer = style({
   backgroundColor: 'var(--sable-bg-container)',

@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { Box, Chip, Header, IconButton, Text, as } from 'folds';
+import { Box, Chip, Header, IconButton, Text, as } from '$components/ui';
 import { ArrowLeft, sizedIcon } from '$components/icons/phosphor';
 import * as css from './ImageEditor.css';
 

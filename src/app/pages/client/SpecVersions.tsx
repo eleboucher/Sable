@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { useCallback, useState } from 'react';
-import { Box, Dialog, config, Text } from 'folds';
+import { Box, Dialog, config, Text } from '$components/ui';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { SpecVersionsLoader } from '$components/SpecVersionsLoader';
 import { SpecVersionsProvider } from '$hooks/useSpecVersions';
@@ -12,7 +12,7 @@ import { AsyncStatus, useAsyncCallback } from '$hooks/useAsyncCallback';
 import { useClientConfig } from '$hooks/useClientConfig';
 import type { SpecVersions } from '../../cs-api';
 import { AsyncError } from '$components/AsyncError';
-import { Button } from '$components/button';
+import { Button } from '$components/ui';
 
 const EMPTY_VERSIONS: SpecVersions = { versions: [] };
 

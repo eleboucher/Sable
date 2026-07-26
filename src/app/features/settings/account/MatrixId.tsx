@@ -1,4 +1,4 @@
-import { Box, Text, Chip } from 'folds';
+import { Box, Text, Chip } from '$components/ui';
 import { useMatrixClient } from '$hooks/useMatrixClient';
 import { SequenceCard, SequenceCardStyle } from '$components/sequence-card';
 import { SettingTile } from '$components/setting-tile';

@@ -1,4 +1,4 @@
-import { Text, as } from 'folds';
+import { Text, as } from '$components/ui';
 import classNames from 'classnames';
 import * as css from './layout.css';
 

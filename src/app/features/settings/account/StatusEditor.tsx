@@ -1,6 +1,6 @@
 import type { ChangeEventHandler, FormEventHandler } from 'react';
 import { useEffect, useState } from 'react';
-import { Box, Text, Button, Input, IconButton, Spinner, config } from 'folds';
+import { Box, Text, Button, Input, IconButton, Spinner, config } from '$components/ui';
 import { menuIcon, X } from '$components/icons/phosphor';
 import { SettingTile } from '$components/setting-tile';
 

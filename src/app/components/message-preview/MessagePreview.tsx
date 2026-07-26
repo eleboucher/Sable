@@ -2,7 +2,7 @@ import type { ComponentProps, MouseEventHandler, ReactNode } from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { HTMLReactParserOptions } from 'html-react-parser';
 import type { Opts as LinkifyOpts } from 'linkifyjs';
-import { Avatar, Box, Text } from 'folds';
+import { Avatar, Box, Text } from '$components/ui';
 import type { IImageContent } from '$types/matrix/common';
 import type { MatrixEvent, Room } from '$types/matrix-sdk';
 import { EventType, MatrixEventEvent } from '$types/matrix-sdk';

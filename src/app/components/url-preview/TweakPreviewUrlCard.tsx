@@ -10,7 +10,7 @@ import {
   TooltipProvider,
   config,
   toRem,
-} from 'folds';
+} from '$components/ui';
 import { Check, Link, Star, Warning, sizedIcon } from '$components/icons/phosphor';
 
 import { useClientConfig } from '$hooks/useClientConfig';

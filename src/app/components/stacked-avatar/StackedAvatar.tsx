@@ -1,4 +1,4 @@
-import { as, Avatar } from 'folds';
+import { as, Avatar } from '$components/ui';
 import classNames from 'classnames';
 import * as css from './styles.css';
 

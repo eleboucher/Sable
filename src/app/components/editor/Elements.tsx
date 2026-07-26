@@ -1,4 +1,4 @@
-import { Text } from 'folds';
+import { Text } from '$components/ui';
 import type { RenderElementProps, RenderLeafProps } from 'slate-react';
 import { useFocused, useSelected, useSlate } from 'slate-react';
 import { useAtomValue } from 'jotai';

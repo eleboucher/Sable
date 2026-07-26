@@ -21,7 +21,7 @@ import {
 import { ScreenSize, useScreenSizeContext } from '$hooks/useScreenSize';
 import { useNavToActivePathAtom } from '$state/hooks/navToActivePath';
 import { useInviteCount } from '$hooks/useInviteCount';
-import { Text, Box, color } from 'folds';
+import { Text, Box, color } from '$components/ui';
 import { EnvelopeSimple, getPhosphorIconSize, Tray } from '$components/icons/phosphor';
 import { BookmarkIcon, ChatCircleDotsIcon } from '@phosphor-icons/react';
 import { useMobileTapActivation } from '$hooks/useMobileTapActivation';

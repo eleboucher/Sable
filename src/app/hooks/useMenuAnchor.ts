@@ -1,6 +1,6 @@
 import type { MouseEventHandler, TouchEvent as ReactTouchEvent } from 'react';
 import { useCallback, useRef, useState } from 'react';
-import type { RectCords } from 'folds';
+import type { RectCords } from '$components/ui';
 import { getMouseEventCords } from '$utils/dom';
 import { useMobileLongPress } from './useMobileLongPress';
 

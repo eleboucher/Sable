@@ -1,5 +1,5 @@
 import type { ComponentProps } from 'react';
-import { Text, as, Tooltip, TooltipProvider } from 'folds';
+import { Text, as, Tooltip, TooltipProvider } from '$components/ui';
 import {
   timeDayMonYear,
   timeHourMinute,

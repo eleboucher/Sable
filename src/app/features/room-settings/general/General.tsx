@@ -1,4 +1,4 @@
-import { Box, Scroll, Text } from 'folds';
+import { Box, Scroll, Text } from '$components/ui';
 import { PageContent, SettingsSectionPage } from '$components/page';
 import { usePowerLevels } from '$hooks/usePowerLevels';
 import { useRoom } from '$hooks/useRoom';

@@ -1,6 +1,6 @@
 import type { FormEventHandler } from 'react';
 import { useEffect, useCallback } from 'react';
-import { Dialog, Text, Box, Button, config, Input } from 'folds';
+import { Dialog, Text, Box, Button, config, Input } from '$components/ui';
 import { AuthType } from '$types/matrix-sdk';
 import type { StageComponentProps } from './types';
 

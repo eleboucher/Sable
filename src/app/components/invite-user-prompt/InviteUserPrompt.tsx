@@ -16,7 +16,7 @@ import {
   toRem,
   Scroll,
   MenuItem,
-} from 'folds';
+} from '$components/ui';
 import type { Room } from '$types/matrix-sdk';
 import { isKeyHotkey } from 'is-hotkey';
 import FocusTrap from 'focus-trap-react';
@@ -33,7 +33,7 @@ import { useMatrixClient } from '$hooks/useMatrixClient';
 import { useAlive } from '$hooks/useAlive';
 import { getMxIdServer } from '$utils/mxIdHelper';
 import { KnownMembership } from '$types/matrix-sdk';
-import { Button } from '$components/button';
+import { Button } from '$components/ui';
 
 const SEARCH_OPTIONS: UseAsyncSearchOptions = {
   limit: 1000,

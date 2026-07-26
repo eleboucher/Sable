@@ -1,6 +1,6 @@
 import type { ChangeEventHandler, FormEventHandler } from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Box, Text, IconButton, Input, Avatar, Button, config, Spinner } from 'folds';
+import { Box, Text, IconButton, Input, Avatar, Button, config, Spinner } from '$components/ui';
 import { menuIcon, Star, Sun, X } from '$components/icons/phosphor';
 import { useSetAtom } from 'jotai';
 import { SequenceCard, SequenceCardStyle } from '$components/sequence-card';

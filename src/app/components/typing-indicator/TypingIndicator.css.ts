@@ -1,6 +1,6 @@
 import { keyframes } from '@vanilla-extract/css';
 import { recipe } from '@vanilla-extract/recipes';
-import { DefaultReset, toRem } from 'folds';
+import { DefaultReset, toRem } from '$components/ui/theme';
 
 const TypingDotAnime = keyframes({
   to: {

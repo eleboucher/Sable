@@ -1,4 +1,4 @@
-import { Box, IconButton, Text, as, toRem } from 'folds';
+import { Box, IconButton, Text, as, toRem } from '$components/ui';
 import { chipIcon, X } from '$components/icons/phosphor';
 import type { Room } from '$types/matrix-sdk';
 import classNames from 'classnames';

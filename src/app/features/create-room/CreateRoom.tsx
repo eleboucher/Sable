@@ -2,7 +2,7 @@ import type { ReactNode, FormEventHandler } from 'react';
 import { useCallback, useEffect, useState } from 'react';
 import type { Room } from '$types/matrix-sdk';
 import { MatrixError, JoinRule, RoomType } from '$types/matrix-sdk';
-import { Box, Chip, color, config, Input, Switch, Text, TextArea } from 'folds';
+import { Box, Chip, color, config, Input, Switch, Text, TextArea } from '$components/ui';
 import { SettingTile } from '$components/setting-tile';
 import { SequenceCard } from '$components/sequence-card';
 import { useMatrixClient } from '$hooks/useMatrixClient';
@@ -41,7 +41,7 @@ import {
   knockRestrictedSupported,
 } from '$utils/roomSupport';
 import { ErrorCode } from '../../cs-errorcode';
-import { Button } from '$components/button';
+import { Button } from '$components/ui';
 
 const debugLog = createDebugLogger('CreateRoom');
 

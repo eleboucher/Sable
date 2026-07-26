@@ -1,6 +1,6 @@
 import { isTauri } from '@tauri-apps/api/core';
 import { useAtom } from 'jotai';
-import { Box, Text, Scroll, color } from 'folds';
+import { Box, Text, Scroll, color } from '$components/ui';
 import { autoUpdateCheckAtom } from '$state/autoUpdateCheck';
 import { PageContent, SettingsSectionPage } from '$components/page';
 import { SettingToggle } from '$components/setting-tile';

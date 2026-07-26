@@ -1,7 +1,7 @@
 import type { ComponentProps, HTMLAttributes } from 'react';
 import { forwardRef } from 'react';
 import classNames from 'classnames';
-import { Box, Chip, Header, IconButton, Scroll, Text, as } from 'folds';
+import { Box, Chip, Header, IconButton, Scroll, Text, as } from '$components/ui';
 import { ArrowLeft, sizedIcon } from '$components/icons/phosphor';
 import { CodeHighlightRenderer } from '$components/code-highlight';
 import { copyToClipboard } from '$utils/dom';

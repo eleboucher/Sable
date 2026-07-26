@@ -1,5 +1,5 @@
 import { useCallback, useEffect } from 'react';
-import { Box, Line } from 'folds';
+import { Box, Line } from '$components/ui';
 import { useParams } from 'react-router-dom';
 import { isKeyHotkey } from 'is-hotkey';
 import { useAtom, useAtomValue } from 'jotai';

@@ -1,4 +1,4 @@
-import { Badge, Box, ProgressBar, Text, percent } from 'folds';
+import { Badge, Box, ProgressBar, Text, percent } from '$components/ui';
 import { Warning, sizedIcon } from '$components/icons/phosphor';
 import type { ReactNode } from 'react';
 import { forwardRef } from 'react';

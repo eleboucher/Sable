@@ -1,7 +1,7 @@
 import type { FormEventHandler, KeyboardEventHandler } from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { MatrixError } from '$types/matrix-sdk';
-import { Box, color, Input, Spinner, Text, toRem } from 'folds';
+import { Box, color, Input, Spinner, Text, toRem } from '$components/ui';
 import { Hash, Warning, sizedIcon } from '$components/icons/phosphor';
 import { isKeyHotkey } from 'is-hotkey';
 import { useMatrixClient } from '$hooks/useMatrixClient';

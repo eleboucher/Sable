@@ -4,14 +4,13 @@ import {
   Button,
   color,
   config,
-  Icon,
   IconButton,
-  Icons,
   Input,
   Spinner,
   Switch,
   Text,
-} from 'folds';
+} from '$components/ui';
+import { X, sizedIcon } from '$components/icons/phosphor';
 import type { IPusherRequest } from '$types/matrix-sdk';
 import { useAtom } from 'jotai';
 import { SequenceCard, SequenceCardStyle } from '$components/sequence-card';
@@ -293,7 +292,7 @@ function NotificationTransportOverrideInput({
                     title={`Reset ${title}`}
                     onClick={handleReset}
                   >
-                    <Icon src={Icons.Cross} size="100" />
+                    {sizedIcon(X, '100')}
                   </IconButton>
                 )
               }

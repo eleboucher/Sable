@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Avatar, Box, Button, Spinner, Text, as } from 'folds';
+import { Avatar, Box, Button, Spinner, Text, as } from '$components/ui';
 import type { Room } from '$types/matrix-sdk';
 import { useAtomValue } from 'jotai';
 import type { IRoomCreateContent } from '$types/matrix/room';

@@ -9,7 +9,7 @@ import {
   config,
   TextArea as TextAreaComponent,
   color,
-} from 'folds';
+} from '$components/ui';
 import { ArrowLeft, composerIcon, menuIcon, X } from '$components/icons/phosphor';
 import type { MatrixError, StateEvents } from '$types/matrix-sdk';
 import { Page, PageHeader } from '$components/page';
@@ -29,7 +29,7 @@ import { usePowerLevels } from '$hooks/usePowerLevels';
 import { useTextAreaCodeEditor } from '$hooks/useTextAreaCodeEditor';
 import { useRoomCreators } from '$hooks/useRoomCreators';
 import { useRoomPermissions } from '$hooks/useRoomPermissions';
-import { Button } from '$components/button';
+import { Button } from '$components/ui';
 
 const EDITOR_INTENT_SPACE_COUNT = 2;
 

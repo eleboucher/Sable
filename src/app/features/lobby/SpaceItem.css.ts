@@ -1,5 +1,5 @@
 import { style } from '@vanilla-extract/css';
-import { color, config, toRem } from 'folds';
+import { color, config, toRem } from '$components/ui/theme';
 import { recipe } from '@vanilla-extract/recipes';
 
 export const SpaceItemCard = recipe({

@@ -1,5 +1,5 @@
 import { keyframes, style } from '@vanilla-extract/css';
-import { color, config, toRem } from 'folds';
+import { color, config, toRem } from '$components/ui/theme';
 
 const slideIn = keyframes({
   from: {

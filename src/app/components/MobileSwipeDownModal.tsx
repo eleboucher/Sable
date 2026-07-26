@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { Box } from 'folds';
+import { Box } from '$components/ui';
 import * as css from '$features/room/message/styles.css';
 import { useDismissOnBack } from '$utils/androidBack';
 import { getMobileSheetTiming, useMobileSheetAnimation } from './mobileSheetAnimation';

@@ -1,4 +1,4 @@
-import { Box, Chip, IconButton, Spinner, Text, Tooltip, TooltipProvider } from 'folds';
+import { Box, Chip, IconButton, Spinner, Text, Tooltip, TooltipProvider } from '$components/ui';
 import {
   Headphones,
   sizedIcon,

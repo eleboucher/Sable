@@ -1,4 +1,4 @@
-import { Box, Line, Text } from 'folds';
+import { Box, Line, Text } from '$components/ui';
 
 export function OrDivider() {
   return (

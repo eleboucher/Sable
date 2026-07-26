@@ -1,4 +1,4 @@
-import { Badge, Box, IconButton, Spinner, Text, as, toRem } from 'folds';
+import { Badge, Box, IconButton, Spinner, Text, as, toRem } from '$components/ui';
 import { Download, sizedIcon } from '$components/icons/phosphor';
 import type { ReactNode } from 'react';
 import { useCallback } from 'react';

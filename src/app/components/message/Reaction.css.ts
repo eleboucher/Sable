@@ -1,5 +1,5 @@
 import { createVar, style } from '@vanilla-extract/css';
-import { DefaultReset, FocusOutline, color, config, toRem } from 'folds';
+import { DefaultReset, FocusOutline, color, config, toRem } from '$components/ui/theme';
 
 const Container = createVar();
 const ContainerHover = createVar();

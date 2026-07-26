@@ -1,5 +1,5 @@
 import type { MouseEventHandler, ReactNode } from 'react';
-import { Box, Text } from 'folds';
+import { Box, Text } from '$components/ui';
 import type { PowerLevelTags } from '$hooks/usePowerLevelTags';
 import { getPowers } from '$hooks/usePowerLevelTags';
 import { PowerColorBadge } from './PowerColorBadge';

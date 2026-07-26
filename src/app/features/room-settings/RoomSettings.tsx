@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 import { useAtomValue } from 'jotai';
-import { Avatar, Box, Text } from 'folds';
+import { Avatar, Box, Text } from '$components/ui';
 import { JoinRule } from '$types/matrix-sdk';
 import { ScreenSize, useScreenSizeContext } from '$hooks/useScreenSize';
 import { useMatrixClient } from '$hooks/useMatrixClient';

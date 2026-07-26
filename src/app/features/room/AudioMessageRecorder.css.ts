@@ -1,5 +1,5 @@
 import { keyframes, style } from '@vanilla-extract/css';
-import { DefaultReset, color, config, toRem } from 'folds';
+import { DefaultReset, color, config, toRem } from '$components/ui/theme';
 
 const RecDotPulse = keyframes({
   '0%, 100%': { opacity: 1 },

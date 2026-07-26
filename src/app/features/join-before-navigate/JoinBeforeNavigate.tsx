@@ -1,4 +1,4 @@
-import { Box, IconButton, Scroll, Text, toRem } from 'folds';
+import { Box, IconButton, Scroll, Text, toRem } from '$components/ui';
 import { ArrowLeft, composerIcon } from '$components/icons/phosphor';
 import { useAtomValue } from 'jotai';
 import { RoomType } from '$types/matrix-sdk';

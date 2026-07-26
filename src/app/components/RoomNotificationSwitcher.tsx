@@ -1,4 +1,4 @@
-import { Box, Text } from 'folds';
+import { Box, Text } from '$components/ui';
 import type { ReactNode } from 'react';
 import { type MouseEventHandler } from 'react';
 import { SettingMenuSelector, type SettingMenuOption } from '$components/setting-menu-selector';

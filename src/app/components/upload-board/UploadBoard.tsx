@@ -1,6 +1,6 @@
 import type { MutableRefObject, ReactNode } from 'react';
 import { useEffect, useImperativeHandle, useRef } from 'react';
-import { Badge, Box, Chip, Header, Spinner, Text, as, percent } from 'folds';
+import { Badge, Box, Chip, Header, Spinner, Text, as, percent } from '$components/ui';
 import { CaretRight, CaretUp, X, sizedIcon } from '$components/icons/phosphor';
 import classNames from 'classnames';
 import { useAtomValue } from 'jotai';

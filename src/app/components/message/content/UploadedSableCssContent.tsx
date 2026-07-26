@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react';
 import type { EncryptedAttachmentInfo } from 'browser-encrypt-attachment';
-import { Box, Button, IconButton, Spinner, Switch, Text, config, toRem } from 'folds';
+import { Box, Button, IconButton, Spinner, Switch, Text, config, toRem } from '$components/ui';
 
 import { Star, sizedIcon } from '$components/icons/phosphor';
 import { getCspNonce } from '$utils/cspNonce';

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { IconButton, Modal } from 'folds';
+import { IconButton, Modal } from '$components/ui';
 
 import { Code, sizedIcon } from '$components/icons/phosphor';
 import { TextViewer } from '$components/text-viewer';

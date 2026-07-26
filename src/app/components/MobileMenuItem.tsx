@@ -1,5 +1,5 @@
 import type { ComponentProps, MouseEventHandler } from 'react';
-import { MenuItem } from 'folds';
+import { MenuItem } from '$components/ui';
 import { useMobileTapActivation } from '$hooks/useMobileTapActivation';
 
 type MenuItemProps = ComponentProps<typeof MenuItem>;

@@ -1,5 +1,5 @@
 import { useCallback, useEffect } from 'react';
-import { Box, Text, Chip } from 'folds';
+import { Box, Text, Chip } from '$components/ui';
 import { SequenceCard, SequenceCardStyle } from '$components/sequence-card';
 import { SettingTile } from '$components/setting-tile';
 import { useMatrixClient } from '$hooks/useMatrixClient';

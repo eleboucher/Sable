@@ -5,7 +5,7 @@ import type { UserProfile } from '$hooks/useUserProfile';
 import { useSetting } from '$state/hooks/settings';
 import { settingsAtom } from '$state/settings';
 import { profilesCacheAtom } from '$state/userRoomProfile';
-import { Box, IconButton, Input, Text } from 'folds';
+import { Box, IconButton, Input, Text } from '$components/ui';
 import { useSetAtom } from 'jotai';
 import { useCallback, useEffect, useState, type ChangeEvent } from 'react';
 import * as prefix from '$unstable/prefixes';

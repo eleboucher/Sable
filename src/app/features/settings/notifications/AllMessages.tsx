@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Badge, Box, Text } from 'folds';
+import { Badge, Box, Text } from '$components/ui';
 import type { IPushRules, PushRuleCondition } from '$types/matrix-sdk';
 import { ConditionKind, PushRuleKind, RuleId, EventType } from '$types/matrix-sdk';
 import { useAccountData } from '$hooks/useAccountData';

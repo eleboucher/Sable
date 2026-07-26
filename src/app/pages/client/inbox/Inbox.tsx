@@ -1,4 +1,4 @@
-import { Avatar, Box, Text } from 'folds';
+import { Avatar, Box, Text } from '$components/ui';
 import { ChatCircleDots, EnvelopeSimple, Tray, sizedIcon } from '$components/icons/phosphor';
 import { NavCategory, NavItem, NavItemContent, NavLink } from '$components/nav';
 import {

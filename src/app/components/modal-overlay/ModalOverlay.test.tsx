@@ -41,7 +41,7 @@ vi.mock('focus-trap-react', () => {
   return { default: FocusTrapComponent, FocusTrap: FocusTrapComponent };
 });
 
-vi.mock('folds', () => ({
+vi.mock('$components/ui', () => ({
   Box: ({ children, direction }: any) => (
     <div data-testid="box" data-direction={direction}>
       {children}

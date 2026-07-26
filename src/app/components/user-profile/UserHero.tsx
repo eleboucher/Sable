@@ -11,7 +11,7 @@ import {
   toRem,
   Chip,
   config,
-} from 'folds';
+} from '$components/ui';
 import classNames from 'classnames';
 import colorMXID from '$utils/colorMXID';
 import { getMxIdLocalPart } from '$utils/matrix';

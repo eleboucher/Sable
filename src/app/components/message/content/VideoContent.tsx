@@ -13,7 +13,7 @@ import {
   TooltipProvider,
   as,
   config,
-} from 'folds';
+} from '$components/ui';
 import { Eye, EyeSlash, menuIcon, sizedIcon, Play, Warning } from '$components/icons/phosphor';
 import classNames from 'classnames';
 import { isTauri } from '@tauri-apps/api/core';

@@ -1,6 +1,6 @@
 import type { MouseEventHandler, ReactElement } from 'react';
 import { useCallback, useMemo, useRef, useState } from 'react';
-import { Box, Chip, IconButton, Line, Scroll, Spinner, Text, color, config } from 'folds';
+import { Box, Chip, IconButton, Line, Scroll, Spinner, Text, color, config } from '$components/ui';
 import type { VirtualItem } from '@tanstack/react-virtual';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { useAtom, useAtomValue } from 'jotai';

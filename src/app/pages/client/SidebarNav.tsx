@@ -1,6 +1,6 @@
 import type { MouseEventHandler } from 'react';
 import { useRef } from 'react';
-import { Box, Checkbox, config, Line, Menu, MenuItem, Scroll, Text, toRem } from 'folds';
+import { Box, Checkbox, config, Line, Menu, MenuItem, Scroll, Text, toRem } from '$components/ui';
 import { ResponsiveMenu } from '$components/ResponsiveMenu';
 import { useMenuAnchor } from '$hooks/useMenuAnchor';
 import { useSetting } from '$state/hooks/settings';

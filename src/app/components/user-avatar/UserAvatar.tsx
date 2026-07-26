@@ -1,4 +1,4 @@
-import { AvatarFallback, AvatarImage, color } from 'folds';
+import { AvatarFallback, AvatarImage, color } from '$components/ui';
 import type { ReactEventHandler, ReactNode } from 'react';
 import { useEffect, useState } from 'react';
 import classNames from 'classnames';

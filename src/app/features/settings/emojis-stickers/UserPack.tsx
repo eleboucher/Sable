@@ -1,4 +1,4 @@
-import { Avatar, AvatarFallback, AvatarImage, Box, Button, Text } from 'folds';
+import { Avatar, AvatarFallback, AvatarImage, Box, Button, Text } from '$components/ui';
 import { composerIcon, Sticker } from '$components/icons/phosphor';
 import { useUserImagePack } from '$hooks/useImagePacks';
 import { SequenceCard, SequenceCardStyle } from '$components/sequence-card';

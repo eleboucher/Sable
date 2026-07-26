@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 import { matchPath, useLocation } from 'react-router-dom';
-import { Modal } from 'folds';
+import { Modal } from '$components/ui';
 import { useScreenSizeContext } from '$hooks/useScreenSize';
 import { ModalOverlay } from '$components/modal-overlay/ModalOverlay';
 import { isShallowRoute } from '$pages/client/shallowRoute';

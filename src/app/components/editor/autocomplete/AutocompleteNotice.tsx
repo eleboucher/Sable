@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { Header, Menu } from 'folds';
+import { Header, Menu } from '$components/ui';
 import { BaseAutocompleteMenu } from './BaseAutocompleteMenu';
 import * as css from './AutocompleteMenu.css';
 

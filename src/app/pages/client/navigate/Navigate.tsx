@@ -1,4 +1,4 @@
-import { Box, Scroll, Text, color } from 'folds';
+import { Box, Scroll, Text, color } from '$components/ui';
 import { Page, PageContent, PageContentCenter, PageNavHeader } from '$components/page';
 import { SidebarPanel } from '$components/page/SidebarPanel';
 import { ScreenSize, useScreenSizeContext } from '$hooks/useScreenSize';

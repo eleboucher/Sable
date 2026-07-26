@@ -1,5 +1,5 @@
 import { style } from '@vanilla-extract/css';
-import { toRem } from 'folds';
+import { toRem } from '$components/ui/theme';
 
 export const themeCardGrid = style({
   display: 'grid',

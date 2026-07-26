@@ -1,4 +1,4 @@
-import { Box, config } from 'folds';
+import { Box, config } from '$components/ui';
 import type { ReactNode } from 'react';
 
 export function NavEmptyCenter({ children }: { children: ReactNode }) {

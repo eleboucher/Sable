@@ -14,7 +14,7 @@ import {
   MenuItem,
   config,
   color,
-} from 'folds';
+} from '$components/ui';
 import { menuIcon, Warning, X } from '$components/icons/phosphor';
 import { useMatrixClient } from '$hooks/useMatrixClient';
 import { AsyncStatus, useAsyncCallback } from '$hooks/useAsyncCallback';

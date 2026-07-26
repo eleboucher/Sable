@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
-import type { RectCords } from 'folds';
-import { Box, PopOut } from 'folds';
+import type { RectCords } from '$components/ui';
+import { Box, PopOut } from '$components/ui';
 import FocusTrap from 'focus-trap-react';
 import { ScreenSize, useScreenSizeOptionally } from '$hooks/useScreenSize';
 import { stopPropagation } from '$utils/keyboard';

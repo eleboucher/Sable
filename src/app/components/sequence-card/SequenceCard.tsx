@@ -1,5 +1,5 @@
 import type { ComponentProps } from 'react';
-import { Box, as } from 'folds';
+import { Box, as } from '$components/ui';
 import classNames from 'classnames';
 import type { ContainerColorVariants } from '$styles/ContainerColor.css';
 import { ContainerColor } from '$styles/ContainerColor.css';

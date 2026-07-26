@@ -1,6 +1,6 @@
 import type { FormEventHandler } from 'react';
 import { useEffect, useCallback } from 'react';
-import { Dialog, Text, Box, Button, config, Input, color, Spinner } from 'folds';
+import { Dialog, Text, Box, Button, config, Input, color, Spinner } from '$components/ui';
 import type { MatrixError } from '$types/matrix-sdk';
 import { AuthType } from '$types/matrix-sdk';
 import type { AsyncState } from '$hooks/useAsyncCallback';

@@ -1,6 +1,6 @@
 import type { MouseEventHandler } from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import type { RectCords } from 'folds';
+import type { RectCords } from '$components/ui';
 import {
   Box,
   Text,
@@ -19,7 +19,7 @@ import {
   Header,
   Line,
   Chip,
-} from 'folds';
+} from '$components/ui';
 import { composerIcon, menuIcon, Plus, Sticker, X } from '$components/icons/phosphor';
 import FocusTrap from 'focus-trap-react';
 import { useAtomValue } from 'jotai';

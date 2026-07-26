@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Badge, Box, Chip, config, Menu, Text } from 'folds';
+import { Badge, Box, Chip, config, Menu, Text } from '$components/ui';
 import { CaretDown, CaretUp, chipIcon } from '$components/icons/phosphor';
 import { produce } from 'immer';
 import { SequenceCard, SequenceCardStyle } from '$components/sequence-card';
@@ -16,7 +16,7 @@ import { AsyncStatus, useAsyncCallback } from '$hooks/useAsyncCallback';
 import { useAlive } from '$hooks/useAlive';
 import type { PermissionGroup } from './types';
 import { EventType } from '$types/matrix-sdk';
-import { Button } from '$components/button';
+import { Button } from '$components/ui';
 
 const USER_DEFAULT_LOCATION: PermissionLocation = {
   user: true,

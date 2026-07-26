@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { useRef } from 'react';
-import { Avatar, Badge, Box, Chip, as, Text } from 'folds';
+import { Avatar, Badge, Box, Chip, as, Text } from '$components/ui';
 import classNames from 'classnames';
 import type { IHierarchyRoom, MatrixClient, Room } from '$types/matrix-sdk';
 import { useMatrixClient } from '$hooks/useMatrixClient';

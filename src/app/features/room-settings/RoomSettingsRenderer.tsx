@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { Modal } from 'folds';
+import { Modal } from '$components/ui';
 import { ModalOverlay } from '$components/modal-overlay/ModalOverlay';
 import { useCloseRoomSettings, useRoomSettingsState } from '$state/hooks/roomSettings';
 import { useAllJoinedRoomsSet, useGetRoom } from '$hooks/useGetRoom';

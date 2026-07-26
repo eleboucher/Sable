@@ -1,7 +1,7 @@
 import type { MouseEventHandler } from 'react';
 import { useState } from 'react';
-import type { RectCords } from 'folds';
-import { Box, config, Header, IconButton, Menu, PopOut, Text } from 'folds';
+import type { RectCords } from '$components/ui';
+import { Box, config, Header, IconButton, Menu, PopOut, Text } from '$components/ui';
 import { Info, menuIcon } from '$components/icons/phosphor';
 import FocusTrap from 'focus-trap-react';
 import { stopPropagation } from '$utils/keyboard';

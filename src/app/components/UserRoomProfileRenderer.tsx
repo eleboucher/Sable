@@ -1,4 +1,4 @@
-import { Menu, toRem } from 'folds';
+import { Menu, toRem } from '$components/ui';
 import { useCloseUserRoomProfile, useUserRoomProfileState } from '$state/hooks/userRoomProfile';
 import type { UserRoomProfileState } from '$state/userRoomProfile';
 import { useAllJoinedRoomsSet, useGetRoom } from '$hooks/useGetRoom';

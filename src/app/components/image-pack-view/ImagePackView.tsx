@@ -1,4 +1,4 @@
-import { Box, IconButton, Text, Scroll, Chip } from 'folds';
+import { Box, IconButton, Text, Scroll, Chip } from '$components/ui';
 import { ArrowLeft, composerIcon, sizedIcon, X } from '$components/icons/phosphor';
 import type { PackAddress } from '$plugins/custom-emoji';
 import { useMatrixClient } from '$hooks/useMatrixClient';

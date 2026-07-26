@@ -9,7 +9,7 @@ import {
   Spinner,
   Text,
   color,
-} from 'folds';
+} from '$components/ui';
 import type { ChangeEventHandler } from 'react';
 import { useCallback, useMemo, useState } from 'react';
 import type { AuthDict, IAuthData, MatrixError, RegisterRequest, UIAFlow } from '$types/matrix-sdk';

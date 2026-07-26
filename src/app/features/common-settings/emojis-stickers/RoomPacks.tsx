@@ -12,7 +12,7 @@ import {
   color,
   IconButton,
   Menu,
-} from 'folds';
+} from '$components/ui';
 import { composerIcon, menuIcon, Plus, Sticker, X } from '$components/icons/phosphor';
 import type { MatrixError } from '$types/matrix-sdk';
 import { SequenceCard, SequenceCardStyle } from '$components/sequence-card';
@@ -34,7 +34,7 @@ import { useAlive } from '$hooks/useAlive';
 import { useRoomCreators } from '$hooks/useRoomCreators';
 import { useRoomPermissions } from '$hooks/useRoomPermissions';
 import { CustomStateEvent } from '$types/matrix/room';
-import { Button } from '$components/button';
+import { Button } from '$components/ui';
 
 function PackAvatarImage({ url }: { url: string }) {
   const resolved = useRenderableMediaUrl(url);

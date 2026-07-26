@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Box, Text, Chip, IconButton } from 'folds';
+import { Box, Text, Chip, IconButton } from '$components/ui';
 import {
   CaretDown,
   CaretUp,

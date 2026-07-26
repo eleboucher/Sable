@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { forwardRef } from 'react';
-import { Box, Menu, MenuItem, Text, config, toRem } from 'folds';
+import { Box, Menu, MenuItem, Text, config, toRem } from '$components/ui';
 import { useMatrixClient } from '$hooks/useMatrixClient';
 import { useSetting } from '$state/hooks/settings';
 import { settingsAtom } from '$state/settings';

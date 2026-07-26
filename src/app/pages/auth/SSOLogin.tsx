@@ -1,4 +1,4 @@
-import { Avatar, AvatarImage, Box, Button, Text } from 'folds';
+import { Avatar, AvatarImage, Box, Button, Text } from '$components/ui';
 import type { IIdentityProvider, SSOAction } from '$types/matrix-sdk';
 import { createClient } from '$types/matrix-sdk';
 import type { MouseEvent } from 'react';

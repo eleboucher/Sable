@@ -1,4 +1,4 @@
-import { Box, Button, Checkbox, Line, Modal, ProgressBar, RadioButton, Text } from 'folds';
+import { Box, Button, Checkbox, Line, Modal, ProgressBar, RadioButton, Text } from '$components/ui';
 import type { MatrixClient, PollStartSubtype, Room, TimelineEvents } from 'matrix-js-sdk';
 import { M_TEXT } from 'matrix-js-sdk';
 import {

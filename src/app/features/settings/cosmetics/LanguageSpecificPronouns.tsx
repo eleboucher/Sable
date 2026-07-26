@@ -1,4 +1,4 @@
-import { Box, Input, Switch, Text } from 'folds';
+import { Box, Input, Switch, Text } from '$components/ui';
 import { SettingTile } from '$components/setting-tile';
 import { SequenceCard, SequenceCardStyle } from '$components/sequence-card';
 import { useEffect, useState } from 'react';

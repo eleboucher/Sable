@@ -1,6 +1,6 @@
 import FocusTrap from 'focus-trap-react';
-import type { RectCords } from 'folds';
-import { Box, Button, config, Menu, PopOut, Text } from 'folds';
+import type { RectCords } from '$components/ui';
+import { Box, Button, config, Menu, PopOut, Text } from '$components/ui';
 import type { MouseEventHandler, ReactNode } from 'react';
 import { useState } from 'react';
 import { stopPropagation } from '$utils/keyboard';

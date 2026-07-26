@@ -1,5 +1,5 @@
 import { style } from '@vanilla-extract/css';
-import { config } from 'folds';
+import { config } from '$components/ui/theme';
 
 export const WidgetsDrawer = style({
   maxWidth: '100vw',

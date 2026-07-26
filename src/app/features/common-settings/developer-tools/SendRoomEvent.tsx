@@ -10,7 +10,7 @@ import {
   color,
   TextArea as TextAreaComponent,
   Input,
-} from 'folds';
+} from '$components/ui';
 import { ArrowLeft, composerIcon, menuIcon, X } from '$components/icons/phosphor';
 import { Page, PageHeader } from '$components/page';
 import { useMatrixClient } from '$hooks/useMatrixClient';
@@ -21,7 +21,7 @@ import { AsyncStatus, useAsyncCallback } from '$hooks/useAsyncCallback';
 import { AsyncError } from '$components/AsyncError';
 import { syntaxErrorPosition } from '$utils/dom';
 import { Cursor } from '$plugins/text-area';
-import { Button } from '$components/button';
+import { Button } from '$components/ui';
 
 const EDITOR_INTENT_SPACE_COUNT = 2;
 

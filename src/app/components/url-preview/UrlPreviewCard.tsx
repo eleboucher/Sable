@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { MatrixClient } from '$types/matrix-sdk';
 import type { IPreviewUrlResponse } from '$types/matrix-sdk';
-import { Box, IconButton, Scroll, Spinner, Text, as, color, config, toRem } from 'folds';
+import { Box, IconButton, Scroll, Spinner, Text, as, color, config, toRem } from '$components/ui';
 import { ArrowLeft, ArrowRight, sizedIcon } from '$components/icons/phosphor';
 import { AsyncStatus, useAsyncCallback } from '$hooks/useAsyncCallback';
 import { useMatrixClient } from '$hooks/useMatrixClient';

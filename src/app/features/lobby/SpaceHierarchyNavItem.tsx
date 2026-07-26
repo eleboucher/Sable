@@ -1,6 +1,6 @@
 import { forwardRef } from 'react';
 import type { Room, IHierarchyRoom } from '$types/matrix-sdk';
-import { Box } from 'folds';
+import { Box } from '$components/ui';
 import type { HierarchyItem, HierarchyItemSpace } from '$hooks/useSpaceHierarchy';
 import type { IPowerLevels } from '$hooks/usePowerLevels';
 import { useMatrixClient } from '$hooks/useMatrixClient';

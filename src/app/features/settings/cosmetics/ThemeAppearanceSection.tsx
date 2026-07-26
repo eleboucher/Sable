@@ -1,5 +1,5 @@
 import { useCallback, useEffect } from 'react';
-import { Box, Button, Switch, Text } from 'folds';
+import { Box, Button, Switch, Text } from '$components/ui';
 
 import { SettingMenuSelector } from '$components/setting-menu-selector';
 import { SequenceCard, SequenceCardStyle } from '$components/sequence-card';

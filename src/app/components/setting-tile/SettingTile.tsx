@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { Box, IconButton, Text } from 'folds';
+import { Box, IconButton, Text } from '$components/ui';
 import { Check, Link, sizedIcon } from '$components/icons/phosphor';
 import { BreakWord } from '$styles/Text.css';
 import { buildSettingsLink } from '$features/settings/settingsLink';

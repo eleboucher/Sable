@@ -1,7 +1,7 @@
 import { useCallback, useRef, useState } from 'react';
 import { useAtomValue } from 'jotai';
 import { Transforms } from 'slate';
-import { Box, Text, config } from 'folds';
+import { Box, Text, config } from '$components/ui';
 import { EventType } from '$types/matrix-sdk';
 import { ReactEditor } from 'slate-react';
 import { isKeyHotkey } from 'is-hotkey';

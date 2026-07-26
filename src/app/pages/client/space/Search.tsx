@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { Box, Scroll } from 'folds';
+import { Box, Scroll } from '$components/ui';
 import { useAtomValue } from 'jotai';
 import { MessageSearchHeader, Page, PageContent, PageContentCenter } from '$components/page';
 import { MessageSearch } from '$features/message-search';

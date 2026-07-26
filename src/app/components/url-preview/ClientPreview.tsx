@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { useCallback, useEffect, useState } from 'react';
-import { Box, Badge, IconButton, Spinner, Text, as, toRem } from 'folds';
+import { Box, Badge, IconButton, Spinner, Text, as, toRem } from '$components/ui';
 import { Link, sizedIcon } from '$components/icons/phosphor';
 import { AsyncStatus, useAsyncCallback } from '$hooks/useAsyncCallback';
 import { useSetting } from '$state/hooks/settings';

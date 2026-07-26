@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Box, Switch, Text, Tooltip, TooltipProvider, color, config } from 'folds';
+import { Box, Switch, Text, Tooltip, TooltipProvider, color, config } from '$components/ui';
 import { Link, useSearchParams } from 'react-router-dom';
 import { SSOAction } from '$types/matrix-sdk';
 import { isUsableOAuthMetadata, RegisterFlowStatus, useAuthFlows } from '$hooks/useAuthFlows';

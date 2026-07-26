@@ -8,7 +8,7 @@ import {
 import { autoScrollForElements } from '@atlaskit/pragmatic-drag-and-drop-auto-scroll/element';
 import { combine } from '@atlaskit/pragmatic-drag-and-drop/combine';
 import classNames from 'classnames';
-import { Box, as } from 'folds';
+import { Box, as } from '$components/ui';
 import type { HierarchyItem } from '$hooks/useSpaceHierarchy';
 import { chipIcon, DotsThreeOutlineVerticalIcon } from '$components/icons/phosphor';
 import * as css from './DnD.css';

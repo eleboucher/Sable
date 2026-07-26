@@ -1,5 +1,5 @@
 import { style, globalStyle } from '@vanilla-extract/css';
-import { config, color } from 'folds';
+import { config, color } from '$components/ui/theme';
 
 export const ThreadDrawer = style({
   height: '100%',

@@ -1,5 +1,5 @@
 import { SequenceCard, SequenceCardStyle } from '$components/sequence-card';
-import { Box, Button, Text, Avatar, config, IconButton, Input } from 'folds';
+import { Box, Button, Text, Avatar, config, IconButton, Input } from '$components/ui';
 import { menuIcon, X } from '$components/icons/phosphor';
 import type { MatrixClient } from '$types/matrix-sdk';
 import { useCallback, useMemo, useState } from 'react';

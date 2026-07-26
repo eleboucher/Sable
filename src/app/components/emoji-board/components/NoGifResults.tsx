@@ -1,5 +1,5 @@
 import { SmileySadIcon } from '@phosphor-icons/react';
-import { Box, toRem, config, Text } from 'folds';
+import { Box, toRem, config, Text } from '$components/ui';
 
 function GifSearching() {
   return (

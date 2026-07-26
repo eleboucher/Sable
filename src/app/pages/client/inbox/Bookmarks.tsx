@@ -9,9 +9,7 @@ import {
   Chip,
   Dialog,
   Header,
-  Icon,
   IconButton,
-  Icons,
   Input,
   Line,
   Scroll,
@@ -20,7 +18,16 @@ import {
   color,
   config,
   toRem,
-} from 'folds';
+} from '$components/ui';
+import {
+  ArrowLeft,
+  Bookmark,
+  Info,
+  MagnifyingGlass,
+  Trash,
+  X,
+  sizedIcon,
+} from '$components/icons/phosphor';
 import { useAtomValue } from 'jotai';
 import {
   Page,
@@ -84,7 +91,7 @@ function RemoveBookmarkDialog({
             <Text size="H4">Remove Bookmark</Text>
           </Box>
           <IconButton size="300" onClick={onClose} radii="300">
-            <Icon src={Icons.Cross} />
+            {sizedIcon(X, '400')}
           </IconButton>
         </Header>
         <Box style={{ padding: config.space.S400 }} direction="Column" gap="400">
@@ -161,7 +168,7 @@ function BookmarkItemRow({
   const actions = (
     <Box gap="200" alignItems="Center" shrink="Yes" wrap="WrapReverse" justifyContent="End">
       <Box gap="100" alignItems="Center">
-        <Icon size="50" src={Icons.Bookmark} />
+        {sizedIcon(Bookmark, '50')}
         <Time
           ts={item.bookmarked_ts}
           hour24Clock={hour24Clock}
@@ -182,7 +189,7 @@ function BookmarkItemRow({
           aria-label="Remove bookmark"
           style={{ color: color.Critical.Main }}
         >
-          <Icon src={Icons.Delete} size="100" />
+          {sizedIcon(Trash, '100')}
         </IconButton>
       </Box>
     </Box>
@@ -289,7 +296,7 @@ function UnavailableBookmarkItemRow({
               aria-label="Remove bookmark"
               style={{ color: color.Critical.Main }}
             >
-              <Icon src={Icons.Delete} size="100" />
+              {sizedIcon(Trash, '100')}
             </IconButton>
           </Box>
         </Box>
@@ -419,7 +426,7 @@ function BookmarkFilterInput({
           active && loading ? (
             <Spinner variant="Secondary" size="200" />
           ) : (
-            <Icon size="200" src={Icons.Search} />
+            sizedIcon(MagnifyingGlass, '200')
           )
         }
       />
@@ -505,15 +512,13 @@ export function Bookmarks() {
             {screenSize === ScreenSize.Mobile && (
               <BackRouteHandler>
                 {(onBack) => (
-                  <IconButton onClick={onBack}>
-                    <Icon src={Icons.ArrowLeft} />
-                  </IconButton>
+                  <IconButton onClick={onBack}>{sizedIcon(ArrowLeft, '400')}</IconButton>
                 )}
               </BackRouteHandler>
             )}
           </Box>
           <Box justifyContent="Center" alignItems="Center" gap="200">
-            {screenSize !== ScreenSize.Mobile && <Icon size="400" src={Icons.Bookmark} />}
+            {screenSize !== ScreenSize.Mobile && sizedIcon(Bookmark, '400')}
             <Text size="H3" truncate>
               Bookmarks
             </Text>
@@ -539,7 +544,7 @@ export function Bookmarks() {
                   <PageHeroEmpty>
                     <PageHeroSection>
                       <PageHero
-                        icon={<Icon size="600" src={Icons.Bookmark} />}
+                        icon={sizedIcon(Bookmark, '600')}
                         title="Bookmarks"
                         subTitle='Right-click a message and select "Bookmark Message" to save it here.'
                       />
@@ -565,7 +570,7 @@ export function Bookmarks() {
                     alignItems="Center"
                     gap="200"
                   >
-                    <Icon size="200" src={Icons.Info} />
+                    {sizedIcon(Info, '200')}
                     <Text>
                       No bookmarks found for <b>{`"${filterTerm}"`}</b>
                     </Text>

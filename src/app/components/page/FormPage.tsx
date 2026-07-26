@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { Box, IconButton, Scroll, Text, color } from 'folds';
+import { Box, IconButton, Scroll, Text, color } from '$components/ui';
 import { SquaresFour, composerIcon, sizedIcon, X } from '$components/icons/phosphor';
 import { ScreenSize, useScreenSizeContext } from '$hooks/useScreenSize';
 import {

@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Box, IconButton, Scroll } from 'folds';
+import { Box, IconButton, Scroll } from '$components/ui';
 import { ArrowLeft, At, composerIcon, dropzoneIcon } from '$components/icons/phosphor';
 import { useMatrixClient } from '$hooks/useMatrixClient';
 import { getDirectCreateSearchParams } from '$pages/pathSearchParam';

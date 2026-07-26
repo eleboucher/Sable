@@ -1,7 +1,11 @@
 import { type ReactNode, Suspense, lazy, useState } from 'react';
 import { Provider as JotaiProvider } from 'jotai';
 import type { createStore } from 'jotai/vanilla';
-import { OverlayContainerProvider, PopOutContainerProvider, TooltipContainerProvider } from 'folds';
+import {
+  OverlayContainerProvider,
+  PopOutContainerProvider,
+  TooltipContainerProvider,
+} from '$components/ui';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { isTauri } from '@tauri-apps/api/core';
 import { type as osType } from '@tauri-apps/plugin-os';

@@ -1,7 +1,7 @@
 import type { MouseEvent } from 'react';
 import type { Room, Relations } from '$types/matrix-sdk';
 import { useSetAtom } from 'jotai';
-import { Text, MenuItem } from 'folds';
+import { Text, MenuItem } from '$components/ui';
 import { menuIcon, Smiley } from '$components/icons/phosphor';
 import { modalAtom, ModalType } from '$state/modal';
 import * as css from '$features/room/message/styles.css';

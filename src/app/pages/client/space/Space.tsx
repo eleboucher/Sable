@@ -13,7 +13,7 @@ import {
   color,
   config,
   toRem,
-} from 'folds';
+} from '$components/ui';
 import type { VirtualItem } from '@tanstack/react-virtual';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import type { MatrixClient, Room, RoomJoinRulesEventContent } from '$types/matrix-sdk';
@@ -103,7 +103,7 @@ import { ModalOverlay } from '$components/modal-overlay/ModalOverlay';
 import { useOpenRoomSettings } from '$state/hooks/roomSettings';
 import { ResponsiveMenu } from '$components/ResponsiveMenu';
 import { useMenuAnchor } from '$hooks/useMenuAnchor';
-import { Button } from '$components/button';
+import { Button } from '$components/ui';
 
 const debugLog = createDebugLogger('Space');
 

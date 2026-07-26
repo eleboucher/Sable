@@ -1,6 +1,6 @@
-import type { RectCords } from 'folds';
-import type { PopOut } from 'folds';
-import { Box, Button, config, Menu, MenuItem, Scroll, Spinner, Text, toRem } from 'folds';
+import type { RectCords } from '$components/ui';
+import type { PopOut } from '$components/ui';
+import { Box, Button, config, Menu, MenuItem, Scroll, Spinner, Text, toRem } from '$components/ui';
 import { CaretDown, sizedIcon } from '$components/icons/phosphor';
 import {
   type ComponentPropsWithoutRef,

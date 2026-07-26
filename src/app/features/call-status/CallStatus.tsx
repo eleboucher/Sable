@@ -1,4 +1,4 @@
-import { Box, Spinner } from 'folds';
+import { Box, Spinner } from '$components/ui';
 import classNames from 'classnames';
 import { LiveChip } from './LiveChip';
 import * as css from './styles.css';

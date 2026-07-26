@@ -1,6 +1,6 @@
 import type { RefObject } from 'react';
 import { useCallback, useState } from 'react';
-import { Box, as } from 'folds';
+import { Box, as } from '$components/ui';
 import classNames from 'classnames';
 import {
   getIntersectionObserverEntry,

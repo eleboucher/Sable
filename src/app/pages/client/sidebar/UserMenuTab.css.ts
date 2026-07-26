@@ -1,6 +1,6 @@
 import { keyframes } from '@vanilla-extract/css';
 import { recipe } from '@vanilla-extract/recipes';
-import { color } from 'folds';
+import { color } from '$components/ui/theme';
 
 const PulseCritical = keyframes({
   '0%, 100%': {

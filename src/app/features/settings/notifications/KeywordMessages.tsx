@@ -2,7 +2,7 @@ import type { ChangeEventHandler, FormEventHandler } from 'react';
 import { useCallback, useMemo, useState } from 'react';
 import type { IPushRule, IPushRules } from '$types/matrix-sdk';
 import { PushRuleKind, EventType } from '$types/matrix-sdk';
-import { Box, Text, Badge, Button, Input, config, IconButton, Spinner } from 'folds';
+import { Box, Text, Badge, Button, Input, config, IconButton, Spinner } from '$components/ui';
 import { menuIcon, X } from '$components/icons/phosphor';
 import { useAccountData } from '$hooks/useAccountData';
 

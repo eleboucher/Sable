@@ -1,4 +1,4 @@
-import { Box, Button, Dialog, Text, color, config } from 'folds';
+import { Box, Button, Dialog, Text, color, config } from '$components/ui';
 import { Warning, sizedIcon } from '$components/icons/phosphor';
 import * as Sentry from '@sentry/react';
 import { SplashScreen } from '$components/splash-screen';

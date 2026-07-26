@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
-import type { RectCords } from 'folds';
-import { Box, IconButton, Text } from 'folds';
+import type { RectCords } from '$components/ui';
+import { Box, IconButton, Text } from '$components/ui';
 import { composerIcon, DotsThreeOutlineVerticalIcon } from '$components/icons/phosphor';
 import { PageNavHeader } from '$components/page';
 import { ResponsiveMenu } from '$components/ResponsiveMenu';

@@ -1,5 +1,5 @@
 import { createPortal } from 'react-dom';
-import { Box, Text, color, config, toRem } from 'folds';
+import { Box, Text, color, config, toRem } from '$components/ui';
 
 import { Check, sizedIcon } from '$components/icons/phosphor';
 import { useToastMessage } from '$state/toast';

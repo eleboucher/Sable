@@ -1,5 +1,5 @@
 import type { FormEventHandler, RefObject } from 'react';
-import { Box, Text, Input, Spinner, Chip, config } from 'folds';
+import { Box, Text, Input, Spinner, Chip, config } from '$components/ui';
 import { sizedIcon, MagnifyingGlass, X } from '$components/icons/phosphor';
 
 type SearchProps = {

@@ -1,4 +1,4 @@
-import { Dialog, Header, Box, Text, IconButton, Button, Input, Chip } from 'folds';
+import { Dialog, Header, Box, Text, IconButton, Button, Input, Chip } from '$components/ui';
 import { ClipboardIcon, MapPinAreaIcon, MapPinLineIcon } from '@phosphor-icons/react';
 import { chipIcon, composerIcon, Warning, X } from '$components/icons/phosphor';
 import { readClipboardText } from '$utils/dom';

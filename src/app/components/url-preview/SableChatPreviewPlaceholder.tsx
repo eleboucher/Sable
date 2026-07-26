@@ -1,4 +1,4 @@
-import { Box, Button, Text, config, toRem } from 'folds';
+import { Box, Button, Text, config, toRem } from '$components/ui';
 
 import { ThemeThirdPartyBanner } from './ThemeThirdPartyBanner';
 

@@ -1,5 +1,15 @@
 import { type ChangeEventHandler, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Box, Button, config, Dialog, Header, IconButton, Input, Text, toRem } from 'folds';
+import {
+  Box,
+  Button,
+  config,
+  Dialog,
+  Header,
+  IconButton,
+  Input,
+  Text,
+  toRem,
+} from '$components/ui';
 import { menuIcon, X } from '$components/icons/phosphor';
 
 import { useSetting } from '$state/hooks/settings';

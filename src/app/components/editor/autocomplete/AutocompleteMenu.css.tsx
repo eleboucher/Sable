@@ -1,5 +1,5 @@
 import { globalStyle, style } from '@vanilla-extract/css';
-import { DefaultReset, color, config } from 'folds';
+import { DefaultReset, color, config } from '$components/ui/theme';
 
 export const AutocompleteMenuBase = style([
   DefaultReset,

@@ -1,5 +1,5 @@
 import { style } from '@vanilla-extract/css';
-import { config } from 'folds';
+import { config } from '$components/ui/theme';
 import { ContainerColor } from '$styles/ContainerColor.css';
 
 export const RoomsInfoCard = style([

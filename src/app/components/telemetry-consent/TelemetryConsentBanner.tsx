@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { Text } from 'folds';
+import { Text } from '$components/ui';
 import { Shield } from '$components/icons/phosphor';
 import { useRegisterGlobalBanner, type GlobalBanner } from '$state/globalBanners';
 

@@ -1,5 +1,5 @@
 import { recipe } from '@vanilla-extract/recipes';
-import { DefaultReset, config, toRem } from 'folds';
+import { DefaultReset, config, toRem } from '$components/ui/theme';
 
 export const GalleryImageGrid = recipe({
   base: [

@@ -1,5 +1,5 @@
 import type { ComponentProps, MutableRefObject, ReactNode } from 'react';
-import { Box, Header, Line, Scroll, Text, as } from 'folds';
+import { Box, Header, Line, Scroll, Text, as } from '$components/ui';
 import classNames from 'classnames';
 import { ContainerColor } from '$styles/ContainerColor.css';
 import { ScreenSize, useScreenSizeContext } from '$hooks/useScreenSize';

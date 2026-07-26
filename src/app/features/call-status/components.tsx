@@ -1,4 +1,4 @@
-import { Line } from 'folds';
+import { Line } from '$components/ui';
 import * as css from './styles.css';
 
 export function StatusDivider() {

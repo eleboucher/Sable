@@ -1,6 +1,6 @@
 import type { FormEventHandler } from 'react';
 import { useCallback, useEffect, useState } from 'react';
-import { Box, color, Text, toRem } from 'folds';
+import { Box, color, Text, toRem } from '$components/ui';
 import { ArrowRight, CaretDown, CaretUp, File, menuIcon, X } from '$components/icons/phosphor';
 import { saveFileToDevice } from '$utils/download';
 import { SequenceCard, SequenceCardStyle } from '$components/sequence-card';
@@ -16,7 +16,7 @@ import {
 } from '$utils/MegolmExportEncryption';
 import { useAlive } from '$hooks/useAlive';
 import { useFilePicker } from '$hooks/useFilePicker';
-import { Button } from '$components/button';
+import { Button } from '$components/ui';
 
 type LocalBackupError = Error | FriendlyError;
 

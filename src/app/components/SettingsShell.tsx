@@ -1,6 +1,6 @@
 import type { ComponentType, ReactNode } from 'react';
 import type { IconProps } from '@phosphor-icons/react';
-import { Box, config, IconButton, MenuItem, Text } from 'folds';
+import { Box, config, IconButton, MenuItem, Text } from '$components/ui';
 import { PageNav, PageNavContent, PageNavHeader, PageRoot } from '$components/page';
 import { SettingsSectionHeader } from '$components/page/style.css';
 import { ScreenSize, useScreenSizeContext } from '$hooks/useScreenSize';

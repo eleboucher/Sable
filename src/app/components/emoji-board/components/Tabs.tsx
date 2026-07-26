@@ -1,5 +1,5 @@
 import type { CSSProperties } from 'react';
-import { Badge, Box, Text } from 'folds';
+import { Badge, Box, Text } from '$components/ui';
 import { EmojiBoardTab } from '$components/emoji-board/types';
 import { useSetting } from '$state/hooks/settings';
 import { settingsAtom } from '$state/settings';

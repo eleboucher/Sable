@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Button, Spinner, Text } from 'folds';
+import { Button, Spinner, Text } from '$components/ui';
 import { JoinRule } from '$types/matrix-sdk';
 import { CaretDown, sizedIcon } from '$components/icons/phosphor';
 import { getRoomIconComponent, type RoomPhosphorIcon } from '$components/icons/roomIcons';

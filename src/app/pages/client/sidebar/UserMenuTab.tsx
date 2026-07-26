@@ -1,6 +1,6 @@
 import type { MouseEventHandler } from 'react';
 import { useCallback, useEffect, useState } from 'react';
-import type { RectCords } from 'folds';
+import type { RectCords } from '$components/ui';
 import {
   Badge,
   Box,
@@ -17,7 +17,7 @@ import {
   color,
   config,
   toRem,
-} from 'folds';
+} from '$components/ui';
 import { FocusTrap } from 'focus-trap-react';
 import { ModalOverlay } from '$components/modal-overlay/ModalOverlay';
 import { SidebarAvatar, SidebarItem, SidebarItemBadge } from '../../../components/sidebar';

@@ -25,7 +25,7 @@ import { MatrixError } from '$types/matrix-sdk';
 import { EventType, MsgType, RelationType } from '$types/matrix-sdk';
 import { ReactEditor } from 'slate-react';
 import { Editor, Point, Range, Transforms } from 'slate';
-import type { RectCords } from 'folds';
+import type { RectCords } from '$components/ui';
 import {
   Box,
   color,
@@ -42,7 +42,7 @@ import {
   Spinner,
   Text,
   toRem,
-} from 'folds';
+} from '$components/ui';
 
 import { useMatrixClient } from '$hooks/useMatrixClient';
 import { useDismissOnBack } from '$utils/androidBack';

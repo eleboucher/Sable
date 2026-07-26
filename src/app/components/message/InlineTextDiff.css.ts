@@ -1,5 +1,5 @@
 import { style } from '@vanilla-extract/css';
-import { color, config } from 'folds';
+import { color, config } from '$components/ui/theme';
 
 const mono = { fontFamily: 'var(--font-monospace)' };
 

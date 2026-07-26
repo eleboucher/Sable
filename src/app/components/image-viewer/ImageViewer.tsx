@@ -1,7 +1,18 @@
 import type { MouseEventHandler } from 'react';
 import { useEffect, useRef, useState } from 'react';
 import classNames from 'classnames';
-import { Box, Chip, Header, IconButton, Menu, MenuItem, Text, as, config, toRem } from 'folds';
+import {
+  Box,
+  Chip,
+  Header,
+  IconButton,
+  Menu,
+  MenuItem,
+  Text,
+  as,
+  config,
+  toRem,
+} from '$components/ui';
 import {
   ArrowLeft,
   ArrowsClockwise,

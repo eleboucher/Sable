@@ -1,5 +1,5 @@
 import { type ReactNode } from 'react';
-import { Box } from 'folds';
+import { Box } from '$components/ui';
 import { MsgType, type IContent } from 'matrix-js-sdk';
 import type {
   IGalleryContent,

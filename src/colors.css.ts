@@ -1,5 +1,5 @@
 import { createTheme } from '@vanilla-extract/css';
-import { color } from 'folds';
+import { color } from '$components/ui/theme';
 
 // just grabs values from the other files for all the legacy components yet to be updated
 const sableThemeMapping = {

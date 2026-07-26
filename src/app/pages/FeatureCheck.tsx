@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { useEffect } from 'react';
-import { Box, Dialog, Text, config } from 'folds';
+import { Box, Dialog, Text, config } from '$components/ui';
 import { AsyncStatus, useAsyncCallback } from '$hooks/useAsyncCallback';
 import { checkIndexedDBSupport } from '$utils/featureCheck';
 import { SplashScreen } from '$components/splash-screen';

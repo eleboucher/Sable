@@ -10,7 +10,7 @@ import {
   Input,
   TextArea,
   Chip,
-} from 'folds';
+} from '$components/ui';
 import { sizedIcon, PencilSimple } from '$components/icons/phosphor';
 import Linkify from 'linkify-react';
 import { mxcUrlToHttp } from '$utils/matrix';

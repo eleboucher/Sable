@@ -6,7 +6,7 @@
     "interface": true,
     "type": true
   },
-  "ignoreFiles": ["src/app/generated/**/*"],
+  "ignoreFiles": ["src/app/generated/**/*", "src/app/components/ui/**"],
   "ignoreDependencies": [
     "buffer",
     "@sableclient/sable-call-embedded",

@@ -10,7 +10,7 @@ import { HOME_PATH, SETTINGS_PATH } from '$pages/paths';
 import { ChatTextIcon } from '@phosphor-icons/react';
 import { useAtomValue } from 'jotai';
 import { useInboxSelected } from '$hooks/router/useRouteSelected';
-import { Box, color, Text, toRem } from 'folds';
+import { Box, color, Text, toRem } from '$components/ui';
 import { useNavigateSelected } from '$hooks/router/useRouteSelected';
 import { useProfileSelected } from '$hooks/router/useRouteSelected';
 import { getSpacePath } from '$pages/pathUtils';

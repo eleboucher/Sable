@@ -1,5 +1,5 @@
 import { style } from '@vanilla-extract/css';
-import { DefaultReset, color, config, toRem } from 'folds';
+import { DefaultReset, color, config, toRem } from '$components/ui/theme';
 
 export const AuthLayout = style({
   minHeight: '100%',

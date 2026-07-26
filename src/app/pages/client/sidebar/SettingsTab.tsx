@@ -3,7 +3,7 @@ import { GearSix, getPhosphorIconSize } from '$components/icons/phosphor';
 import { useOpenSettings } from '$features/settings';
 import { matchPath } from 'react-router-dom';
 import { SETTINGS_PATH } from '$pages/paths';
-import { color } from 'folds';
+import { color } from '$components/ui';
 
 export function SettingsTab({ isBottom, isMobile }: { isBottom?: boolean; isMobile?: boolean }) {
   const opened = !!matchPath(SETTINGS_PATH, location.pathname);

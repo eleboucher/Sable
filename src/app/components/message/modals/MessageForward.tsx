@@ -2,7 +2,7 @@
 
 import { useMatrixClient } from '$hooks/useMatrixClient';
 import { modalAtom, ModalType } from '$state/modal';
-import { MenuItem, Text, as } from 'folds';
+import { MenuItem, Text, as } from '$components/ui';
 import { ArrowRight, menuIcon } from '$components/icons/phosphor';
 import { useSetAtom } from 'jotai';
 import type { MatrixEvent, Room } from '$types/matrix-sdk';

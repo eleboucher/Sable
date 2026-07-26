@@ -1,4 +1,4 @@
-import { Box, Scroll } from 'folds';
+import { Box, Scroll } from '$components/ui';
 import { PageContent, SettingsSectionPage } from '$components/page';
 import { MatrixId } from './MatrixId';
 import { Profile } from './Profile';

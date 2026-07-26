@@ -10,7 +10,7 @@ import {
 import { useElementSizeObserver } from '$hooks/useElementSizeObserver';
 import { useVoiceRecorder } from '$plugins/voice-recorder-kit';
 import type { VoiceRecorderStopPayload } from '$plugins/voice-recorder-kit';
-import { Box, Text } from 'folds';
+import { Box, Text } from '$components/ui';
 import * as css from './AudioMessageRecorder.css';
 
 export type AudioRecordingCompletePayload = {

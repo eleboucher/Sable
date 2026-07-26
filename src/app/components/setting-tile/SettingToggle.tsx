@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { Switch } from 'folds';
+import { Switch } from '$components/ui';
 import { SequenceCard, SequenceCardStyle } from '$components/sequence-card';
 import { SettingTile } from './SettingTile';
 

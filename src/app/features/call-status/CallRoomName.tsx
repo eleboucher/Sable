@@ -1,5 +1,5 @@
 import type { Room } from '$types/matrix-sdk';
-import { Chip, Text } from 'folds';
+import { Chip, Text } from '$components/ui';
 import { useAtomValue } from 'jotai';
 import { useRoomName } from '../../hooks/useRoomMeta';
 import { RoomIcon } from '../../components/room-avatar';

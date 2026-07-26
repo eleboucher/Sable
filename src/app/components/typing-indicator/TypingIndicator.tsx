@@ -1,4 +1,4 @@
-import { Box, as, toRem } from 'folds';
+import { Box, as, toRem } from '$components/ui';
 import * as css from './TypingIndicator.css';
 
 type TypingIndicatorProps = {

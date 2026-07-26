@@ -1,5 +1,5 @@
 import type { ComponentProps } from 'react';
-import { Text, as } from 'folds';
+import { Text, as } from '$components/ui';
 import classNames from 'classnames';
 import * as css from './styles.css';
 

@@ -6,7 +6,7 @@ import {
   getPerMessageProfileById,
 } from '$hooks/usePerMessageProfile';
 import { useEffect, useState } from 'react';
-import { Box, Button, Text } from 'folds';
+import { Box, Button, Text } from '$components/ui';
 import { generateShortId } from '$utils/shortIdGen';
 import { SequenceCard, SequenceCardStyle } from '$components/sequence-card';
 import { PerMessageProfileListItem } from './PerMessageProfileListItem';

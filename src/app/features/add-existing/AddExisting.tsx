@@ -12,7 +12,7 @@ import {
   Scroll,
   Spinner,
   Text,
-} from 'folds';
+} from '$components/ui';
 import {
   Check,
   MagnifyingGlass,

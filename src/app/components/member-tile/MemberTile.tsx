@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { as, Avatar, Box, Text } from 'folds';
+import { as, Avatar, Box, Text } from '$components/ui';
 import { userFallbackIcon } from '$components/icons/phosphor';
 import type { MatrixClient, Room, RoomMember } from '$types/matrix-sdk';
 import { getAvatarUrl, getMemberDisplayName } from '$utils/room/display';

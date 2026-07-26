@@ -1,7 +1,7 @@
 import { createVar, style } from '@vanilla-extract/css';
 import type { RecipeVariants } from '@vanilla-extract/recipes';
 import { recipe } from '@vanilla-extract/recipes';
-import { config } from 'folds';
+import { config } from '$components/ui/theme';
 
 export const SequenceCardStyle = style({
   padding: config.space.S300,

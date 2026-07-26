@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Box, Text, color } from 'folds';
+import { Box, Text, color } from '$components/ui';
 import { Link, useSearchParams } from 'react-router-dom';
 import { SSOAction } from '$types/matrix-sdk';
 import { useAuthServer } from '$hooks/useAuthServer';

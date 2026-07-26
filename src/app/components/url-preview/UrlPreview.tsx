@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import { Box, as } from 'folds';
+import { Box, as } from '$components/ui';
 import * as css from './UrlPreview.css';
 
 export const UrlPreview = as<'div'>(({ className, ...props }, ref) => (

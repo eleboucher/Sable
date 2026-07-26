@@ -7,8 +7,8 @@ import {
   isThreadRelationEvent,
 } from '$utils/room/relations';
 import { MessageReportItem } from './MessageReport';
-import type { RectCords } from 'folds';
-import { as, Box, config, IconButton, Line, Menu, MenuItem, PopOut, Text } from 'folds';
+import type { RectCords } from '$components/ui';
+import { as, Box, config, IconButton, Line, Menu, MenuItem, PopOut, Text } from '$components/ui';
 import { useMatrixClient } from '$hooks/useMatrixClient';
 import {
   ArrowBendUpLeftIcon,

@@ -1,4 +1,4 @@
-import { Box, Overlay, OverlayBackdrop, OverlayCenter, Spinner, Text } from 'folds';
+import { Box, Overlay, OverlayBackdrop, OverlayCenter, Spinner, Text } from '$components/ui';
 import { useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { ValidatedAuthMetadata } from '$types/matrix-sdk';
@@ -14,7 +14,7 @@ import {
   completeOidcLogin,
   startOidcLogin,
 } from './oidcLoginUtil';
-import { Button } from '$components/button';
+import { Button } from '$components/ui';
 
 const ERROR_TITLE = 'Single sign-on';
 

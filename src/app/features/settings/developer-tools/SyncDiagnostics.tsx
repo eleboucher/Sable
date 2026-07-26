@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useAtomValue } from 'jotai';
-import { Box, Button, Text } from 'folds';
+import { Box, Button, Text } from '$components/ui';
 import { CaretDown, CaretUp, menuIcon } from '$components/icons/phosphor';
 import { SequenceCard, SequenceCardStyle } from '$components/sequence-card';
 import { useMatrixClient } from '$hooks/useMatrixClient';

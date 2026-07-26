@@ -1,5 +1,5 @@
 import { style } from '@vanilla-extract/css';
-import { DefaultReset, color, config, toRem } from 'folds';
+import { DefaultReset, color, config, toRem } from '$components/ui/theme';
 import { ContainerColor } from '$styles/ContainerColor.css';
 import { recipe } from '@vanilla-extract/recipes';
 

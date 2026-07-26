@@ -1,5 +1,5 @@
 import type { JoinRule } from '$types/matrix-sdk';
-import { AvatarFallback, color } from 'folds';
+import { AvatarFallback, color } from '$components/ui';
 import type { ReactNode } from 'react';
 import { forwardRef, useEffect, useState } from 'react';
 import type { IconProps } from '@phosphor-icons/react';

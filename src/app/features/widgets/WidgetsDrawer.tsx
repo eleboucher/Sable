@@ -14,7 +14,7 @@ import {
   Button,
   Line,
   toRem,
-} from 'folds';
+} from '$components/ui';
 import {
   ArrowLeft,
   composerIcon,

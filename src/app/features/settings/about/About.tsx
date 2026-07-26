@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Box, Text, Scroll, Button, config, toRem, Spinner } from 'folds';
+import { Box, Text, Scroll, Button, config, toRem, Spinner } from '$components/ui';
 import { Code, Heart, menuIcon } from '$components/icons/phosphor';
 import { PageContent, SettingsSectionPage } from '$components/page';
 import { SequenceCard, SequenceCardStyle } from '$components/sequence-card';

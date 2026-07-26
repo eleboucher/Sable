@@ -1,5 +1,5 @@
 import { style } from '@vanilla-extract/css';
-import { color, toRem } from 'folds';
+import { color, toRem } from '$components/ui/theme';
 
 export const BackgroundDotPattern = style({
   backgroundImage: `radial-gradient(${color.Background.ContainerActive} ${toRem(2)}, ${

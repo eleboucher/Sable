@@ -1,4 +1,4 @@
-import { Box, IconButton, Text } from 'folds';
+import { Box, IconButton, Text } from '$components/ui';
 import { ArrowLeft, composerIcon, dropzoneIcon, MagnifyingGlass } from '$components/icons/phosphor';
 import { BackRouteHandler } from '$components/BackRouteHandler';
 import { ScreenSize, useScreenSizeContext } from '$hooks/useScreenSize';

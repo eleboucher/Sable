@@ -1,5 +1,5 @@
 import { globalStyle, style } from '@vanilla-extract/css';
-import { config, toRem } from 'folds';
+import { config, toRem } from '$components/ui/theme';
 
 export const SheetContent = style({
   width: '100%',

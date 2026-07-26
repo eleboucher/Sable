@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Box, Icons, Input, Text, toRem } from 'folds';
+import { Box, Input, Text, toRem } from '$components/ui';
+import { Phone, Play } from '$components/icons/phosphor';
 import { SequenceCard, SequenceCardStyle } from '$components/sequence-card';
 import { SettingTile, SettingToggle } from '$components/setting-tile';
 import { SettingMenuSelector } from '$components/setting-menu-selector';
@@ -342,7 +343,7 @@ export function CallSoundSettings() {
         emptyLabel="No custom ringtone imported."
         hasCustomTone={hasCustomRingtone}
         previewing={previewing}
-        previewActions={[{ label: 'Preview Ringtone', tone: 'incoming', icon: Icons.Play }]}
+        previewActions={[{ label: 'Preview Ringtone', tone: 'incoming', icon: Play }]}
         onImport={handleImportCustomRingtone}
         onPreview={playPreviewTone}
         onReset={handleResetCustomRingtone}
@@ -355,7 +356,7 @@ export function CallSoundSettings() {
         emptyLabel="No custom ringback imported."
         hasCustomTone={hasCustomRingback}
         previewing={previewing}
-        previewActions={[{ label: 'Preview Ringback', tone: 'outgoing', icon: Icons.Phone }]}
+        previewActions={[{ label: 'Preview Ringback', tone: 'outgoing', icon: Phone }]}
         onImport={handleImportCustomRingback}
         onPreview={playPreviewTone}
         onReset={handleResetCustomRingback}

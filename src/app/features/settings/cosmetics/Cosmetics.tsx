@@ -1,7 +1,18 @@
 import { useEffect, useRef, useState } from 'react';
 import type { ChangeEventHandler, KeyboardEventHandler, MouseEventHandler } from 'react';
-import type { RectCords } from 'folds';
-import { Box, Button, config, Input, Menu, MenuItem, PopOut, Scroll, Text, toRem } from 'folds';
+import type { RectCords } from '$components/ui';
+import {
+  Box,
+  Button,
+  config,
+  Input,
+  Menu,
+  MenuItem,
+  PopOut,
+  Scroll,
+  Text,
+  toRem,
+} from '$components/ui';
 import { CaretDown, composerIcon } from '$components/icons/phosphor';
 import { isKeyHotkey } from 'is-hotkey';
 import FocusTrap from 'focus-trap-react';

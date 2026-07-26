@@ -1,4 +1,4 @@
-import { Box, Text } from 'folds';
+import { Box, Text } from '$components/ui';
 import { useMemo } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { getLoginPath } from '$pages/pathUtils';

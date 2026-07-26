@@ -1,7 +1,7 @@
 import type { KeyboardEvent as ReactKeyboardEvent, MouseEvent as ReactMouseEvent } from 'react';
 import { useCallback, useEffect, useMemo } from 'react';
 import type { Editor } from 'slate';
-import { Box, config, MenuItem, Text } from 'folds';
+import { Box, config, MenuItem, Text } from '$components/ui';
 import type { Room } from '$types/matrix-sdk';
 import type { Command } from '$hooks/useCommands';
 import { useCommands } from '$hooks/useCommands';

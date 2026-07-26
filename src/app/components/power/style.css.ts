@@ -1,7 +1,7 @@
 import { createVar, style } from '@vanilla-extract/css';
 import type { RecipeVariants } from '@vanilla-extract/recipes';
 import { recipe } from '@vanilla-extract/recipes';
-import { color, config, DefaultReset, toRem } from 'folds';
+import { color, config, DefaultReset, toRem } from '$components/ui/theme';
 
 export const PowerColorBadge = style({
   display: 'inline-flex',

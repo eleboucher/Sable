@@ -1,5 +1,5 @@
 import { style } from '@vanilla-extract/css';
-import { color } from 'folds';
+import { color } from '$components/ui/theme';
 
 export const GroupAvatarContainer = style({
   position: 'relative',

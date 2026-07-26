@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { Box, Text } from 'folds';
+import { Box, Text } from '$components/ui';
 
 import { useMatrixClient } from '$hooks/useMatrixClient';
 import { AsyncStatus, useAsyncCallback } from '$hooks/useAsyncCallback';
@@ -10,7 +10,7 @@ import { getViaServers } from '$plugins/via-servers';
 import { RoomInputPlaceholder } from './RoomInputPlaceholder';
 import * as css from './RoomTombstone.css';
 import { KnownMembership } from '$types/matrix-sdk';
-import { Button } from '$components/button';
+import { Button } from '$components/ui';
 
 type RoomTombstoneProps = { roomId: string; body?: string; replacementRoomId: string };
 export function RoomTombstone({ roomId, body, replacementRoomId }: RoomTombstoneProps) {

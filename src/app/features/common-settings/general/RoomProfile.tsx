@@ -1,4 +1,4 @@
-import { Avatar, Box, Chip, config, Input, Text, TextArea } from 'folds';
+import { Avatar, Box, Chip, config, Input, Text, TextArea } from '$components/ui';
 import { ArrowsClockwise, chipIcon, menuIcon, PencilSimple } from '$components/icons/phosphor';
 import type { FormEventHandler } from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -35,7 +35,7 @@ import { SettingTile } from '$components/setting-tile';
 import { confirm } from '$components/confirm/confirm';
 import { reportMediaLoadFailure } from '$utils/mediaLoadDiagnostics';
 import { AsyncError } from '$components/AsyncError';
-import { Button } from '$components/button';
+import { Button } from '$components/ui';
 
 type RoomProfileEditProps = {
   canEditAvatar: boolean;

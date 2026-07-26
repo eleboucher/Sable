@@ -7,8 +7,7 @@ import '@fontsource/space-mono/400.css';
 import '@fontsource/space-mono/700.css';
 import '@fontsource/space-mono/400-italic.css';
 import '@fontsource/space-mono/700-italic.css';
-import 'folds/dist/style.css';
-import { configClass, varsClass } from 'folds';
+import { configClass, varsClass } from '$components/ui';
 import App from './app/pages/App';
 import './app/i18n';
 

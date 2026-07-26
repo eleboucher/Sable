@@ -12,7 +12,7 @@ import {
   Text,
   color,
   config,
-} from 'folds';
+} from '$components/ui';
 import { useNavigate } from 'react-router-dom';
 import FocusTrap from 'focus-trap-react';
 import type { AuthDict, MatrixError } from '$types/matrix-sdk';

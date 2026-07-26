@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Box, Text, Switch, Button } from 'folds';
+import { Box, Text, Switch, Button } from '$components/ui';
 import { SequenceCard, SequenceCardStyle } from '$components/sequence-card';
 import { SettingTile } from '$components/setting-tile';
 import { toSettingsFocusIdPart } from '$features/settings/settingsLink';

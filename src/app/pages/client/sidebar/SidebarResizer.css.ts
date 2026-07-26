@@ -1,6 +1,6 @@
 import { style } from '@vanilla-extract/css';
 import { recipe } from '@vanilla-extract/recipes';
-import { color, toRem } from 'folds';
+import { color, toRem } from '$components/ui/theme';
 
 /** Out-of-flow so flex siblings (e.g. PageRoot vertical Line) stay flush with the panel edge. */
 export const SidebarResizerDockRight = style({

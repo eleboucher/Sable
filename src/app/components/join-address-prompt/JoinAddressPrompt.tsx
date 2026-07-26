@@ -1,6 +1,6 @@
 import type { FormEventHandler } from 'react';
 import { useState } from 'react';
-import { config, Box, Text, Button, Input, color } from 'folds';
+import { config, Box, Text, Button, Input, color } from '$components/ui';
 import { isRoomAlias, isRoomId } from '$utils/matrix';
 import { parseMatrixToRoom, parseMatrixToRoomEvent, testMatrixTo } from '$plugins/matrix-to';
 import { PromptDialog } from '$components/modal-overlay/PromptDialog';

@@ -1,4 +1,4 @@
-import { Box, Button, Spinner, Text } from 'folds';
+import { Box, Button, Spinner, Text } from '$components/ui';
 import classNames from 'classnames';
 import { sizedIcon, Phone } from '$components/icons/phosphor';
 import { SequenceCard } from '../../components/sequence-card';

@@ -3,8 +3,19 @@ import { useState } from 'react';
 import { useAtomValue } from 'jotai';
 import { CaretDown, chipIcon, composerIcon, X } from '$components/icons/phosphor';
 import FocusTrap from 'focus-trap-react';
-import type { RectCords } from 'folds';
-import { Dialog, Header, config, Box, Text, IconButton, color, Button, Chip, PopOut } from 'folds';
+import type { RectCords } from '$components/ui';
+import {
+  Dialog,
+  Header,
+  config,
+  Box,
+  Text,
+  IconButton,
+  color,
+  Button,
+  Chip,
+  PopOut,
+} from '$components/ui';
 import { stopPropagation } from '$utils/keyboard';
 import { timeDayMonthYear, timeHourMinute, hoursToMs, daysToMs } from '$utils/time';
 import { DatePicker, TimePicker } from '$components/time-date';

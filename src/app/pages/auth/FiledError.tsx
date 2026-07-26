@@ -1,4 +1,4 @@
-import { Box, color, Text } from 'folds';
+import { Box, color, Text } from '$components/ui';
 import { sizedIcon, Warning } from '$components/icons/phosphor';
 
 export function FieldError({ message }: { message: string }) {

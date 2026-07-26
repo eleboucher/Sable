@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Chip, IconButton, Text, color } from 'folds';
+import { Chip, IconButton, Text, color } from '$components/ui';
 import {
   Check,
   File,

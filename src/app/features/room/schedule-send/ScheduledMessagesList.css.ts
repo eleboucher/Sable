@@ -1,5 +1,5 @@
 import { style } from '@vanilla-extract/css';
-import { config, toRem } from 'folds';
+import { config, toRem } from '$components/ui/theme';
 
 export const ScheduledMessagesToggle = style({
   padding: `${config.space.S100} ${config.space.S400}`,

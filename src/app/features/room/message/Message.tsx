@@ -1,5 +1,5 @@
 // oxlint-disable no-console
-import type { RectCords } from 'folds';
+import type { RectCords } from '$components/ui';
 import {
   Avatar,
   Box,
@@ -11,7 +11,7 @@ import {
   as,
   config,
   toRem,
-} from 'folds';
+} from '$components/ui';
 import type { KeyboardEventHandler, MouseEventHandler, MouseEvent, ReactNode } from 'react';
 import {
   memo,

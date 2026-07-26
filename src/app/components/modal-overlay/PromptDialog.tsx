@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { Box, Dialog, Header, IconButton, Text, config } from 'folds';
+import { Box, Dialog, Header, IconButton, Text, config } from '$components/ui';
 import { composerIcon, X } from '$components/icons/phosphor';
 import { ModalOverlay } from './ModalOverlay';
 

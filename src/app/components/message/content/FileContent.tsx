@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { useCallback, useState } from 'react';
-import { Box, Button, Modal, Spinner, Text, Tooltip, TooltipProvider, as } from 'folds';
+import { Box, Button, Modal, Spinner, Text, Tooltip, TooltipProvider, as } from '$components/ui';
 import { ArrowRight, Download, sizedIcon, Warning } from '$components/icons/phosphor';
 import type { EncryptedAttachmentInfo } from 'browser-encrypt-attachment';
 import type { IFileInfo } from '$types/matrix/common';

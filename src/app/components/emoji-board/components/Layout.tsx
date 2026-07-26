@@ -1,4 +1,4 @@
-import { as, Box, Line } from 'folds';
+import { as, Box, Line } from '$components/ui';
 import type { ReactNode } from 'react';
 import classNames from 'classnames';
 import * as css from './styles.css';

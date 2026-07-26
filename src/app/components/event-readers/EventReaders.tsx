@@ -1,6 +1,16 @@
 import classNames from 'classnames';
 import { useEffect, useState } from 'react';
-import { Avatar, Box, Header, IconButton, MenuItem, Scroll, Text, as, config } from 'folds';
+import {
+  Avatar,
+  Box,
+  Header,
+  IconButton,
+  MenuItem,
+  Scroll,
+  Text,
+  as,
+  config,
+} from '$components/ui';
 import type { Room } from '$types/matrix-sdk';
 import { useRoomEventReaders } from '$hooks/useRoomEventReaders';
 import { getAvatarUrl, getMemberDisplayName } from '$utils/room/display';
