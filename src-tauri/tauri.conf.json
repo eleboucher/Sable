@@ -30,6 +30,7 @@
       "deb": {
         "depends": [
           "xwayland",
+          "xdg-utils",
           "gstreamer1.0-plugins-good",
           "gstreamer1.0-plugins-bad",
           "gstreamer1.0-libav",
@@ -40,6 +41,7 @@
       "rpm": {
         "depends": [
           "xorg-x11-server-Xwayland",
+          "xdg-utils",
           "gstreamer1-plugins-good",
           "gstreamer1-plugins-bad-free",
           "gstreamer1-libav",

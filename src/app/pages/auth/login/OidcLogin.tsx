@@ -1,10 +1,14 @@
-import { Box, Overlay, OverlayBackdrop, OverlayCenter, Spinner, Text } from 'folds';
+import { Box, IconButton, Overlay, OverlayBackdrop, OverlayCenter, Spinner, Text } from 'folds';
 import { useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { ValidatedAuthMetadata } from '$types/matrix-sdk';
 import { AsyncStatus, useAsyncCallback } from '$hooks/useAsyncCallback';
 import { useAuthServer } from '$hooks/useAuthServer';
 import { InfoCard } from '$components/info-card';
+import { Check, Link, sizedIcon } from '$components/icons/phosphor';
+import { BreakWord } from '$styles/Text.css';
+import { copyToClipboard } from '$utils/dom';
+import { useTimeoutToggle } from '$hooks/useTimeoutToggle';
 import { getLoginPath } from '$pages/pathUtils';
 import { useCommitLoginSession } from './loginUtil';
 import type { OidcLoginResult } from './oidcLoginUtil';
@@ -29,10 +33,46 @@ const oidcErrorMessage = (error: unknown): string => {
       return 'The homeserver did not grant a device for this session.';
     case OidcLoginError.MissingRefreshToken:
       return 'The authorization server did not issue the required refresh token.';
+    case OidcLoginError.BrowserOpenFailed:
+      return "Couldn't open your browser. Copy the link below to sign in.";
     default:
       return 'Failed to sign in with single sign-on.';
   }
 };
+
+const BROWSER_OPEN_FAILED_TITLE = 'Open link manually';
+const BROWSER_OPEN_FAILED_DESC =
+  "Couldn't open your browser automatically. Copy this link and open it in your browser to sign in.";
+
+function BrowserOpenFailedFallback({ url }: { url: string }) {
+  const [copied, setCopied] = useTimeoutToggle();
+  return (
+    <Box direction="Column" gap="300">
+      <InfoCard variant="Secondary" title={BROWSER_OPEN_FAILED_TITLE} description={BROWSER_OPEN_FAILED_DESC} />
+      <Box direction="Row" gap="200" alignItems="Center">
+        <Box grow="Yes" style={{ minWidth: 0 }}>
+          <Text className={BreakWord} size="T200" priority="300">
+            {url}
+          </Text>
+        </Box>
+        <Box shrink="No">
+          <IconButton
+            aria-label={copied ? 'Copied login link' : 'Copy login link'}
+            onClick={async () => {
+              if (await copyToClipboard(url)) setCopied();
+            }}
+            size="300"
+            variant="Surface"
+            fill="None"
+            radii="Inherit"
+          >
+            {sizedIcon(copied ? Check : Link, '50')}
+          </IconButton>
+        </Box>
+      </Box>
+    </Box>
+  );
+}
 
 type OidcLoginButtonProps = {
   authMetadata: ValidatedAuthMetadata;
@@ -60,10 +100,24 @@ export function OidcLoginButton({
   );
 
   const loading = state.status === AsyncStatus.Loading || state.status === AsyncStatus.Success;
-  const errorMessage = state.status === AsyncStatus.Error ? oidcErrorMessage(state.error) : notice;
+
+  const browserOpenFailedUrl =
+    state.status === AsyncStatus.Error &&
+    state.error instanceof OidcLoginFailure &&
+    state.error.code === OidcLoginError.BrowserOpenFailed
+      ? state.error.authUrl
+      : undefined;
+
+  const errorMessage =
+    state.status === AsyncStatus.Error && !browserOpenFailedUrl
+      ? oidcErrorMessage(state.error)
+      : state.status === AsyncStatus.Error
+        ? undefined
+        : notice;
 
   return (
     <Box direction="Column" gap="300">
+      {browserOpenFailedUrl && <BrowserOpenFailedFallback url={browserOpenFailedUrl} />}
       {errorMessage && (
         <InfoCard variant="Critical" title={ERROR_TITLE} description={errorMessage} />
       )}

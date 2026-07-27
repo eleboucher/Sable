@@ -22,11 +22,15 @@ export enum OidcLoginError {
   MissingDeviceId = 'MissingDeviceId',
   MissingRefreshToken = 'MissingRefreshToken',
   MissingOauthContext = 'MissingOauthContext',
+  BrowserOpenFailed = 'BrowserOpenFailed',
   Unknown = 'Unknown',
 }
 
 export class OidcLoginFailure extends Error {
-  public constructor(public readonly code: OidcLoginError) {
+  public constructor(
+    public readonly code: OidcLoginError,
+    public readonly authUrl?: string
+  ) {
     super(code);
     this.name = 'OidcLoginFailure';
   }
@@ -120,8 +124,13 @@ export const startOidcLogin = async (
   });
 
   if (tauri) {
-    await openUrl(authUrl);
-    return;
+    try {
+      await openUrl(authUrl);
+      return;
+    } catch (err) {
+      log.error('Failed to open browser for OIDC login', err);
+      throw new OidcLoginFailure(OidcLoginError.BrowserOpenFailed, authUrl);
+    }
   }
 
   window.location.assign(authUrl);
