@@ -9,6 +9,31 @@ import type { ColorSet } from './useUserProfile';
 
 const ACCOUNT_DATA_PREFIX = CustomAccountDataEvent.SablePerProfileMessageProfiles;
 
+const profilePersistenceQueues = new WeakMap<MatrixClient, Map<string, Promise<unknown>>>();
+
+function enqueueProfilePersistence<T>(
+  mx: MatrixClient,
+  key: string,
+  operation: () => Promise<T>
+): Promise<T> {
+  let queues = profilePersistenceQueues.get(mx);
+  if (!queues) {
+    queues = new Map();
+    profilePersistenceQueues.set(mx, queues);
+  }
+
+  const previous = queues.get(key) ?? Promise.resolve();
+  const current = previous.catch(() => undefined).then(operation);
+  queues.set(key, current);
+
+  const clearQueue = () => {
+    if (queues?.get(key) === current) queues.delete(key);
+  };
+  current.then(clearQueue, clearQueue);
+
+  return current;
+}
+
 /**
  * a per message profile
  */
@@ -453,32 +478,34 @@ export async function setCurrentlyUsedPerMessageProfileIdForRoom(
   validUntil?: number,
   reset?: boolean
 ) {
-  const accountData = mx.getAccountData(
-    `${ACCOUNT_DATA_PREFIX}.roomassociation` as Parameters<typeof mx.getAccountData>[0]
-  );
-  const content: PerMessageProfileRoomAssociationWrapper | undefined = accountData?.getContent();
-  const associations = getAssociationsMap(content);
+  return enqueueProfilePersistence(mx, 'roomassociation', async () => {
+    const accountData = mx.getAccountData(
+      `${ACCOUNT_DATA_PREFIX}.roomassociation` as Parameters<typeof mx.getAccountData>[0]
+    );
+    const content: PerMessageProfileRoomAssociationWrapper | undefined = accountData?.getContent();
+    const associations = getAssociationsMap(content);
 
-  if (reset) {
-    associations.delete(roomId);
-    mx.setAccountData(
+    if (reset) {
+      associations.delete(roomId);
+      await mx.setAccountData(
+        `${ACCOUNT_DATA_PREFIX}.roomassociation` as Parameters<typeof mx.setAccountData>[0],
+        { associations: associationsMapToObject(associations) } as Parameters<
+          typeof mx.setAccountData
+        >[1]
+      );
+      return;
+    }
+    if (!profileId) {
+      throw new Error("profile Id is empty, yet it isn't a reset");
+    }
+    associations.set(roomId, { profileId, validUntil });
+    await mx.setAccountData(
       `${ACCOUNT_DATA_PREFIX}.roomassociation` as Parameters<typeof mx.setAccountData>[0],
       { associations: associationsMapToObject(associations) } as Parameters<
         typeof mx.setAccountData
       >[1]
     );
-    return;
-  }
-  if (!profileId) {
-    throw new Error("profile Id is empty, yet it isn't a reset");
-  }
-  associations.set(roomId, { profileId, validUntil });
-  mx.setAccountData(
-    `${ACCOUNT_DATA_PREFIX}.roomassociation` as Parameters<typeof mx.setAccountData>[0],
-    { associations: associationsMapToObject(associations) } as Parameters<
-      typeof mx.setAccountData
-    >[1]
-  );
+  });
 }
 
 /**
@@ -490,22 +517,24 @@ export async function setCurrentlyUsedPerMessageProfileIdForAccount(
   validUntil?: number,
   reset?: boolean
 ) {
-  if (reset) {
-    mx.deleteAccountData(
-      `${ACCOUNT_DATA_PREFIX}.globalassociation` as Parameters<typeof mx.setAccountData>[0]
+  return enqueueProfilePersistence(mx, 'globalassociation', async () => {
+    if (reset) {
+      await mx.deleteAccountData(
+        `${ACCOUNT_DATA_PREFIX}.globalassociation` as Parameters<typeof mx.setAccountData>[0]
+      );
+      return;
+    }
+    if (!profileId) {
+      throw new Error("profile Id is empty, yet it isn't a reset");
+    }
+
+    const association: PerMessageProfileRoomAssociation = { profileId, validUntil };
+
+    await mx.setAccountData(
+      `${ACCOUNT_DATA_PREFIX}.globalassociation` as Parameters<typeof mx.setAccountData>[0],
+      { association: association } as Parameters<typeof mx.setAccountData>[1]
     );
-    return;
-  }
-  if (!profileId) {
-    throw new Error("profile Id is empty, yet it isn't a reset");
-  }
-
-  const association: PerMessageProfileRoomAssociation = { profileId, validUntil };
-
-  mx.setAccountData(
-    `${ACCOUNT_DATA_PREFIX}.globalassociation` as Parameters<typeof mx.setAccountData>[0],
-    { association: association } as Parameters<typeof mx.setAccountData>[1]
-  );
+  });
 }
 
 /**

@@ -138,6 +138,7 @@ import {
   computeDelayMs,
   cancelDelayedEvent,
 } from '$utils/delayedEvents';
+import { roomScheduleCoordinator } from '$state/room/roomScheduleCoordinator';
 import { timeHourMinute, timeDayMonthYear, daysToMs } from '$utils/time';
 import { stopPropagation } from '$utils/keyboard';
 
@@ -216,6 +217,7 @@ import * as prefix from '$unstable/prefixes';
 import { PollDialog } from './poll-modals';
 import { useClientConfig } from '$hooks/useClientConfig';
 import { PersonaPicker, type PersonaPickerTab } from './persona-picker/PersonaPicker.tsx';
+import { createComposerController, type ComposerOperationContext } from './composerController';
 
 const LocationDialog = lazy(() =>
   import('./location-modal').then((module) => ({ default: module.LocationDialog }))
@@ -278,6 +280,19 @@ interface ReplyEventContent {
 
 const createUploadItemKey = () =>
   globalThis.crypto.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+
+interface EditorSubmissionSnapshot {
+  children: Editor['children'];
+  epoch: number;
+}
+
+interface ReplyClaim {
+  id: number;
+  epoch: number;
+  revision: number;
+  snapshot: IReplyDraft;
+  silentReply: boolean;
+}
 
 interface RoomInputProps {
   editor: Editor;
@@ -364,31 +379,81 @@ export const RoomInput = forwardRef<HTMLDivElement, RoomInputProps>(
 
     const [msgDraft, setMsgDraft] = useAtom(roomIdToMsgDraftAtomFamily(draftKey));
     const [replyDraft, setReplyDraft] = useAtom(roomIdToReplyDraftAtomFamily(draftKey));
+    const replyDraftRef = useRef(replyDraft);
+    const previousReplyDraftRef = useRef(replyDraft);
+    const replyRevisionRef = useRef(0);
+    if (previousReplyDraftRef.current !== replyDraft) {
+      previousReplyDraftRef.current = replyDraft;
+      replyDraftRef.current = replyDraft;
+      replyRevisionRef.current += 1;
+    }
 
     const [uploadBoard, setUploadBoard] = useState(true);
     const [uploadSending, setUploadSending] = useState(false);
     const [uploadBusy, setUploadBusy] = useState(false);
     const [isSending, setIsSending] = useState(false);
     const isSendingRef = useRef(false);
+    const [fileIngestionCount, setFileIngestionCount] = useState(0);
+    const fileIngestionCountRef = useRef(0);
+    const composerControllerRef = useRef<ReturnType<typeof createComposerController>>();
+    const composerControllerKeyRef = useRef(draftKey);
+    if (!composerControllerRef.current || composerControllerKeyRef.current !== draftKey) {
+      composerControllerRef.current?.dispose();
+      composerControllerRef.current = createComposerController();
+      composerControllerKeyRef.current = draftKey;
+    }
+    const activeOperationRef = useRef<ComposerOperationContext>();
+    const activeReplyClaimRef = useRef<ReplyClaim>();
+    const bridgingUploadFromSubmitRef = useRef(false);
+    const submitQueuedRef = useRef(false);
+    const draftEpochRef = useRef(0);
+    const draftKeyRef = useRef(draftKey);
+    const mountedRef = useRef(false);
+    if (draftKeyRef.current !== draftKey) {
+      draftKeyRef.current = draftKey;
+      draftEpochRef.current += 1;
+    }
+    const uploadLifecycleRef = useRef(0);
     const [selectedFiles, setSelectedFiles] = useAtom(roomIdToUploadItemsAtomFamily(draftKey));
+    const selectedFilesRef = useRef(selectedFiles);
+    selectedFilesRef.current = selectedFiles;
+    const uploadItemOverridesRef = useRef(new Map<TUploadContent, Partial<TUploadItem>>());
+    const removedUploadFilesRef = useRef(new Set<TUploadContent>());
     const isEncrypting = selectedFiles.some((f) => f.encrypting);
-    const sendBusy = isSending || uploadSending || isEncrypting || uploadBusy;
+    const sendBusy =
+      isSending || uploadSending || isEncrypting || uploadBusy || fileIngestionCount > 0;
     const uploadFamilyObserverAtom = createUploadFamilyObserverAtom(
       roomUploadAtomFamily,
       selectedFiles.map((f) => f.file)
     );
     const uploadBoardHandlers = useRef<UploadBoardImperativeHandlers>();
     const uploadSendConsumedRef = useRef(false);
-    const uploadSendPromiseRef = useRef<Promise<boolean>>();
+    const uploadSendPromiseRef = useRef<Promise<boolean | undefined>>();
+    const submitEditorSnapshotRef = useRef<EditorSubmissionSnapshot>();
     const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
     const isLongPress = useRef(false);
     const suppressBlurRefocusRef = useRef(false);
+    const editorRafIdsRef = useRef(new Set<number>());
+    const scheduleEditorRaf = useCallback((callback: () => void) => {
+      const rafId = requestAnimationFrame(() => {
+        editorRafIdsRef.current.delete(rafId);
+        callback();
+      });
+      editorRafIdsRef.current.add(rafId);
+    }, []);
+    useEffect(
+      () => () => {
+        editorRafIdsRef.current.forEach((rafId) => cancelAnimationFrame(rafId));
+        editorRafIdsRef.current.clear();
+      },
+      []
+    );
     const suppressEditorRefocus = useCallback(() => {
       suppressBlurRefocusRef.current = true;
-      requestAnimationFrame(() => {
+      scheduleEditorRaf(() => {
         suppressBlurRefocusRef.current = false;
       });
-    }, []);
+    }, [scheduleEditorRaf]);
 
     const imagePackRooms: Room[] = useImagePackRooms(roomId, roomToParents);
 
@@ -396,11 +461,28 @@ export const RoomInput = forwardRef<HTMLDivElement, RoomInputProps>(
     const audioRecorderRef = useRef<AudioMessageRecorderHandle>(null);
     const micHoldStartRef = useRef(0);
     const micHoldReleaseRef = useRef<(() => void) | null>(null);
+    const recorderActionRef = useRef<'stop' | 'cancel'>();
+    const recorderTimerIdsRef = useRef(new Set<ReturnType<typeof setTimeout>>());
+    const scheduleRecorderTimer = useCallback((callback: () => void) => {
+      const timerId = setTimeout(() => {
+        recorderTimerIdsRef.current.delete(timerId);
+        callback();
+      }, 50);
+      recorderTimerIdsRef.current.add(timerId);
+    }, []);
+    const requestRecorderStop = useCallback(() => {
+      if (recorderActionRef.current) return;
+      recorderActionRef.current = 'stop';
+      audioRecorderRef.current?.stop();
+    }, []);
     const HOLD_THRESHOLD_MS = 400;
 
     useEffect(
       () => () => {
         micHoldReleaseRef.current?.();
+        recorderTimerIdsRef.current.forEach((timerId) => clearTimeout(timerId));
+        recorderTimerIdsRef.current.clear();
+        recorderActionRef.current = undefined;
       },
       []
     );
@@ -423,6 +505,22 @@ export const RoomInput = forwardRef<HTMLDivElement, RoomInputProps>(
 
     const sendTypingStatus = useTypingStatusUpdater(mx, roomId, { disabled: !!threadRootId });
 
+    useEffect(() => {
+      mountedRef.current = true;
+      return () => {
+        mountedRef.current = false;
+        uploadLifecycleRef.current += 1;
+        draftEpochRef.current += 1;
+      };
+    }, [draftKey]);
+
+    useEffect(
+      () => () => {
+        composerControllerRef.current?.dispose();
+      },
+      []
+    );
+
     const [inputKey, setInputKey] = useState(0);
     const getUploadItemKey = useCallback((fileItem: TUploadItem): string => {
       const existingKey = uploadItemKeysRef.current.get(fileItem.originalFile);
@@ -435,64 +533,98 @@ export const RoomInput = forwardRef<HTMLDivElement, RoomInputProps>(
 
     const handleFiles = useCallback(
       async (files: File[], audioMeta?: { waveform: number[]; audioDuration: number }) => {
-        setUploadBoard(true);
-        const safeFiles = await Promise.all(files.map(safeUploadFile));
-        // Eager-read to avoid Android content URI expiry after SAF picker
-        const blobbedFiles = isMobileOrTablet()
-          ? await Promise.all(
-              safeFiles.map(async (f) => {
-                try {
-                  const buf = await f.arrayBuffer();
-                  return new File([buf], f.name, { type: f.type, lastModified: f.lastModified });
-                } catch {
-                  return f;
-                }
-              })
-            )
-          : safeFiles;
-        const makeMetadata = () => ({
-          markedAsSpoiler: false,
-          waveform: audioMeta?.waveform,
-          audioDuration: audioMeta?.audioDuration,
-        });
+        const lifecycle = uploadLifecycleRef.current;
+        fileIngestionCountRef.current += 1;
+        setFileIngestionCount(fileIngestionCountRef.current);
+        try {
+          setUploadBoard(true);
+          const safeFiles = await Promise.all(files.map(safeUploadFile));
+          if (lifecycle !== uploadLifecycleRef.current || !mountedRef.current) return;
 
-        if (room.hasEncryptionStateEvent()) {
-          const placeholders: TUploadItem[] = blobbedFiles.map((f) => ({
-            file: f,
-            originalFile: f,
-            encInfo: undefined,
-            encrypting: true,
-            metadata: makeMetadata(),
-          }));
-          setSelectedFiles({ type: 'PUT', item: placeholders });
-          placeholders.forEach((placeholder) => {
-            encryptFile(placeholder.originalFile)
-              .then((ef) =>
-                setSelectedFiles({
-                  type: 'REPLACE',
-                  item: placeholder,
-                  replacement: { ...ef, encrypting: false, metadata: placeholder.metadata },
+          // Eager-read to avoid Android content URI expiry after SAF picker
+          const blobbedFiles = isMobileOrTablet()
+            ? await Promise.all(
+                safeFiles.map(async (f) => {
+                  try {
+                    const buf = await f.arrayBuffer();
+                    return new File([buf], f.name, { type: f.type, lastModified: f.lastModified });
+                  } catch {
+                    return f;
+                  }
                 })
               )
-              .catch((encryptError: unknown) => {
-                log.warn('Failed to encrypt file for upload:', encryptError);
-                setSelectedFiles({ type: 'DELETE', item: placeholder });
-              });
-          });
-          return;
-        }
+            : safeFiles;
+          if (lifecycle !== uploadLifecycleRef.current || !mountedRef.current) return;
+          blobbedFiles.forEach((file) => removedUploadFilesRef.current.delete(file));
 
-        setSelectedFiles({
-          type: 'PUT',
-          item: blobbedFiles.map((f) => ({
-            file: f,
-            originalFile: f,
-            encInfo: undefined,
-            metadata: makeMetadata(),
-          })),
-        });
+          const makeMetadata = () => ({
+            markedAsSpoiler: false,
+            waveform: audioMeta?.waveform,
+            audioDuration: audioMeta?.audioDuration,
+          });
+
+          if (room.hasEncryptionStateEvent()) {
+            const placeholders: TUploadItem[] = blobbedFiles.map((f) => ({
+              file: f,
+              originalFile: f,
+              encInfo: undefined,
+              encrypting: true,
+              metadata: makeMetadata(),
+            }));
+            setSelectedFiles({ type: 'PUT', item: placeholders });
+            await Promise.all(
+              placeholders.map(async (placeholder) => {
+                try {
+                  const encryptedFile = await encryptFile(placeholder.originalFile);
+                  if (lifecycle !== uploadLifecycleRef.current || !mountedRef.current) return;
+                  if (removedUploadFilesRef.current.has(placeholder.originalFile)) return;
+                  const currentItem = selectedFilesRef.current.find(
+                    (item) => item.originalFile === placeholder.originalFile
+                  );
+                  if (!currentItem) return;
+                  const overrides = uploadItemOverridesRef.current.get(placeholder.originalFile);
+                  setSelectedFiles({
+                    type: 'REPLACE',
+                    item: currentItem,
+                    replacement: {
+                      ...currentItem,
+                      ...encryptedFile,
+                      ...overrides,
+                      encrypting: false,
+                      metadata: overrides?.metadata ?? currentItem.metadata,
+                    },
+                  });
+                } catch (encryptError: unknown) {
+                  log.warn('Failed to encrypt file for upload:', encryptError);
+                  if (lifecycle === uploadLifecycleRef.current && mountedRef.current) {
+                    const currentItem = selectedFilesRef.current.find(
+                      (item) => item.originalFile === placeholder.originalFile
+                    );
+                    if (currentItem) setSelectedFiles({ type: 'DELETE', item: currentItem });
+                  }
+                }
+              })
+            );
+            return;
+          }
+
+          setSelectedFiles({
+            type: 'PUT',
+            item: blobbedFiles.map((f) => ({
+              file: f,
+              originalFile: f,
+              encInfo: undefined,
+              metadata: makeMetadata(),
+            })),
+          });
+        } catch (error: unknown) {
+          log.warn('Failed to prepare files for upload:', error);
+        } finally {
+          fileIngestionCountRef.current -= 1;
+          setFileIngestionCount(fileIngestionCountRef.current);
+        }
       },
-      [setSelectedFiles, room]
+      [room, setSelectedFiles]
     );
     const pickFile = useFilePicker(handleFiles, true);
     const handlePaste = useFilePasteHandler(handleFiles);
@@ -507,9 +639,25 @@ export const RoomInput = forwardRef<HTMLDivElement, RoomInputProps>(
 
     const queryClient = useQueryClient();
     const delayedEventsSupported = useAtomValue(delayedEventsSupportedAtom);
-    const [scheduledTime, setScheduledTime] = useAtom(roomIdToScheduledTimeAtomFamily(roomId));
-    const [editingScheduledDelayId, setEditingScheduledDelayId] = useAtom(
+    const [roomScheduledTime, setRoomScheduledTime] = useAtom(
+      roomIdToScheduledTimeAtomFamily(roomId)
+    );
+    const [roomEditingScheduledDelayId, setRoomEditingScheduledDelayId] = useAtom(
       roomIdToEditingScheduledDelayIdAtomFamily(roomId)
+    );
+    const scheduledTime = threadRootId ? null : roomScheduledTime;
+    const editingScheduledDelayId = threadRootId ? null : roomEditingScheduledDelayId;
+    const setScheduledTime = useCallback(
+      (value: Date | null) => {
+        if (!threadRootId) setRoomScheduledTime(value);
+      },
+      [setRoomScheduledTime, threadRootId]
+    );
+    const setEditingScheduledDelayId = useCallback(
+      (value: string | null) => {
+        if (!threadRootId) setRoomEditingScheduledDelayId(value);
+      },
+      [setRoomEditingScheduledDelayId, threadRootId]
     );
     const [AddMenuAnchor, setAddMenuAnchor] = useState<RectCords>();
     const [showAttachmentSheet, setShowAttachmentSheet] = useState(false);
@@ -519,6 +667,45 @@ export const RoomInput = forwardRef<HTMLDivElement, RoomInputProps>(
     const [scheduleMenuAnchor, setScheduleMenuAnchor] = useState<RectCords>();
     const [showSchedulePicker, setShowSchedulePicker] = useState(false);
     const [silentReply, setSilentReply] = useState(!mentionInReplies);
+    const replyClaimRef = useRef<ReplyClaim>();
+    const replyClaimIdRef = useRef(0);
+    const claimReply = useCallback((): ReplyClaim | undefined => {
+      const currentReply = replyDraftRef.current;
+      if (!currentReply) return undefined;
+
+      const claim: ReplyClaim = {
+        id: ++replyClaimIdRef.current,
+        epoch: draftEpochRef.current,
+        revision: replyRevisionRef.current + 1,
+        snapshot: structuredClone(currentReply),
+        silentReply,
+      };
+      replyClaimRef.current = claim;
+      replyDraftRef.current = replyDraftBase;
+      previousReplyDraftRef.current = replyDraftBase;
+      replyRevisionRef.current = claim.revision;
+      setReplyDraft(replyDraftBase);
+      return claim;
+    }, [replyDraftBase, setReplyDraft, silentReply]);
+    const releaseReplyClaim = useCallback(
+      (claim: ReplyClaim | undefined, consumed: boolean) => {
+        if (!claim || replyClaimRef.current?.id !== claim.id) return;
+        replyClaimRef.current = undefined;
+        if (consumed) return;
+        if (
+          claim.epoch !== draftEpochRef.current ||
+          claim.revision !== replyRevisionRef.current ||
+          replyDraftRef.current !== replyDraftBase
+        ) {
+          return;
+        }
+        replyDraftRef.current = claim.snapshot;
+        previousReplyDraftRef.current = claim.snapshot;
+        replyRevisionRef.current += 1;
+        setReplyDraft(claim.snapshot);
+      },
+      [replyDraftBase, setReplyDraft]
+    );
     const [hour24Clock] = useSetting(settingsAtom, 'hour24Clock');
     const setServerMaxDelayMs = useSetAtom(serverMaxDelayMsAtom);
     const [sendError, setSendError] = useState<string | undefined>();
@@ -578,9 +765,13 @@ export const RoomInput = forwardRef<HTMLDivElement, RoomInputProps>(
       Transforms.insertFragment(editor, msgDraft);
     }, [editor, msgDraft]);
 
+    const editingStateRef = useRef(false);
+    const preEditDraftRef = useRef<Editor['children']>();
     useEffect(
       () => () => {
-        if (isEmptyEditor(editor)) {
+        if (editingStateRef.current) {
+          setMsgDraft(structuredClone(preEditDraftRef.current ?? []));
+        } else if (isEmptyEditor(editor)) {
           setMsgDraft([]);
         } else {
           const parsedDraft = structuredClone(editor.children);
@@ -610,9 +801,9 @@ export const RoomInput = forwardRef<HTMLDivElement, RoomInputProps>(
     );
 
     const prevEditingEventId = useRef<string>();
-    const preEditDraftRef = useRef<Editor['children']>();
     useEffect(() => {
       if (!isMobile) {
+        editingStateRef.current = false;
         prevEditingEventId.current = undefined;
         preEditDraftRef.current = undefined;
         setInitializedEditId(undefined);
@@ -626,6 +817,7 @@ export const RoomInput = forwardRef<HTMLDivElement, RoomInputProps>(
       }
 
       if (editingEvent) {
+        editingStateRef.current = true;
         if (editingEvent.getId() !== prevEditingEventId.current) {
           if (!prevEditingEventId.current) {
             preEditDraftRef.current = structuredClone(editor.children);
@@ -675,7 +867,7 @@ export const RoomInput = forwardRef<HTMLDivElement, RoomInputProps>(
           resetEditorHistory(editor);
           Transforms.insertFragment(editor, initialValue);
 
-          requestAnimationFrame(() => {
+          scheduleEditorRaf(() => {
             try {
               ReactEditor.focus(editor);
               moveCursor(editor);
@@ -686,6 +878,7 @@ export const RoomInput = forwardRef<HTMLDivElement, RoomInputProps>(
         }
         setInitializedEditId(editId);
       } else {
+        editingStateRef.current = false;
         const previousDraft = preEditDraftRef.current;
         if (prevEditingEventId.current && previousDraft) {
           resetEditor(editor);
@@ -697,7 +890,7 @@ export const RoomInput = forwardRef<HTMLDivElement, RoomInputProps>(
           prevEditingEventId.current &&
           (!replyDraft?.eventId || replyDraft.eventId === threadRootId)
         ) {
-          requestAnimationFrame(() => {
+          scheduleEditorRaf(() => {
             try {
               const domNode = ReactEditor.toDOMNode(editor, editor);
               domNode.blur();
@@ -723,6 +916,7 @@ export const RoomInput = forwardRef<HTMLDivElement, RoomInputProps>(
       isMobile,
       setInitializedEditId,
       onCancelEdit,
+      scheduleEditorRaf,
     ]);
 
     useEffect(() => {
@@ -755,7 +949,7 @@ export const RoomInput = forwardRef<HTMLDivElement, RoomInputProps>(
         prevReplyEventId.current = newId;
 
         if (newId && newId !== threadRootId) {
-          requestAnimationFrame(() => {
+          scheduleEditorRaf(() => {
             try {
               ReactEditor.focus(editor);
               moveCursor(editor);
@@ -764,7 +958,7 @@ export const RoomInput = forwardRef<HTMLDivElement, RoomInputProps>(
             }
           });
         } else if (!newId && prevId && prevId !== threadRootId && !editId) {
-          requestAnimationFrame(() => {
+          scheduleEditorRaf(() => {
             try {
               const domNode = ReactEditor.toDOMNode(editor, editor);
               domNode.blur();
@@ -775,10 +969,14 @@ export const RoomInput = forwardRef<HTMLDivElement, RoomInputProps>(
           });
         }
       }
-    }, [replyDraft?.eventId, threadRootId, editId, editor]);
+    }, [replyDraft?.eventId, threadRootId, editId, editor, scheduleEditorRaf]);
 
     const handleFileMetadata = useCallback(
       (fileItem: TUploadItem, metadata: TUploadMetadata) => {
+        uploadItemOverridesRef.current.set(fileItem.originalFile, {
+          ...uploadItemOverridesRef.current.get(fileItem.originalFile),
+          metadata,
+        });
         setSelectedFiles({
           type: 'REPLACE',
           item: fileItem,
@@ -789,6 +987,11 @@ export const RoomInput = forwardRef<HTMLDivElement, RoomInputProps>(
     );
     const setDesc = useCallback(
       (fileItem: TUploadItem, body: string, formatted_body: string) => {
+        uploadItemOverridesRef.current.set(fileItem.originalFile, {
+          ...uploadItemOverridesRef.current.get(fileItem.originalFile),
+          body,
+          formatted_body,
+        });
         setSelectedFiles({
           type: 'REPLACE',
           item: fileItem,
@@ -804,13 +1007,18 @@ export const RoomInput = forwardRef<HTMLDivElement, RoomInputProps>(
           type: 'DELETE',
           item: selectedFiles.filter((f) => uploads.find((u) => u === f.file)),
         });
-        uploads.forEach((u) => roomUploadAtomFamily.remove(u));
+        uploads.forEach((u) => {
+          removedUploadFilesRef.current.add(u);
+          roomUploadAtomFamily.remove(u);
+          uploadItemOverridesRef.current.delete(u);
+        });
       },
       [setSelectedFiles, selectedFiles]
     );
 
     const handleAudioRecordingComplete = useCallback(
       (payload: AudioRecordingCompletePayload) => {
+        recorderActionRef.current = undefined;
         const extension = getSupportedAudioExtension(payload.audioCodec);
         const file = new File(
           [payload.audioBlob],
@@ -831,7 +1039,10 @@ export const RoomInput = forwardRef<HTMLDivElement, RoomInputProps>(
     const audioRecorder = showAudioRecorder ? (
       <AudioMessageRecorder
         ref={audioRecorderRef}
-        onRequestClose={() => setShowAudioRecorder(false)}
+        onRequestClose={() => {
+          recorderActionRef.current = undefined;
+          setShowAudioRecorder(false);
+        }}
         onRecordingComplete={handleAudioRecordingComplete}
         onAudioLengthUpdate={() => {}}
         onWaveformUpdate={() => {}}
@@ -847,21 +1058,49 @@ export const RoomInput = forwardRef<HTMLDivElement, RoomInputProps>(
       handleRemoveUpload(uploads.map((upload) => upload.file));
     };
 
-    const resetInput = useCallback(() => {
-      resetEditor(editor);
-      resetEditorHistory(editor);
-      setInputKey((prev) => prev + 1);
-      imagePacksUsedRef.current.clear();
-      setReplyDraft(replyDraftBase);
-      sendTypingStatus(false);
-    }, [editor, replyDraftBase, sendTypingStatus, setReplyDraft]);
+    const getEditorSubmissionSnapshot = useCallback(
+      (): EditorSubmissionSnapshot => ({
+        children: structuredClone(editor.children),
+        epoch: draftEpochRef.current,
+      }),
+      [editor]
+    );
+    const resetInput = useCallback(
+      (snapshot?: EditorSubmissionSnapshot, replyClaim?: ReplyClaim) => {
+        if (snapshot) {
+          const editorUnchanged =
+            JSON.stringify(snapshot.children) === JSON.stringify(editor.children);
+          if (!mountedRef.current || snapshot.epoch !== draftEpochRef.current || !editorUnchanged) {
+            return;
+          }
+        }
+        resetEditor(editor);
+        resetEditorHistory(editor);
+        setInputKey((prev) => prev + 1);
+        imagePacksUsedRef.current.clear();
+        if (replyClaim) releaseReplyClaim(replyClaim, true);
+        else setReplyDraft(replyDraftBase);
+        sendTypingStatus(false);
+      },
+      [editor, releaseReplyClaim, replyDraftBase, sendTypingStatus, setReplyDraft]
+    );
 
     const handleSendContents = async (
       contents: IContent[],
       includeReply = false,
-      onContentSent?: (index: number) => void | Promise<void>
+      onContentSent?: (index: number) => void | Promise<void>,
+      submittedEditorChildren: Editor['children'] = editor.children,
+      operationContext?: ComposerOperationContext,
+      submittedReplyDraft: IReplyDraft | undefined = replyDraft,
+      submittedSilentReply = silentReply,
+      replyClaim?: ReplyClaim
     ) => {
-      const plainText = toPlainText(editor.children).trim();
+      const plainText = toPlainText(submittedEditorChildren).trim();
+      const isCurrent = () => operationContext?.isCurrent() ?? true;
+      const finalizeReply = () => {
+        if (replyClaim) releaseReplyClaim(replyClaim, true);
+        else setReplyDraft(replyDraftBase);
+      };
 
       /**
        * the currently with the room associated per-message profile, if any, so that it can be included in the message content when sending.
@@ -883,20 +1122,23 @@ export const RoomInput = forwardRef<HTMLDivElement, RoomInputProps>(
       }
 
       const replyContent =
-        replyDraft && (includeReply || plainText.length === 0)
-          ? getReplyContent(replyDraft, room)
+        submittedReplyDraft && (includeReply || plainText.length === 0)
+          ? getReplyContent(submittedReplyDraft, room)
           : undefined;
       if (replyContent && contents.length > 0) {
         contents[0]!['m.relates_to'] = replyContent;
-        if (!silentReply && replyDraft)
-          contents[0]!['m.mentions'] = { ['user_ids']: [replyDraft.userId] };
+        if (!submittedSilentReply && submittedReplyDraft)
+          contents[0]!['m.mentions'] = { ['user_ids']: [submittedReplyDraft.userId] };
       }
 
-      const invalidate = () =>
-        queryClient.invalidateQueries({ queryKey: ['delayedEvents', roomId] });
+      const invalidate = () => {
+        if (isCurrent()) queryClient.invalidateQueries({ queryKey: ['delayedEvents', roomId] });
+      };
       const handleContentSent = async (index: number) => {
-        if (onContentSent) {
-          if (index === 0 && replyContent) setReplyDraft(replyDraftBase);
+        if (onContentSent && isCurrent()) {
+          if (index === 0 && replyContent) {
+            finalizeReply();
+          }
           await onContentSent(index);
         }
       };
@@ -904,29 +1146,35 @@ export const RoomInput = forwardRef<HTMLDivElement, RoomInputProps>(
       if (scheduledTime) {
         try {
           const delayMs = computeDelayMs(scheduledTime);
-          if (editingScheduledDelayId) {
-            await cancelDelayedEvent(mx, editingScheduledDelayId);
-            setEditingScheduledDelayId(null);
-          }
+          await roomScheduleCoordinator.run(roomId, async () => {
+            if (editingScheduledDelayId) {
+              await cancelDelayedEvent(mx, editingScheduledDelayId);
+              if (isCurrent()) setEditingScheduledDelayId(null);
+            }
 
-          const sendResults = await Promise.allSettled(
-            contents.map(async (content, index) => {
-              const response = isEncrypted
-                ? await sendDelayedMessageE2EE(mx, roomId, room, content, delayMs)
-                : await sendDelayedMessage(mx, roomId, content, delayMs);
-              await handleContentSent(index);
-              return response;
-            })
-          );
-          const failedSend = sendResults.find(
-            (result): result is PromiseRejectedResult => result.status === 'rejected'
-          );
-          if (failedSend) throw failedSend.reason;
+            const sendResults = await Promise.allSettled(
+              contents.map(async (content, index) => {
+                const response = isEncrypted
+                  ? await sendDelayedMessageE2EE(mx, roomId, room, content, delayMs)
+                  : await sendDelayedMessage(mx, roomId, content, delayMs);
+                await handleContentSent(index);
+                return response;
+              })
+            );
+            const failedSend = sendResults.find(
+              (result): result is PromiseRejectedResult => result.status === 'rejected'
+            );
+            if (failedSend) throw failedSend.reason;
+          });
 
           invalidate();
-          setEditingScheduledDelayId(null);
-          setScheduledTime(null);
-          if (replyContent && !onContentSent) setReplyDraft(replyDraftBase);
+          if (isCurrent()) {
+            setEditingScheduledDelayId(null);
+            setScheduledTime(null);
+            if (replyContent && !onContentSent) {
+              finalizeReply();
+            }
+          }
           return contents.length > 0;
         } catch (error) {
           debugLog.error('message', 'Failed to schedule message', {
@@ -937,48 +1185,60 @@ export const RoomInput = forwardRef<HTMLDivElement, RoomInputProps>(
           throw error;
         }
       } else {
+        const sendImmediateContents = async () =>
+          Promise.allSettled(
+            contents.map(async (content, index) => {
+              try {
+                const res = await mx.sendMessage(
+                  roomId,
+                  threadRootId ?? null,
+                  content as RoomMessageEventContent
+                );
+                await handleContentSent(index);
+                debugLog.info('message', 'Message sent', {
+                  roomId,
+                  eventId: res.event_id,
+                  msgtype: content.msgtype,
+                });
+                return res;
+              } catch (error: unknown) {
+                debugLog.error('message', 'Failed to send message', {
+                  roomId,
+                  error: error instanceof Error ? error.message : String(error),
+                });
+                log.error('failed to send message', { roomId }, error);
+                throw error;
+              }
+            })
+          );
+        let sendResults: PromiseSettledResult<unknown>[] = [];
         if (editingScheduledDelayId) {
-          try {
-            await cancelDelayedEvent(mx, editingScheduledDelayId);
-            invalidate();
-            setEditingScheduledDelayId(null);
-          } catch {
-            debugLog.error('message', 'Failed to cancel scheduled event before immediate send', {
-              roomId,
-            });
-          }
-        }
-
-        const sendResults = await Promise.allSettled(
-          contents.map(async (content, index) => {
+          let cancellationFailed = false;
+          await roomScheduleCoordinator.run(roomId, async () => {
             try {
-              const res = await mx.sendMessage(
+              await cancelDelayedEvent(mx, editingScheduledDelayId);
+              invalidate();
+              if (isCurrent()) setEditingScheduledDelayId(null);
+            } catch {
+              cancellationFailed = true;
+              debugLog.error('message', 'Failed to cancel scheduled event before immediate send', {
                 roomId,
-                threadRootId ?? null,
-                content as RoomMessageEventContent
-              );
-              await handleContentSent(index);
-              debugLog.info('message', 'Message sent', {
-                roomId,
-                eventId: res.event_id,
-                msgtype: content.msgtype,
               });
-              return res;
-            } catch (error: unknown) {
-              debugLog.error('message', 'Failed to send message', {
-                roomId,
-                error: error instanceof Error ? error.message : String(error),
-              });
-              log.error('failed to send message', { roomId }, error);
-              throw error;
+              return;
             }
-          })
-        );
+            sendResults = await sendImmediateContents();
+          });
+          if (cancellationFailed) sendResults = await sendImmediateContents();
+        } else {
+          sendResults = await sendImmediateContents();
+        }
         const failedSend = sendResults.find(
           (result): result is PromiseRejectedResult => result.status === 'rejected'
         );
         if (failedSend) throw failedSend.reason;
-        if (replyContent && !onContentSent) setReplyDraft(replyDraftBase);
+        if (isCurrent() && replyContent && !onContentSent) {
+          finalizeReply();
+        }
         return contents.length > 0;
       }
     };
@@ -999,11 +1259,17 @@ export const RoomInput = forwardRef<HTMLDivElement, RoomInputProps>(
       return getFileMsgContent(fileItem, upload.mxc);
     };
 
-    const handleSendUpload = async (uploads: Upload[]): Promise<boolean> => {
-      const plainText = toPlainText(editor.children).trim();
+    const handleSendUpload = async (
+      uploads: Upload[],
+      editorSnapshot: EditorSubmissionSnapshot,
+      operationContext?: ComposerOperationContext,
+      replyClaim?: ReplyClaim
+    ): Promise<boolean> => {
+      const isCurrent = () => operationContext?.isCurrent() ?? true;
+      const plainText = toPlainText(editorSnapshot.children).trim();
       const caption = plainText.length > 0 ? plainText : undefined;
       let customHtml = trimCustomHtml(
-        toMatrixCustomHTML(editor.children, {
+        toMatrixCustomHTML(editorSnapshot.children, {
           stripNickname: true,
           room,
         })
@@ -1038,9 +1304,20 @@ export const RoomInput = forwardRef<HTMLDivElement, RoomInputProps>(
           content.formatted_body = formattedCaption;
         }
 
-        if (await handleSendContents([content], true)) {
-          resetInput();
-          handleCancelUpload(resolved);
+        if (
+          await handleSendContents(
+            [content],
+            true,
+            undefined,
+            editorSnapshot.children,
+            operationContext,
+            replyClaim?.snapshot,
+            replyClaim?.silentReply,
+            replyClaim
+          )
+        ) {
+          resetInput(editorSnapshot, replyClaim);
+          if (isCurrent()) handleCancelUpload(resolved);
         }
         return true;
       }
@@ -1054,20 +1331,92 @@ export const RoomInput = forwardRef<HTMLDivElement, RoomInputProps>(
 
         const galleryContent = buildGalleryContent(items, caption, formattedCaption);
 
-        if (await handleSendContents([galleryContent], true)) {
-          resetInput();
-          handleCancelUpload(resolved);
+        if (
+          await handleSendContents(
+            [galleryContent],
+            true,
+            undefined,
+            editorSnapshot.children,
+            operationContext,
+            replyClaim?.snapshot,
+            replyClaim?.silentReply,
+            replyClaim
+          )
+        ) {
+          resetInput(editorSnapshot, replyClaim);
+          if (isCurrent()) handleCancelUpload(resolved);
         }
         return true;
       }
       const contentsPromises = resolved.map(uploadToContent);
       const contents = await Promise.all(contentsPromises);
 
-      await handleSendContents(contents, false, (index) => {
-        const upload = resolved[index];
-        if (upload) handleCancelUpload([upload]);
-      });
+      await handleSendContents(
+        contents,
+        false,
+        (index) => {
+          const upload = resolved[index];
+          if (upload && isCurrent()) handleCancelUpload([upload]);
+        },
+        editorSnapshot.children,
+        operationContext,
+        replyClaim?.snapshot,
+        replyClaim?.silentReply,
+        replyClaim
+      );
       return false;
+    };
+
+    const handleUploadBoardSend = async (uploads: Upload[]) => {
+      setUploadSending(true);
+      const editorSnapshot = submitEditorSnapshotRef.current ?? getEditorSubmissionSnapshot();
+      const activeOperation = bridgingUploadFromSubmitRef.current
+        ? activeOperationRef.current
+        : undefined;
+      const replyClaim = activeOperation ? activeReplyClaimRef.current : claimReply();
+      const uploadSendPromise = activeOperation
+        ? handleSendUpload(uploads, editorSnapshot, activeOperation, replyClaim)
+        : composerControllerRef.current!.enqueue(async (operationContext) => {
+            activeOperationRef.current = operationContext;
+            try {
+              return await handleSendUpload(uploads, editorSnapshot, operationContext, replyClaim);
+            } finally {
+              if (activeOperationRef.current === operationContext) {
+                activeOperationRef.current = undefined;
+              }
+              releaseReplyClaim(replyClaim, false);
+            }
+          });
+      uploadSendPromiseRef.current = uploadSendPromise;
+      try {
+        uploadSendConsumedRef.current = (await uploadSendPromise) ?? false;
+      } finally {
+        setUploadSending(false);
+        if (uploadSendPromiseRef.current === uploadSendPromise) {
+          uploadSendPromiseRef.current = undefined;
+        }
+      }
+    };
+
+    const handleDialogSendContent = async (content: IContent): Promise<void> => {
+      const editorSnapshot = getEditorSubmissionSnapshot();
+      const replyClaim = claimReply();
+      await composerControllerRef.current!.enqueue(async (operationContext) => {
+        try {
+          await handleSendContents(
+            [content],
+            true,
+            undefined,
+            editorSnapshot.children,
+            operationContext,
+            replyClaim?.snapshot,
+            replyClaim?.silentReply,
+            replyClaim
+          );
+        } finally {
+          releaseReplyClaim(replyClaim, false);
+        }
+      });
     };
 
     const handleCloseAutocomplete = useCallback(() => {
@@ -1080,7 +1429,7 @@ export const RoomInput = forwardRef<HTMLDivElement, RoomInputProps>(
     }, [editor]);
 
     const handleQuickReact = useCallback(
-      (key: string, shortcode?: string) => {
+      (key: string, shortcode?: string, submittedChildren?: Editor['children']) => {
         if (key.length > 0) {
           const lastMessage = room
             .getLiveTimeline()
@@ -1101,507 +1450,603 @@ export const RoomInput = forwardRef<HTMLDivElement, RoomInputProps>(
           }
         }
 
-        resetEditor(editor);
-        resetEditorHistory(editor);
-        sendTypingStatus(false);
+        if (
+          !submittedChildren ||
+          JSON.stringify(submittedChildren) === JSON.stringify(editor.children)
+        ) {
+          resetEditor(editor);
+          resetEditorHistory(editor);
+          sendTypingStatus(false);
+        }
         handleCloseAutocomplete();
       },
       [editor, handleCloseAutocomplete, mx, room, sendTypingStatus]
     );
 
-    const submit = useCallback(async () => {
-      if (
-        isSendingRef.current ||
-        isEditInitializing ||
-        (isMobile && editId !== undefined && !editingEvent)
-      )
-        return;
+    const executeSubmit = useCallback(
+      async (
+        editorSnapshot: EditorSubmissionSnapshot,
+        operationContext: ComposerOperationContext,
+        replyClaim?: ReplyClaim
+      ) => {
+        if (
+          isSendingRef.current ||
+          fileIngestionCountRef.current > 0 ||
+          isEditInitializing ||
+          (isMobile && editId !== undefined && !editingEvent)
+        )
+          return;
 
-      isSendingRef.current = true;
-      setIsSending(true);
-      try {
-        if (editingEvent && isMobile) {
-          let plainText = toPlainText(editor.children).trim();
-          if (!plainText) {
-            onCancelEdit?.();
+        isSendingRef.current = true;
+        setIsSending(true);
+        activeOperationRef.current = operationContext;
+        activeReplyClaimRef.current = replyClaim;
+        submitEditorSnapshotRef.current = editorSnapshot;
+        const snapshotEditor = { children: editorSnapshot.children } as Editor;
+        const submittedReplyDraft = replyClaim?.snapshot ?? replyDraft;
+        const submittedSilentReply = replyClaim?.silentReply ?? silentReply;
+        try {
+          if (editingEvent && isMobile) {
+            let plainText = toPlainText(editorSnapshot.children).trim();
+            if (!plainText) {
+              if (operationContext.isCurrent()) onCancelEdit?.();
+              return;
+            }
+
+            let customHtml = trimCustomHtml(
+              toMatrixCustomHTML(editorSnapshot.children, {
+                forEmote: editingEvent.getContent().msgtype === MsgType.Emote,
+                room,
+              })
+            );
+            const oldContent = editingEvent.getContent();
+            const currentContent = getEditingContent(editingEvent);
+            const eventId = editingEvent.getId();
+            if (!eventId) return;
+
+            const rawPmp =
+              currentContent['com.beeper.per_message_profile'] ??
+              oldContent['com.beeper.per_message_profile'];
+
+            const mentionData = getMentions(mx, roomId, snapshotEditor);
+            const previousMentions = currentContent['m.mentions'];
+            if (
+              previousMentions &&
+              typeof previousMentions === 'object' &&
+              'user_ids' in previousMentions &&
+              Array.isArray(previousMentions.user_ids)
+            ) {
+              previousMentions.user_ids.forEach((userId) => {
+                if (typeof userId === 'string') mentionData.users.add(userId);
+              });
+            }
+            const mMentions = getMentionContent(Array.from(mentionData.users), mentionData.room);
+
+            const linkPreviews =
+              getLinks(editorSnapshot.children)?.map((matchedUrl) => ({
+                matched_url: matchedUrl,
+              })) ?? [];
+
+            const content = buildReplacementContent(
+              oldContent,
+              plainText,
+              customHtml,
+              eventId,
+              mMentions,
+              linkPreviews,
+              rawPmp
+            );
+
+            await mx.sendMessage(roomId, content as RoomMessageEventContent);
+            if (operationContext.isCurrent()) {
+              onCancelEdit?.();
+              sendTypingStatus(false);
+            }
             return;
           }
 
-          let customHtml = trimCustomHtml(
-            toMatrixCustomHTML(editor.children, {
-              forEmote: editingEvent.getContent().msgtype === MsgType.Emote,
-              room,
-            })
-          );
-          const oldContent = editingEvent.getContent();
-          const currentContent = getEditingContent(editingEvent);
-          const eventId = editingEvent.getId();
-          if (!eventId) return;
-
-          const rawPmp =
-            currentContent['com.beeper.per_message_profile'] ??
-            oldContent['com.beeper.per_message_profile'];
-
-          const mentionData = getMentions(mx, roomId, editor);
-          const previousMentions = currentContent['m.mentions'];
-          if (
-            previousMentions &&
-            typeof previousMentions === 'object' &&
-            'user_ids' in previousMentions &&
-            Array.isArray(previousMentions.user_ids)
-          ) {
-            previousMentions.user_ids.forEach((userId) => {
-              if (typeof userId === 'string') mentionData.users.add(userId);
-            });
+          if (selectedFiles.some((f) => f.encrypting)) return;
+          if (selectedFiles.length > 0) {
+            const uploadSendPromise = uploadSendPromiseRef.current;
+            if (uploadSendPromise) {
+              uploadSendConsumedRef.current = (await uploadSendPromise) ?? false;
+            } else {
+              uploadSendConsumedRef.current = false;
+              bridgingUploadFromSubmitRef.current = true;
+              try {
+                await uploadBoardHandlers.current?.handleSend();
+              } finally {
+                bridgingUploadFromSubmitRef.current = false;
+              }
+            }
+            if (uploadSendConsumedRef.current) return;
           }
-          const mMentions = getMentionContent(Array.from(mentionData.users), mentionData.room);
 
-          const linkPreviews =
-            getLinks(editor.children)?.map((matchedUrl) => ({
-              matched_url: matchedUrl,
-            })) ?? [];
-
-          const content = buildReplacementContent(
-            oldContent,
-            plainText,
-            customHtml,
-            eventId,
-            mMentions,
-            linkPreviews,
-            rawPmp
-          );
-
-          await mx.sendMessage(roomId, content as RoomMessageEventContent);
-          onCancelEdit?.();
-          sendTypingStatus(false);
-          return;
-        }
-
-        if (selectedFiles.some((f) => f.encrypting)) return;
-        if (selectedFiles.length > 0) {
-          const uploadSendPromise = uploadSendPromiseRef.current;
-          if (uploadSendPromise) {
-            uploadSendConsumedRef.current = await uploadSendPromise;
-          } else {
-            uploadSendConsumedRef.current = false;
-            await uploadBoardHandlers.current?.handleSend();
-          }
-          if (uploadSendConsumedRef.current) return;
-        }
-
-        const commandName = getBeginCommand(editor);
-        /**
-         * a map of regex patterns to replace nicknames with,
-         * used when stripNickname is true in toMatrixCustomHTML
-         * during HTML generation for the message content.
-         * This is necessary because the HTML generation needs to know
-         * which nicknames to strip in order to generate the correct formatted_body,
-         * and the plain text generation needs to replace those same nicknames with
-         * the original user IDs so that the message content remains consistent and
-         * mentions are correctly processed by the server and clients.
-         */
-        const nicknameReplacement = new Map<RegExp, string>();
-        if (replyEvent) {
+          const commandName = getBeginCommand(snapshotEditor);
           /**
-           * the id of the user being replied to,
-           * whose nickname (if any) should be stripped
-           * from the message content and replaced with their
-           * user ID for correct mention processing
+           * a map of regex patterns to replace nicknames with,
+           * used when stripNickname is true in toMatrixCustomHTML
+           * during HTML generation for the message content.
+           * This is necessary because the HTML generation needs to know
+           * which nicknames to strip in order to generate the correct formatted_body,
+           * and the plain text generation needs to replace those same nicknames with
+           * the original user IDs so that the message content remains consistent and
+           * mentions are correctly processed by the server and clients.
            */
-          const senderId = replyEvent.getSender();
-          if (senderId) {
-            const nick = nicknames[senderId];
-            if (typeof nick === 'string' && nick.length > 0) {
-              nicknameReplacement.set(
-                new RegExp(`@?${nick}`, 'g'),
-                room.getMember(senderId)?.rawDisplayName ?? senderId
-              );
-            }
-          }
-        }
-        /**
-         * any other users mentioned in the message being replied to,
-         * whose nicknames should also be stripped and replaced with user IDs
-         */
-        const mentions = getMentions(mx, roomId, editor);
-        if (mentions?.users) {
-          mentions.users.forEach((id) => {
-            const nick = nicknames[id];
-            if (typeof nick === 'string' && nick.length > 0) {
-              nicknameReplacement.set(
-                new RegExp(`@?${nick}`, 'g'),
-                room.getMember(id)?.rawDisplayName ?? id
-              );
-            }
-          });
-        }
-        /**
-         * the plain text we will send
-         */
-        let serializedChildren = editor.children;
-        if (commandName) {
-          // Strip the empty text node and command node from the beginning of the first paragraph
-          const firstPara = serializedChildren[0];
-          if (
-            firstPara &&
-            'type' in firstPara &&
-            firstPara.type === BlockType.Paragraph &&
-            firstPara.children.length >= 2
-          ) {
-            serializedChildren = [
-              {
-                ...firstPara,
-                children: firstPara.children.slice(2),
-              },
-              ...serializedChildren.slice(1),
-            ];
-          }
-        }
-        const outgoingTransformContext = {
-          isMarkdown: true,
-          settingsLinkBaseUrl,
-        };
-
-        outgoingMessageTransforms.forEach((transform) => {
-          if (!transform.shouldApply(serializedChildren, outgoingTransformContext)) return;
-          serializedChildren = transform.apply(serializedChildren, outgoingTransformContext);
-        });
-
-        let plainText = toPlainText(serializedChildren, true, true, nicknameReplacement).trim();
-
-        /**
-         * the html we will send
-         */
-        let customHtml = trimCustomHtml(
-          toMatrixCustomHTML(serializedChildren, {
-            stripNickname: true,
-            nickNameReplacement: nicknameReplacement,
-            forEmote: commandName === Command.Me || commandName === Command.RainbowMe,
-            room,
-          })
-        );
-
-        let msgType = MsgType.Text;
-
-        // quick text react
-        if (canSendReaction && plainText.startsWith('+#')) {
-          handleQuickReact(plainText.substring(2));
-          return;
-        }
-
-        // check if its a pk command
-        if (pkCompatEnable && PKitCommandMessageHandler.isPKCommand(plainText)) {
-          await pluralkitCmdMessageHandler.handleMessage(plainText);
-          resetEditor(editor); // clear the editor
-          return; // don't do anything besides handling the command
-        }
-
-        if (commandName) {
-          plainText = trimCommand(commandName, plainText);
-          customHtml = trimCommand(commandName, customHtml);
-        }
-        if (commandName === Command.Me) {
-          msgType = MsgType.Emote;
-        } else if (commandName === Command.Notice) {
-          msgType = MsgType.Notice;
-        } else if (commandName === Command.Shrug) {
-          plainText = `${SHRUG} ${plainText}`;
-          customHtml = `${SHRUG} ${customHtml}`;
-        } else if (commandName === Command.TableFlip) {
-          plainText = `${TABLEFLIP} ${plainText}`;
-          customHtml = `${TABLEFLIP} ${customHtml}`;
-        } else if (commandName === Command.UnFlip) {
-          plainText = `${UNFLIP} ${plainText}`;
-          customHtml = `${UNFLIP} ${customHtml}`;
-        } else if (commandName) {
-          if ((commandName as Command) === Command.Poll) setShowPollPicker(true);
-          else if ((commandName as Command) === Command.Location && plainText.trim().length === 0)
-            setShowLocationPicker(true);
-          else {
-            const commandContent = commands[commandName as Command];
-            if (commandContent) {
-              commandContent.exe(plainText, customHtml);
-            }
-          }
-          resetEditor(editor);
-          resetEditorHistory(editor);
-          sendTypingStatus(false);
-
-          return;
-        }
-
-        if (plainText === '') return;
-
-        // PluralKit-style proxy wrappers (per-message profile proxies) must be stripped
-        // *before* building `content`, otherwise we end up sending the wrapper verbatim.
-        let proxiedPerMessageProfile:
-          | Awaited<ReturnType<(typeof pluralkitProxyMessageHandler)['getPmpBasedOnMessage']>>
-          | undefined;
-        if (pmpProxyingEnable) {
-          proxiedPerMessageProfile =
-            await pluralkitProxyMessageHandler.getPmpBasedOnMessage(plainText);
-          if (proxiedPerMessageProfile) {
-            // normal plainText has spoilers stripped, but this breaks spoilers with a proxy tag.
-            // here we get a new 'unsanitized' plainText without spoiler stripping
-            let unsanitizedPlainText = toPlainText(
-              serializedChildren,
-              true,
-              false,
-              nicknameReplacement
-            ).trim();
-
-            const stripped =
-              pluralkitProxyMessageHandler.stripProxyFromMessage(unsanitizedPlainText);
-            if (stripped !== undefined) {
-              // Re-run the normal outgoing pipeline on the stripped content so the message
-              // goes through the same transforms/parsers as any other message.
-              serializedChildren = plainToEditorInput(stripped);
-
-              outgoingMessageTransforms.forEach((transform) => {
-                if (!transform.shouldApply(serializedChildren, outgoingTransformContext)) return;
-                serializedChildren = transform.apply(serializedChildren, outgoingTransformContext);
-              });
-
-              plainText = toPlainText(serializedChildren, true, true, nicknameReplacement).trim();
-              customHtml = trimCustomHtml(
-                toMatrixCustomHTML(serializedChildren, {
-                  stripNickname: true,
-                  nickNameReplacement: nicknameReplacement,
-                  forEmote: commandName === Command.Me || commandName === Command.RainbowMe,
-                  room,
-                })
-              );
-
-              if (pmpLatchingEnable) {
-                await setCurrentlyUsedPerMessageProfileIdForRoom(
-                  mx,
-                  roomId,
-                  proxiedPerMessageProfile.id
+          const nicknameReplacement = new Map<RegExp, string>();
+          if (replyEvent) {
+            /**
+             * the id of the user being replied to,
+             * whose nickname (if any) should be stripped
+             * from the message content and replaced with their
+             * user ID for correct mention processing
+             */
+            const senderId = replyEvent.getSender();
+            if (senderId) {
+              const nick = nicknames[senderId];
+              if (typeof nick === 'string' && nick.length > 0) {
+                nicknameReplacement.set(
+                  new RegExp(`@?${nick}`, 'g'),
+                  room.getMember(senderId)?.rawDisplayName ?? senderId
                 );
-                setLatchedPersona(proxiedPerMessageProfile);
               }
             }
           }
-        }
-
-        const body = plainText;
-        const formattedBody = customHtml;
-        const mentionData = getMentions(mx, roomId, editor);
-
-        const content: IContent & Pick<RoomMessageEventContent, 'msgtype' | 'body'> = {
-          msgtype: msgType,
-          body,
-        };
-
-        if (replyDraft && !silentReply) {
-          mentionData.users.add(replyDraft.userId);
-        }
-
-        content['m.mentions'] = getMentionContent(Array.from(mentionData.users), mentionData.room);
-        content[prefix.MATRIX_UNSTABLE_IMAGE_SOURCE_PACK_PROPERTY_NAME] =
-          imagePacksUsedRef.current.toJSON();
-
-        const links = getLinks(serializedChildren);
-        content[prefix.MATRIX_UNSTABLE_EMBEDDED_LINK_PREVIEW_PROPERTY_NAME] = [];
-        links?.forEach((link) =>
-          content[prefix.MATRIX_UNSTABLE_EMBEDDED_LINK_PREVIEW_PROPERTY_NAME].push({
-            matched_url: link,
-          })
-        );
-
-        if (replyDraft || !customHtmlEqualsPlainText(formattedBody, body)) {
-          content.format = 'org.matrix.custom.html';
-          content.formatted_body = formattedBody;
-        }
-
-        /**
-         * the currently with the room associated per-message profile, if any, so that it can be included in the message content when sending.
-         * This allows the server to apply the correct profile-based transformations (e.g. font size adjustments) when processing the message,
-         * and also allows clients to display an accurate preview of how the message will look with the profile applied while it's being composed.
-         */
-        const globalPerMessageProfile = await getCurrentlyUsedPerMessageProfileForAccount(mx);
-        const roomPerMessageProfile = await getCurrentlyUsedPerMessageProfileForRoom(mx, roomId);
-        let perMessageProfile = latchedPersona ?? roomPerMessageProfile ?? globalPerMessageProfile;
-
-        if (pmpProxyingEnable) {
-          if (proxiedPerMessageProfile) perMessageProfile = proxiedPerMessageProfile;
-        }
-        if (perMessageProfile) {
-          content[prefix.MATRIX_UNSTABLE_PER_MESSAGE_PROFILE_PROPERTY_NAME] =
-            convertPerMessageProfileToBeeperFormat(
-              perMessageProfile,
-              perMessageProfile.name.trim() !== ''
-            );
-
-          if (perMessageProfile.name.trim() !== '') {
-            // if a per-message profile is used, it must per spec include a fallback
-            const pmpPrefix = `${perMessageProfile.name}: `;
-
-            if (!content.body.startsWith(pmpPrefix)) {
-              // to prevent double-prefixing when the fallback is already present
-              content.body = pmpPrefix + content.body;
-            }
-
-            /**
-             * html escaped version of the display name
-             */
-            const escapedName = sanitizeText(perMessageProfile.name);
-
-            const htmlPrefix = `<strong data-mx-profile-fallback>${escapedName}: </strong>`;
-
-            if (content.formatted_body && !content.formatted_body.startsWith(htmlPrefix)) {
-              content.formatted_body = htmlPrefix + content.formatted_body;
-            } else {
-              // we don't have a formatted body, but we need one
-              content.format = 'org.matrix.custom.html';
-              const escapedBody = sanitizeText(plainText).replaceAll('\n', '<br/>');
-              content.formatted_body = `${htmlPrefix}${escapedBody}`;
-            }
+          /**
+           * any other users mentioned in the message being replied to,
+           * whose nicknames should also be stripped and replaced with user IDs
+           */
+          const mentions = getMentions(mx, roomId, snapshotEditor);
+          if (mentions?.users) {
+            mentions.users.forEach((id) => {
+              const nick = nicknames[id];
+              if (typeof nick === 'string' && nick.length > 0) {
+                nicknameReplacement.set(
+                  new RegExp(`@?${nick}`, 'g'),
+                  room.getMember(id)?.rawDisplayName ?? id
+                );
+              }
+            });
           }
-        }
-
-        if (replyDraft) {
-          content['m.relates_to'] = getReplyContent(replyDraft, room);
-        }
-        const invalidate = () =>
-          queryClient.invalidateQueries({ queryKey: ['delayedEvents', roomId] });
-
-        if (scheduledTime) {
-          try {
-            const delayMs = computeDelayMs(scheduledTime);
-            if (editingScheduledDelayId) {
-              await cancelDelayedEvent(mx, editingScheduledDelayId);
-            }
-            if (isEncrypted) {
-              await sendDelayedMessageE2EE(mx, roomId, room, content, delayMs);
-            } else {
-              await sendDelayedMessage(mx, roomId, content as RoomMessageEventContent, delayMs);
-            }
-            setSendError(undefined);
-            invalidate();
-            setEditingScheduledDelayId(null);
-            setScheduledTime(null);
-            resetInput();
-          } catch (e: unknown) {
+          /**
+           * the plain text we will send
+           */
+          let serializedChildren = editorSnapshot.children;
+          if (commandName) {
+            // Strip the empty text node and command node from the beginning of the first paragraph
+            const firstPara = serializedChildren[0];
             if (
-              e instanceof MatrixError &&
-              (e.errcode === ErrorCode.M_MAX_DELAY_EXCEEDED ||
-                e.data?.['org.matrix.msc4140.errcode'] === 'M_MAX_DELAY_EXCEEDED')
+              firstPara &&
+              'type' in firstPara &&
+              firstPara.type === BlockType.Paragraph &&
+              firstPara.children.length >= 2
             ) {
-              const maxDelay =
-                (e.data as { max_delay?: number })?.max_delay ??
-                e.data?.['org.matrix.msc4140.max_delay'];
-              if (typeof maxDelay === 'number') setServerMaxDelayMs(maxDelay);
-              const maxDelayDays = maxDelay / daysToMs(1);
-              setSendError(
-                `Scheduled time exceeds the maximum delay allowed by this server. Please choose an earlier time. The Maximum Delay is of ${maxDelayDays} day${maxDelayDays > 1 ? 's' : ''}.`
-              );
-            } else {
-              setSendError('Failed to schedule message. Please try again.');
+              serializedChildren = [
+                {
+                  ...firstPara,
+                  children: firstPara.children.slice(2),
+                },
+                ...serializedChildren.slice(1),
+              ];
             }
           }
-        } else if (editingScheduledDelayId) {
-          try {
-            await cancelDelayedEvent(mx, editingScheduledDelayId);
-            debugLog.info('message', 'Sending message after cancelling scheduled event', {
-              roomId,
-              scheduledDelayId: editingScheduledDelayId,
-            });
-            const res = await mx.sendMessage(
-              roomId,
-              threadRootId ?? null,
-              content as RoomMessageEventContent
-            );
-            debugLog.info('message', 'Message sent successfully', {
-              roomId,
-              eventId: res.event_id,
-            });
-            invalidate();
-            setEditingScheduledDelayId(null);
-            resetInput();
-          } catch (error) {
-            debugLog.error('message', 'Failed to send message after cancelling scheduled event', {
-              roomId,
-              error: error instanceof Error ? error.message : String(error),
-            });
-            // Cancel failed — leave state intact for retry
-          }
-        } else {
-          const msgSendStart = performance.now();
-          debugLog.info('message', 'Sending message', {
-            roomId,
-            msgtype: content.msgtype,
+          const outgoingTransformContext = {
+            isMarkdown: true,
+            settingsLinkBaseUrl,
+          };
+
+          outgoingMessageTransforms.forEach((transform) => {
+            if (!transform.shouldApply(serializedChildren, outgoingTransformContext)) return;
+            serializedChildren = transform.apply(serializedChildren, outgoingTransformContext);
           });
-          try {
-            const res = await Sentry.startSpan(
-              {
-                name: 'message.send',
-                op: 'matrix.message',
-                attributes: { encrypted: String(isEncrypted) },
-              },
-              () => mx.sendMessage(roomId, threadRootId ?? null, content as RoomMessageEventContent)
-            );
-            debugLog.info('message', 'Message sent successfully', {
-              roomId,
-              eventId: res.event_id,
-            });
-            Sentry.metrics.distribution(
-              'sable.message.send_latency_ms',
-              performance.now() - msgSendStart,
-              { attributes: { encrypted: String(isEncrypted) } }
-            );
-            resetInput();
-          } catch (error: unknown) {
-            debugLog.error('message', 'Failed to send message', {
-              roomId,
-              error: error instanceof Error ? error.message : String(error),
-            });
-            Sentry.metrics.count('sable.message.send_error', 1, {
-              attributes: { encrypted: String(isEncrypted) },
-            });
-            log.error('failed to send message', { roomId }, error);
+
+          let plainText = toPlainText(serializedChildren, true, true, nicknameReplacement).trim();
+
+          /**
+           * the html we will send
+           */
+          let customHtml = trimCustomHtml(
+            toMatrixCustomHTML(serializedChildren, {
+              stripNickname: true,
+              nickNameReplacement: nicknameReplacement,
+              forEmote: commandName === Command.Me || commandName === Command.RainbowMe,
+              room,
+            })
+          );
+
+          let msgType = MsgType.Text;
+
+          // quick text react
+          if (canSendReaction && plainText.startsWith('+#')) {
+            handleQuickReact(plainText.substring(2), undefined, editorSnapshot.children);
+            return;
           }
+
+          // check if its a pk command
+          if (pkCompatEnable && PKitCommandMessageHandler.isPKCommand(plainText)) {
+            await pluralkitCmdMessageHandler.handleMessage(plainText);
+            if (operationContext.isCurrent()) resetEditor(editor); // clear the editor
+            return; // don't do anything besides handling the command
+          }
+
+          if (commandName) {
+            plainText = trimCommand(commandName, plainText);
+            customHtml = trimCommand(commandName, customHtml);
+          }
+          if (commandName === Command.Me) {
+            msgType = MsgType.Emote;
+          } else if (commandName === Command.Notice) {
+            msgType = MsgType.Notice;
+          } else if (commandName === Command.Shrug) {
+            plainText = `${SHRUG} ${plainText}`;
+            customHtml = `${SHRUG} ${customHtml}`;
+          } else if (commandName === Command.TableFlip) {
+            plainText = `${TABLEFLIP} ${plainText}`;
+            customHtml = `${TABLEFLIP} ${customHtml}`;
+          } else if (commandName === Command.UnFlip) {
+            plainText = `${UNFLIP} ${plainText}`;
+            customHtml = `${UNFLIP} ${customHtml}`;
+          } else if (commandName) {
+            if ((commandName as Command) === Command.Poll) setShowPollPicker(true);
+            else if ((commandName as Command) === Command.Location && plainText.trim().length === 0)
+              setShowLocationPicker(true);
+            else {
+              const commandContent = commands[commandName as Command];
+              if (commandContent) {
+                commandContent.exe(plainText, customHtml);
+              }
+            }
+            if (operationContext.isCurrent()) {
+              resetEditor(editor);
+              resetEditorHistory(editor);
+              sendTypingStatus(false);
+            }
+
+            return;
+          }
+
+          if (plainText === '') return;
+
+          // PluralKit-style proxy wrappers (per-message profile proxies) must be stripped
+          // *before* building `content`, otherwise we end up sending the wrapper verbatim.
+          let proxiedPerMessageProfile:
+            | Awaited<ReturnType<(typeof pluralkitProxyMessageHandler)['getPmpBasedOnMessage']>>
+            | undefined;
+          if (pmpProxyingEnable) {
+            proxiedPerMessageProfile =
+              await pluralkitProxyMessageHandler.getPmpBasedOnMessage(plainText);
+            if (proxiedPerMessageProfile) {
+              // normal plainText has spoilers stripped, but this breaks spoilers with a proxy tag.
+              // here we get a new 'unsanitized' plainText without spoiler stripping
+              let unsanitizedPlainText = toPlainText(
+                serializedChildren,
+                true,
+                false,
+                nicknameReplacement
+              ).trim();
+
+              const stripped =
+                pluralkitProxyMessageHandler.stripProxyFromMessage(unsanitizedPlainText);
+              if (stripped !== undefined) {
+                // Re-run the normal outgoing pipeline on the stripped content so the message
+                // goes through the same transforms/parsers as any other message.
+                serializedChildren = plainToEditorInput(stripped);
+
+                outgoingMessageTransforms.forEach((transform) => {
+                  if (!transform.shouldApply(serializedChildren, outgoingTransformContext)) return;
+                  serializedChildren = transform.apply(
+                    serializedChildren,
+                    outgoingTransformContext
+                  );
+                });
+
+                plainText = toPlainText(serializedChildren, true, true, nicknameReplacement).trim();
+                customHtml = trimCustomHtml(
+                  toMatrixCustomHTML(serializedChildren, {
+                    stripNickname: true,
+                    nickNameReplacement: nicknameReplacement,
+                    forEmote: commandName === Command.Me || commandName === Command.RainbowMe,
+                    room,
+                  })
+                );
+
+                if (pmpLatchingEnable) {
+                  await setCurrentlyUsedPerMessageProfileIdForRoom(
+                    mx,
+                    roomId,
+                    proxiedPerMessageProfile.id
+                  );
+                  setLatchedPersona(proxiedPerMessageProfile);
+                }
+              }
+            }
+          }
+
+          const body = plainText;
+          const formattedBody = customHtml;
+          const mentionData = getMentions(mx, roomId, snapshotEditor);
+
+          const content: IContent & Pick<RoomMessageEventContent, 'msgtype' | 'body'> = {
+            msgtype: msgType,
+            body,
+          };
+
+          if (submittedReplyDraft && !submittedSilentReply) {
+            mentionData.users.add(submittedReplyDraft.userId);
+          }
+
+          content['m.mentions'] = getMentionContent(
+            Array.from(mentionData.users),
+            mentionData.room
+          );
+          content[prefix.MATRIX_UNSTABLE_IMAGE_SOURCE_PACK_PROPERTY_NAME] =
+            imagePacksUsedRef.current.toJSON();
+
+          const links = getLinks(serializedChildren);
+          content[prefix.MATRIX_UNSTABLE_EMBEDDED_LINK_PREVIEW_PROPERTY_NAME] = [];
+          links?.forEach((link) =>
+            content[prefix.MATRIX_UNSTABLE_EMBEDDED_LINK_PREVIEW_PROPERTY_NAME].push({
+              matched_url: link,
+            })
+          );
+
+          if (submittedReplyDraft || !customHtmlEqualsPlainText(formattedBody, body)) {
+            content.format = 'org.matrix.custom.html';
+            content.formatted_body = formattedBody;
+          }
+
+          /**
+           * the currently with the room associated per-message profile, if any, so that it can be included in the message content when sending.
+           * This allows the server to apply the correct profile-based transformations (e.g. font size adjustments) when processing the message,
+           * and also allows clients to display an accurate preview of how the message will look with the profile applied while it's being composed.
+           */
+          const globalPerMessageProfile = await getCurrentlyUsedPerMessageProfileForAccount(mx);
+          const roomPerMessageProfile = await getCurrentlyUsedPerMessageProfileForRoom(mx, roomId);
+          let perMessageProfile =
+            latchedPersona ?? roomPerMessageProfile ?? globalPerMessageProfile;
+
+          if (pmpProxyingEnable) {
+            if (proxiedPerMessageProfile) perMessageProfile = proxiedPerMessageProfile;
+          }
+          if (perMessageProfile) {
+            content[prefix.MATRIX_UNSTABLE_PER_MESSAGE_PROFILE_PROPERTY_NAME] =
+              convertPerMessageProfileToBeeperFormat(
+                perMessageProfile,
+                perMessageProfile.name.trim() !== ''
+              );
+
+            if (perMessageProfile.name.trim() !== '') {
+              // if a per-message profile is used, it must per spec include a fallback
+              const pmpPrefix = `${perMessageProfile.name}: `;
+
+              if (!content.body.startsWith(pmpPrefix)) {
+                // to prevent double-prefixing when the fallback is already present
+                content.body = pmpPrefix + content.body;
+              }
+
+              /**
+               * html escaped version of the display name
+               */
+              const escapedName = sanitizeText(perMessageProfile.name);
+
+              const htmlPrefix = `<strong data-mx-profile-fallback>${escapedName}: </strong>`;
+
+              if (content.formatted_body && !content.formatted_body.startsWith(htmlPrefix)) {
+                content.formatted_body = htmlPrefix + content.formatted_body;
+              } else {
+                // we don't have a formatted body, but we need one
+                content.format = 'org.matrix.custom.html';
+                const escapedBody = sanitizeText(plainText).replaceAll('\n', '<br/>');
+                content.formatted_body = `${htmlPrefix}${escapedBody}`;
+              }
+            }
+          }
+
+          if (submittedReplyDraft) {
+            content['m.relates_to'] = getReplyContent(submittedReplyDraft, room);
+          }
+          const invalidate = () => {
+            if (operationContext.isCurrent()) {
+              queryClient.invalidateQueries({ queryKey: ['delayedEvents', roomId] });
+            }
+          };
+
+          if (scheduledTime) {
+            try {
+              const delayMs = computeDelayMs(scheduledTime);
+              await roomScheduleCoordinator.run(roomId, async () => {
+                if (editingScheduledDelayId) {
+                  await cancelDelayedEvent(mx, editingScheduledDelayId);
+                  if (operationContext.isCurrent()) setEditingScheduledDelayId(null);
+                }
+                if (isEncrypted) {
+                  await sendDelayedMessageE2EE(mx, roomId, room, content, delayMs);
+                } else {
+                  await sendDelayedMessage(mx, roomId, content as RoomMessageEventContent, delayMs);
+                }
+                if (submittedReplyDraft) releaseReplyClaim(replyClaim, true);
+              });
+              if (operationContext.isCurrent()) setSendError(undefined);
+              invalidate();
+              if (operationContext.isCurrent()) {
+                setEditingScheduledDelayId(null);
+                setScheduledTime(null);
+              }
+              resetInput(editorSnapshot, replyClaim);
+            } catch (e: unknown) {
+              if (
+                e instanceof MatrixError &&
+                (e.errcode === ErrorCode.M_MAX_DELAY_EXCEEDED ||
+                  e.data?.['org.matrix.msc4140.errcode'] === 'M_MAX_DELAY_EXCEEDED')
+              ) {
+                const maxDelay =
+                  (e.data as { max_delay?: number })?.max_delay ??
+                  e.data?.['org.matrix.msc4140.max_delay'];
+                if (operationContext.isCurrent() && typeof maxDelay === 'number') {
+                  setServerMaxDelayMs(maxDelay);
+                }
+                const maxDelayDays = maxDelay / daysToMs(1);
+                if (operationContext.isCurrent()) {
+                  setSendError(
+                    `Scheduled time exceeds the maximum delay allowed by this server. Please choose an earlier time. The Maximum Delay is of ${maxDelayDays} day${maxDelayDays > 1 ? 's' : ''}.`
+                  );
+                }
+              } else {
+                if (operationContext.isCurrent()) {
+                  setSendError('Failed to schedule message. Please try again.');
+                }
+              }
+            }
+          } else if (editingScheduledDelayId) {
+            try {
+              const scheduledDelayId = editingScheduledDelayId;
+              await roomScheduleCoordinator.run(roomId, async () => {
+                await cancelDelayedEvent(mx, scheduledDelayId);
+                if (operationContext.isCurrent()) setEditingScheduledDelayId(null);
+                debugLog.info('message', 'Sending message after cancelling scheduled event', {
+                  roomId,
+                  scheduledDelayId,
+                });
+                const res = await mx.sendMessage(
+                  roomId,
+                  threadRootId ?? null,
+                  content as RoomMessageEventContent
+                );
+                debugLog.info('message', 'Message sent successfully', {
+                  roomId,
+                  eventId: res.event_id,
+                });
+                if (submittedReplyDraft) releaseReplyClaim(replyClaim, true);
+              });
+              invalidate();
+              resetInput(editorSnapshot, replyClaim);
+            } catch (error) {
+              debugLog.error('message', 'Failed to send message after cancelling scheduled event', {
+                roomId,
+                error: error instanceof Error ? error.message : String(error),
+              });
+              // Cancel failed — leave state intact for retry
+            }
+          } else {
+            const msgSendStart = performance.now();
+            debugLog.info('message', 'Sending message', {
+              roomId,
+              msgtype: content.msgtype,
+            });
+            try {
+              const res = await Sentry.startSpan(
+                {
+                  name: 'message.send',
+                  op: 'matrix.message',
+                  attributes: { encrypted: String(isEncrypted) },
+                },
+                () =>
+                  mx.sendMessage(roomId, threadRootId ?? null, content as RoomMessageEventContent)
+              );
+              debugLog.info('message', 'Message sent successfully', {
+                roomId,
+                eventId: res.event_id,
+              });
+              Sentry.metrics.distribution(
+                'sable.message.send_latency_ms',
+                performance.now() - msgSendStart,
+                { attributes: { encrypted: String(isEncrypted) } }
+              );
+              if (submittedReplyDraft) releaseReplyClaim(replyClaim, true);
+              resetInput(editorSnapshot, replyClaim);
+            } catch (error: unknown) {
+              debugLog.error('message', 'Failed to send message', {
+                roomId,
+                error: error instanceof Error ? error.message : String(error),
+              });
+              Sentry.metrics.count('sable.message.send_error', 1, {
+                attributes: { encrypted: String(isEncrypted) },
+              });
+              log.error('failed to send message', { roomId }, error);
+            }
+          }
+        } finally {
+          if (submitEditorSnapshotRef.current === editorSnapshot) {
+            submitEditorSnapshotRef.current = undefined;
+          }
+          if (activeOperationRef.current === operationContext) {
+            activeOperationRef.current = undefined;
+          }
+          if (activeReplyClaimRef.current === replyClaim) {
+            activeReplyClaimRef.current = undefined;
+          }
+          isSendingRef.current = false;
+          if (operationContext.isCurrent()) setIsSending(false);
         }
-      } finally {
-        isSendingRef.current = false;
-        setIsSending(false);
-      }
+      },
+      [
+        editor,
+        replyEvent,
+        mx,
+        roomId,
+        canSendReaction,
+        pkCompatEnable,
+        replyDraft,
+        silentReply,
+        pmpProxyingEnable,
+        pmpLatchingEnable,
+        pluralkitProxyMessageHandler,
+        scheduledTime,
+        editingScheduledDelayId,
+        nicknames,
+        room,
+        handleQuickReact,
+        pluralkitCmdMessageHandler,
+        commands,
+        sendTypingStatus,
+        queryClient,
+        threadRootId,
+        settingsLinkBaseUrl,
+        isEncrypted,
+        setEditingScheduledDelayId,
+        setScheduledTime,
+        setServerMaxDelayMs,
+        selectedFiles,
+        editingEvent,
+        getEditingContent,
+        onCancelEdit,
+        resetInput,
+        releaseReplyClaim,
+        isMobile,
+        editId,
+        isEditInitializing,
+        latchedPersona,
+      ]
+    );
+
+    const submit = useCallback(() => {
+      if (isSendingRef.current || submitQueuedRef.current) return Promise.resolve(undefined);
+
+      submitQueuedRef.current = true;
+      const editorSnapshot = getEditorSubmissionSnapshot();
+      const replyClaim = editingEvent && isMobile ? undefined : claimReply();
+      const operation = composerControllerRef.current!.enqueue((operationContext) => {
+        submitQueuedRef.current = false;
+        return executeSubmit(editorSnapshot, operationContext, replyClaim).finally(() => {
+          releaseReplyClaim(replyClaim, false);
+        });
+      });
+      operation.then(
+        () => {
+          submitQueuedRef.current = false;
+        },
+        () => {
+          submitQueuedRef.current = false;
+        }
+      );
+      return operation;
     }, [
-      editor,
-      replyEvent,
-      mx,
-      roomId,
-      canSendReaction,
-      pkCompatEnable,
-      replyDraft,
-      silentReply,
-      pmpProxyingEnable,
-      pmpLatchingEnable,
-      pluralkitProxyMessageHandler,
-      scheduledTime,
-      editingScheduledDelayId,
-      nicknames,
-      room,
-      handleQuickReact,
-      pluralkitCmdMessageHandler,
-      commands,
-      sendTypingStatus,
-      queryClient,
-      threadRootId,
-      settingsLinkBaseUrl,
-      isEncrypted,
-      setEditingScheduledDelayId,
-      setScheduledTime,
-      setServerMaxDelayMs,
-      selectedFiles,
+      claimReply,
       editingEvent,
-      getEditingContent,
-      onCancelEdit,
-      resetInput,
+      executeSubmit,
+      getEditorSubmissionSnapshot,
       isMobile,
-      editId,
-      isEditInitializing,
-      latchedPersona,
+      releaseReplyClaim,
     ]);
 
     const handleKeyDown: KeyboardEventHandler = useCallback(
@@ -1758,7 +2203,16 @@ export const RoomInput = forwardRef<HTMLDivElement, RoomInputProps>(
       handleCloseAutocomplete();
     };
 
-    const handleStickerSelect = async (mxc: string, shortcode: string, label: string) => {
+    const executeStickerSelect = async (
+      mxc: string,
+      shortcode: string,
+      label: string,
+      _editorSnapshot: EditorSubmissionSnapshot,
+      replySnapshot: IReplyDraft | undefined,
+      silentReplySnapshot: boolean,
+      operationContext: ComposerOperationContext,
+      replyClaim?: ReplyClaim
+    ) => {
       // Packs declare their own info, so sending does not need the file. Measuring it instead made
       // the send fail outright whenever the media fetch did.
       let info = getPackImageInfo(mx, room, ImageUsage.Sticker, mxc);
@@ -1801,27 +2255,71 @@ export const RoomInput = forwardRef<HTMLDivElement, RoomInputProps>(
       content[prefix.MATRIX_UNSTABLE_IMAGE_SOURCE_PACK_PROPERTY_NAME] =
         getImagePackReferencesForMxcWrappedInMap(mxc, mx, ImageUsage.Sticker, room);
 
-      if (replyDraft) {
-        content['m.relates_to'] = getReplyContent(replyDraft, room);
-        if (!silentReply && replyDraft)
-          content['m.mentions'] = { ['user_ids']: [replyDraft.userId] };
+      if (replySnapshot) {
+        content['m.relates_to'] = getReplyContent(replySnapshot, room);
+        if (!silentReplySnapshot) content['m.mentions'] = { ['user_ids']: [replySnapshot.userId] };
       }
       try {
         await mx.sendEvent(roomId, EventType.Sticker, content);
-        if (replyDraft) setReplyDraft(replyDraftBase);
+        if (operationContext.isCurrent() && replySnapshot) {
+          if (replyClaim) releaseReplyClaim(replyClaim, true);
+          else setReplyDraft(replyDraftBase);
+        }
       } catch (error) {
         log.error('failed to send sticker', { roomId }, error);
       }
     };
 
-    const handleGifSelect = async (gif: GifData, spoiler?: boolean) => {
-      const url = getSendableKlipyMxcUrl(gif.url, clientConfig.gifs?.proxyUrl);
-      if (!url) return;
+    const handleStickerSelect = (mxc: string, shortcode: string, label: string) => {
+      const editorSnapshot = getEditorSubmissionSnapshot();
+      const replyClaim = claimReply();
+      const replySnapshot = replyClaim?.snapshot;
+      const silentReplySnapshot = replyClaim?.silentReply ?? silentReply;
+      return composerControllerRef.current!.enqueue(async (operationContext) => {
+        try {
+          return await executeStickerSelect(
+            mxc,
+            shortcode,
+            label,
+            editorSnapshot,
+            replySnapshot,
+            silentReplySnapshot,
+            operationContext,
+            replyClaim
+          );
+        } finally {
+          releaseReplyClaim(replyClaim, false);
+        }
+      });
+    };
 
-      const content = await getGifMsgContent(mx, gif, url, spoiler);
-      if (!content) return;
+    const handleGifSelect = (gif: GifData, spoiler?: boolean) => {
+      const editorSnapshot = getEditorSubmissionSnapshot();
+      const replyClaim = claimReply();
+      const replySnapshot = replyClaim?.snapshot;
+      const silentReplySnapshot = replyClaim?.silentReply ?? silentReply;
+      return composerControllerRef.current!.enqueue(async (operationContext) => {
+        try {
+          const url = getSendableKlipyMxcUrl(gif.url, clientConfig.gifs?.proxyUrl);
+          if (!url) return false;
 
-      await handleSendContents([content]);
+          const content = await getGifMsgContent(mx, gif, url, spoiler);
+          if (!content) return false;
+
+          return handleSendContents(
+            [content],
+            false,
+            undefined,
+            editorSnapshot.children,
+            operationContext,
+            replySnapshot,
+            silentReplySnapshot,
+            replyClaim
+          );
+        } finally {
+          releaseReplyClaim(replyClaim, false);
+        }
+      });
     };
 
     if (isEditInitializing) return <div ref={ref} />;
@@ -1929,19 +2427,7 @@ export const RoomInput = forwardRef<HTMLDivElement, RoomInputProps>(
                       open={uploadBoard}
                       onToggle={() => setUploadBoard(!uploadBoard)}
                       uploadFamilyObserverAtom={uploadFamilyObserverAtom}
-                      onSend={async (uploads) => {
-                        setUploadSending(true);
-                        const uploadSendPromise = handleSendUpload(uploads);
-                        uploadSendPromiseRef.current = uploadSendPromise;
-                        try {
-                          uploadSendConsumedRef.current = await uploadSendPromise;
-                        } finally {
-                          setUploadSending(false);
-                          if (uploadSendPromiseRef.current === uploadSendPromise) {
-                            uploadSendPromiseRef.current = undefined;
-                          }
-                        }
-                      }}
+                      onSend={handleUploadBoardSend}
                       onBusyChange={setUploadBusy}
                       imperativeHandlerRef={uploadBoardHandlers}
                       onCancel={handleCancelUpload}
@@ -2438,7 +2924,7 @@ export const RoomInput = forwardRef<HTMLDivElement, RoomInputProps>(
                 aria-pressed={!hasContent && editorMicButton ? showAudioRecorder : undefined}
                 onClick={() => {
                   if (showAudioRecorder) {
-                    audioRecorderRef.current?.stop();
+                    requestRecorderStop();
                     return;
                   }
                   if (hasContent) {
@@ -2451,6 +2937,7 @@ export const RoomInput = forwardRef<HTMLDivElement, RoomInputProps>(
                   }
                   if (!editorMicButton) return;
                   if (isMobileOrTablet()) return;
+                  recorderActionRef.current = undefined;
                   setShowAudioRecorder(true);
                 }}
                 onMouseDown={(e: MouseEvent) => {
@@ -2460,7 +2947,7 @@ export const RoomInput = forwardRef<HTMLDivElement, RoomInputProps>(
                   if (showAudioRecorder) return;
                   if (hasContent) {
                     isLongPress.current = false;
-                    if (isMobileOrTablet() && delayedEventsSupported) {
+                    if (isMobileOrTablet() && delayedEventsSupported && !threadRootId) {
                       longPressTimer.current = setTimeout(() => {
                         isLongPress.current = true;
                         setShowSchedulePicker(true);
@@ -2470,22 +2957,27 @@ export const RoomInput = forwardRef<HTMLDivElement, RoomInputProps>(
                   }
                   if (!editorMicButton) return;
                   if (!isMobileOrTablet()) return;
+                  recorderActionRef.current = undefined;
                   micHoldStartRef.current = Date.now();
                   setShowAudioRecorder(true);
 
                   function discardRecording() {
+                    if (recorderActionRef.current) return;
+                    recorderActionRef.current = 'cancel';
                     releaseListeners();
-                    setTimeout(() => {
+                    scheduleRecorderTimer(() => {
                       audioRecorderRef.current?.cancel();
-                    }, 50);
+                    });
                   }
                   function onUp() {
+                    if (recorderActionRef.current) return;
                     const held = Date.now() - micHoldStartRef.current;
                     if (held >= HOLD_THRESHOLD_MS) {
+                      recorderActionRef.current = 'stop';
                       releaseListeners();
-                      setTimeout(() => {
+                      scheduleRecorderTimer(() => {
                         audioRecorderRef.current?.stop();
-                      }, 50);
+                      });
                     } else {
                       discardRecording();
                     }
@@ -2512,7 +3004,11 @@ export const RoomInput = forwardRef<HTMLDivElement, RoomInputProps>(
                   }
                 }}
                 disabled={sendBusy && !showAudioRecorder}
-                className={hasContent && delayedEventsSupported ? css.SplitSendButton : undefined}
+                className={
+                  hasContent && delayedEventsSupported && !threadRootId
+                    ? css.SplitSendButton
+                    : undefined
+                }
               >
                 {showAudioRecorder ? (
                   <Stop
@@ -2575,7 +3071,7 @@ export const RoomInput = forwardRef<HTMLDivElement, RoomInputProps>(
                   </FocusTrap>
                 }
               />
-              {delayedEventsSupported && !isMobileOrTablet() && (
+              {delayedEventsSupported && !isMobileOrTablet() && !threadRootId && (
                 <IconButton
                   onClick={(evt: MouseEvent<HTMLButtonElement>) => {
                     setScheduleMenuAnchor(evt.currentTarget.getBoundingClientRect());
@@ -2595,7 +3091,7 @@ export const RoomInput = forwardRef<HTMLDivElement, RoomInputProps>(
           }
           bottom={<MarkdownFormattingToolbarBottom />}
         />
-        {showSchedulePicker && (
+        {showSchedulePicker && !threadRootId && (
           <SchedulePickerDialog
             initialTime={scheduledTime?.getTime()}
             showEncryptionWarning={isEncrypted}
@@ -2610,20 +3106,15 @@ export const RoomInput = forwardRef<HTMLDivElement, RoomInputProps>(
         {showPollPicker && (
           <PollDialog
             onCancel={() => setShowPollPicker(false)}
-            mx={mx}
-            room={room}
-            replyDraft={replyDraft}
-            clearReplyDraft={() => setReplyDraft(replyDraftBase)}
+            onSubmit={handleDialogSendContent}
           />
         )}
         {showLocationPicker && (
           <Suspense fallback={null}>
             <LocationDialog
               onCancel={() => setShowLocationPicker(false)}
-              mx={mx}
               room={room}
-              replyDraft={replyDraft}
-              clearReplyDraft={() => setReplyDraft(replyDraftBase)}
+              onSubmit={handleDialogSendContent}
             />
           </Suspense>
         )}

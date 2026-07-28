@@ -1,30 +1,45 @@
 /* oxlint-disable typescript/no-explicit-any, typescript/no-extraneous-class, unicorn/consistent-function-scoping, vitest/require-mock-type-parameters */
 
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { forwardRef, useEffect, useImperativeHandle, useMemo, type ReactNode } from 'react';
-import { useAtom } from 'jotai';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useState,
+  type ReactNode,
+} from 'react';
+import { useAtom, useAtomValue } from 'jotai';
 import { createEditor, Transforms } from 'slate';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { RoomInput } from './RoomInput';
 import {
   roomIdToMsgDraftAtomFamily,
+  roomIdToReplyDraftAtomFamily,
   roomIdToUploadItemsAtomFamily,
 } from '$state/room/roomInputDrafts';
 import {
   roomIdToEditingScheduledDelayIdAtomFamily,
   roomIdToScheduledTimeAtomFamily,
 } from '$state/scheduledMessages';
+import { roomScheduleCoordinator } from '$state/room/roomScheduleCoordinator';
 
 const testState = vi.hoisted(() => ({
   isMobile: false,
   matrix: {
     sendMessage: vi.fn(),
+    sendEvent: vi.fn(),
     getUserId: vi.fn(() => '@me:example.org'),
     getSafeUserId: vi.fn(() => '@me:example.org'),
   },
   cancelDelayedEvent: vi.fn(),
   sendDelayedMessage: vi.fn(),
   pendingUploads: [] as unknown[],
+  sendIndividualAttachmentAsCaption: false,
+  encrypted: false,
+  handleFiles: undefined as ((files: File[]) => Promise<void>) | undefined,
+  safeUploadFile: vi.fn(),
+  encryptFile: vi.fn(),
   editingEvent: undefined as
     | { getId: () => string; getContent: () => Record<string, unknown> }
     | undefined,
@@ -56,7 +71,7 @@ vi.mock('$state/hooks/settings', () => ({
       pmpPicker: false,
       hour24Clock: false,
       enableMediaGalleries: false,
-      sendIndividualAttachmentAsCaption: false,
+      sendIndividualAttachmentAsCaption: testState.sendIndividualAttachmentAsCaption,
     };
     return [values[key], vi.fn()];
   },
@@ -76,10 +91,16 @@ vi.mock('$state/room/roomInputDrafts', async () => {
     }
     if (update?.type === 'PUT') set(uploadItemsAtom, [...get(uploadItemsAtom), ...update.item]);
     if (update?.type === 'DELETE') {
-      const deleted = new Set(update.item);
+      const deleted = new Set(Array.isArray(update.item) ? update.item : [update.item]);
       set(
         uploadItemsAtom,
         get(uploadItemsAtom).filter((item: any) => !deleted.has(item))
+      );
+    }
+    if (update?.type === 'REPLACE') {
+      set(
+        uploadItemsAtom,
+        get(uploadItemsAtom).map((item: any) => (item === update.item ? update.replacement : item))
       );
     }
   });
@@ -204,9 +225,33 @@ vi.mock('$components/upload-board', async () => {
   };
 });
 
-vi.mock('$components/upload-card', () => ({ UploadCardRenderer: () => null }));
+vi.mock('$components/upload-card', () => ({
+  UploadCardRenderer: ({ fileItem, setMetadata, setDesc }: any) => (
+    <>
+      <button
+        type="button"
+        onClick={() => setMetadata(fileItem, { ...fileItem.metadata, markedAsSpoiler: true })}
+      >
+        Update attachment metadata
+      </button>
+      <button
+        type="button"
+        onClick={() => setDesc(fileItem, 'updated description', 'updated description')}
+      >
+        Update attachment description
+      </button>
+    </>
+  ),
+}));
 vi.mock('$components/attachment-sheet/AttachmentSheet', () => ({ AttachmentSheet: () => null }));
-vi.mock('$components/emoji-board', () => ({ EmojiBoard: () => null, EmojiBoardTab: {} }));
+vi.mock('$components/emoji-board', () => ({
+  EmojiBoard: ({ onStickerSelect }: any) => (
+    <button type="button" onClick={() => onStickerSelect('mxc://sticker', 'sticker', 'sticker')}>
+      Select sticker
+    </button>
+  ),
+  EmojiBoardTab: {},
+}));
 vi.mock('$components/UseStateProvider', () => ({
   UseStateProvider: ({ children }: any) => (typeof children === 'function' ? children() : children),
 }));
@@ -215,7 +260,36 @@ vi.mock('./CommandAutocomplete', () => ({ CommandAutocomplete: () => null }));
 vi.mock('./AudioMessageRecorder', () => ({ AudioMessageRecorder: () => null }));
 vi.mock('./persona-picker/PersonaPicker', () => ({ PersonaPicker: () => null }));
 vi.mock('./schedule-send', () => ({ SchedulePickerDialog: () => null }));
-vi.mock('./poll-modals', () => ({ PollDialog: () => null }));
+vi.mock('./poll-modals', () => ({
+  PollDialog: ({ onSubmit }: any) => (
+    <button
+      type="button"
+      onClick={() => void onSubmit({ msgtype: 'm.poll.start', body: 'poll' }).catch(() => {})}
+    >
+      Submit poll
+    </button>
+  ),
+}));
+vi.mock('./location-modal', () => ({
+  LocationDialog: ({ onSubmit, onCancel }: any) => {
+    const [failed, setFailed] = useState(false);
+    return (
+      <>
+        {failed && <div data-testid="location-submit-failed">location submit failed</div>}
+        <button
+          type="button"
+          onClick={() =>
+            void onSubmit({ msgtype: 'm.location', body: 'location' }).then(onCancel, () =>
+              setFailed(true)
+            )
+          }
+        >
+          Submit location
+        </button>
+      </>
+    );
+  },
+}));
 vi.mock('$components/icons/phosphor', () => {
   const Icon = forwardRef<HTMLButtonElement, { children?: ReactNode }>(({ children }, ref) => (
     <button ref={ref}>{children}</button>
@@ -263,7 +337,12 @@ vi.mock('folds', () => {
     Overlay: passthrough,
     OverlayBackdrop: () => null,
     OverlayCenter: passthrough,
-    PopOut: ({ children }: any) => <>{children}</>,
+    PopOut: ({ children, content }: any) => (
+      <>
+        {children}
+        {content}
+      </>
+    ),
     Scroll: passthrough,
     Spinner: () => <span>Sending</span>,
     Text: ({ children }: any) => <span>{children}</span>,
@@ -274,7 +353,12 @@ vi.mock('folds', () => {
 });
 
 vi.mock('$hooks/useTypingStatusUpdater', () => ({ useTypingStatusUpdater: () => vi.fn() }));
-vi.mock('$hooks/useFilePicker', () => ({ useFilePicker: () => vi.fn() }));
+vi.mock('$hooks/useFilePicker', () => ({
+  useFilePicker: (handleFiles: (files: File[]) => Promise<void>) => {
+    testState.handleFiles = handleFiles;
+    return vi.fn();
+  },
+}));
 vi.mock('$hooks/useFilePasteHandler', () => ({ useFilePasteHandler: () => vi.fn() }));
 vi.mock('$hooks/useFileDrop', () => ({ useFileDropZone: () => false }));
 vi.mock('$hooks/useCommands', () => ({
@@ -324,7 +408,7 @@ vi.mock('$state/scheduledMessages', async () => {
 });
 vi.mock('$utils/matrix', () => ({
   cancelUploadContent: vi.fn(),
-  encryptFile: vi.fn(),
+  encryptFile: testState.encryptFile,
   getImageInfo: vi.fn(),
   mxcUrlToHttp: vi.fn(),
   toggleReaction: vi.fn(),
@@ -333,9 +417,14 @@ vi.mock('$utils/mimeTypes', () => ({
   FALLBACK_MIMETYPE: 'application/octet-stream',
   TGS_MIMETYPE: 'application/x-tgsticker',
   isImageMimeType: () => false,
-  safeUploadFile: async (file: File) => file,
+  safeUploadFile: testState.safeUploadFile,
 }));
 vi.mock('$utils/dom', () => ({ loadImageElementFromMediaUrl: vi.fn() }));
+vi.mock('$plugins/custom-emoji/utils', () => ({ getPackImageInfo: () => undefined }));
+vi.mock('$utils/msc4459helper', () => ({
+  getImagePackReferencesForMxc: () => undefined,
+  getImagePackReferencesForMxcWrappedInMap: () => ({}),
+}));
 vi.mock('$utils/common', () => ({
   fulfilledPromiseSettledResult: (results: any[]) =>
     results.filter((result) => result.status === 'fulfilled').map((result) => result.value),
@@ -385,7 +474,7 @@ vi.mock('$sentry/react', () => ({
 const room = {
   roomId: '!room:example.org',
   name: 'Test room',
-  hasEncryptionStateEvent: () => false,
+  hasEncryptionStateEvent: () => testState.encrypted,
   findEventById: (eventId: string) =>
     eventId === testState.editingEvent?.getId() ? testState.editingEvent : undefined,
   getTimelineForEvent: () => undefined,
@@ -397,10 +486,16 @@ function RoomInputHarness({
   editId,
   onCancelEdit,
   scheduled = false,
+  initialDraft,
+  initialReply = false,
+  threadRootId,
 }: {
   editId?: string;
   onCancelEdit?: () => void;
   scheduled?: boolean;
+  initialDraft?: string;
+  initialReply?: boolean;
+  threadRootId?: string;
 }) {
   const editor = useMemo(() => {
     const nextEditor = createEditor();
@@ -410,26 +505,55 @@ function RoomInputHarness({
   const fileDropContainerRef = useMemo(() => ({ current: null }), []);
   const [, setMsgDraft] = useAtom(roomIdToMsgDraftAtomFamily(room.roomId));
   const [, setSelectedFiles] = useAtom(roomIdToUploadItemsAtomFamily(room.roomId));
+  const [, setReplyDraft] = useAtom(roomIdToReplyDraftAtomFamily(room.roomId));
   const [, setScheduledTime] = useAtom(roomIdToScheduledTimeAtomFamily(room.roomId));
   const [, setEditingScheduledDelayId] = useAtom(
     roomIdToEditingScheduledDelayIdAtomFamily(room.roomId)
   );
   useEffect(() => {
-    (setMsgDraft as any)([]);
+    (setMsgDraft as any)(
+      initialDraft ? [{ type: 'paragraph', children: [{ text: initialDraft }] }] : []
+    );
     (setSelectedFiles as any)([]);
+    setReplyDraft(
+      initialReply ? { userId: '@other:example.org', eventId: '$reply', body: 'reply' } : undefined
+    );
     setScheduledTime(null);
     setEditingScheduledDelayId(null);
-  }, [setEditingScheduledDelayId, setMsgDraft, setScheduledTime, setSelectedFiles]);
-  const setText = () => {
+  }, [
+    initialDraft,
+    initialReply,
+    setEditingScheduledDelayId,
+    setMsgDraft,
+    setReplyDraft,
+    setScheduledTime,
+    setSelectedFiles,
+  ]);
+  const setText = (text = 'retry me') => {
     editor.children = [{ type: 'paragraph' as any, children: [{ text: '' }] }];
     Transforms.select(editor, { path: [0, 0], offset: 0 });
-    Transforms.insertText(editor, 'retry me');
+    Transforms.insertText(editor, text);
     fireEvent.input(screen.getByTestId('room-input-editor'));
   };
   return (
     <>
-      <button type="button" onClick={setText}>
+      <button type="button" onClick={() => setText()}>
         Compose text
+      </button>
+      <button type="button" onClick={() => setText('updated while sending')}>
+        Compose updated text
+      </button>
+      <button
+        type="button"
+        onClick={() =>
+          setReplyDraft({
+            userId: '@new:example.org',
+            eventId: '$new-reply',
+            body: 'newer reply',
+          })
+        }
+      >
+        Select newer reply
       </button>
       <button
         type="button"
@@ -495,10 +619,46 @@ function RoomInputHarness({
         fileDropContainerRef={fileDropContainerRef}
         roomId={room.roomId}
         room={room}
+        threadRootId={threadRootId}
         editId={editId}
         onCancelEdit={onCancelEdit}
       />
     </>
+  );
+}
+
+function DraftObserver() {
+  const draft = useAtomValue(roomIdToMsgDraftAtomFamily(room.roomId));
+  return (
+    <div data-testid="draft-observer">{((draft[0] as any)?.children?.[0] as any)?.text ?? ''}</div>
+  );
+}
+
+function DraftSetter({ text }: { text: string }) {
+  const [, setDraft] = useAtom(roomIdToMsgDraftAtomFamily(room.roomId));
+  useEffect(() => {
+    setDraft([{ type: 'paragraph' as any, children: [{ text }] }]);
+  }, [setDraft, text]);
+  return null;
+}
+
+function ReplyObserver() {
+  const reply = useAtomValue(roomIdToReplyDraftAtomFamily(room.roomId));
+  return <div data-testid="reply-observer">{reply?.eventId ?? ''}</div>;
+}
+
+function UploadObserver() {
+  const uploads = useAtomValue(roomIdToUploadItemsAtomFamily(room.roomId));
+  return (
+    <div data-testid="upload-observer">
+      {JSON.stringify(
+        uploads.map((upload) => ({
+          encrypting: upload.encrypting,
+          metadata: upload.metadata,
+          body: upload.body,
+        }))
+      )}
+    </div>
   );
 }
 
@@ -515,8 +675,14 @@ function deferred<T>() {
 beforeEach(() => {
   testState.isMobile = false;
   testState.pendingUploads = [];
+  testState.sendIndividualAttachmentAsCaption = false;
+  testState.encrypted = false;
+  testState.handleFiles = undefined;
+  testState.safeUploadFile.mockReset().mockImplementation(async (file: File) => file);
+  testState.encryptFile.mockReset();
   testState.editingEvent = undefined;
   testState.matrix.sendMessage.mockReset().mockResolvedValue({ event_id: '$event' });
+  testState.matrix.sendEvent.mockReset().mockResolvedValue({});
   testState.cancelDelayedEvent.mockReset();
   testState.sendDelayedMessage.mockReset();
 });
@@ -612,6 +778,62 @@ describe('RoomInput submit regressions', () => {
     expect(testState.cancelDelayedEvent).toHaveBeenCalledOnce();
   });
 
+  it('routes delayed replacement sends through the room schedule coordinator', async () => {
+    const runSpy = vi.spyOn(roomScheduleCoordinator, 'run');
+    try {
+      render(<RoomInputHarness scheduled />);
+      fireEvent.click(screen.getByRole('button', { name: 'Prepare two attachments' }));
+      fireEvent.keyDown(screen.getByTestId('room-input-editor'), { key: 'Enter', code: 'Enter' });
+
+      await waitFor(() => expect(testState.sendDelayedMessage).toHaveBeenCalledTimes(2));
+      expect(runSpy).toHaveBeenCalledWith(room.roomId, expect.any(Function));
+    } finally {
+      runSpy.mockRestore();
+    }
+  });
+
+  it('does not consume main-room scheduling state from a thread composer', async () => {
+    render(<RoomInputHarness scheduled threadRootId="$thread" />);
+    fireEvent.click(screen.getByRole('button', { name: 'Prepare two attachments' }));
+    fireEvent.keyDown(screen.getByTestId('room-input-editor'), { key: 'Enter', code: 'Enter' });
+
+    await waitFor(() => expect(testState.matrix.sendMessage).toHaveBeenCalledTimes(2));
+    expect(testState.sendDelayedMessage).not.toHaveBeenCalled();
+    expect(testState.cancelDelayedEvent).not.toHaveBeenCalled();
+  });
+
+  it('queues poll content behind a picker and applies reply semantics', async () => {
+    const stickerSend = deferred<unknown>();
+    testState.matrix.sendEvent.mockReturnValue(stickerSend.promise);
+    render(<RoomInputHarness scheduled />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Select sticker' }));
+    await waitFor(() => expect(testState.matrix.sendEvent).toHaveBeenCalledOnce());
+    fireEvent.click(screen.getByRole('button', { name: 'Select newer reply' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Create Poll' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Submit poll' }));
+
+    expect(testState.matrix.sendMessage).not.toHaveBeenCalled();
+    stickerSend.resolve({});
+    await waitFor(() => expect(testState.matrix.sendMessage).toHaveBeenCalledOnce());
+    expect(testState.matrix.sendMessage.mock.calls[0]?.[2]?.['m.relates_to']).toBeDefined();
+  });
+
+  it('keeps the location dialog open when the queued send rejects', async () => {
+    testState.matrix.sendMessage.mockRejectedValueOnce(new Error('send failed'));
+    render(<RoomInputHarness />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Add Location' }));
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: 'Submit location' })).toBeInTheDocument()
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Submit location' }));
+
+    await waitFor(() => expect(testState.matrix.sendMessage).toHaveBeenCalledOnce());
+    expect(screen.getByTestId('location-submit-failed')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Submit location' })).toBeInTheDocument();
+  });
+
   it('keeps composed text after a failed send so it can be retried', async () => {
     testState.matrix.sendMessage
       .mockRejectedValueOnce(new Error('send failed'))
@@ -626,6 +848,224 @@ describe('RoomInput submit regressions', () => {
 
     fireEvent.click(submit);
     await waitFor(() => expect(testState.matrix.sendMessage).toHaveBeenCalledTimes(2));
+  });
+
+  it('keeps text typed while a send is in flight', async () => {
+    const send = deferred<{ event_id: string }>();
+    testState.matrix.sendMessage.mockReturnValue(send.promise);
+    render(<RoomInputHarness />);
+    fireEvent.click(screen.getByRole('button', { name: 'Compose text' }));
+    const submit = screen.getByRole('button', { name: 'Send your composed Message' });
+
+    fireEvent.click(submit);
+    fireEvent.click(screen.getByRole('button', { name: 'Compose updated text' }));
+    send.resolve({ event_id: '$event' });
+
+    await waitFor(() =>
+      expect(screen.getByTestId('room-input-editor')).toHaveAttribute(
+        'data-editor-text',
+        'updated while sending'
+      )
+    );
+  });
+
+  it('blocks submission while file preprocessing is pending', async () => {
+    const preprocessing = deferred<File>();
+    const file = new File(['attachment'], 'attachment.txt', { type: 'text/plain' });
+    testState.safeUploadFile.mockReturnValue(preprocessing.promise);
+    render(<RoomInputHarness />);
+
+    void testState.handleFiles?.([file]);
+    await waitFor(() => expect(testState.safeUploadFile).toHaveBeenCalledOnce());
+    fireEvent.click(screen.getByRole('button', { name: 'Compose text' }));
+    const submit = screen.getByRole('button', { name: 'Send your composed Message' });
+
+    expect(submit).toBeDisabled();
+    fireEvent.click(submit);
+    expect(testState.matrix.sendMessage).not.toHaveBeenCalled();
+
+    preprocessing.resolve(file);
+  });
+
+  it('uses the queued Enter snapshot after a slow sticker send', async () => {
+    const stickerSend = deferred<unknown>();
+    testState.matrix.sendEvent.mockReturnValue(stickerSend.promise);
+    render(<RoomInputHarness />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Select sticker' }));
+    await waitFor(() => expect(testState.matrix.sendEvent).toHaveBeenCalledOnce());
+    fireEvent.click(screen.getByRole('button', { name: 'Compose text' }));
+    fireEvent.keyDown(screen.getByTestId('room-input-editor'), { key: 'Enter', code: 'Enter' });
+    fireEvent.click(screen.getByRole('button', { name: 'Compose updated text' }));
+
+    stickerSend.resolve({});
+    await waitFor(() => expect(testState.matrix.sendMessage).toHaveBeenCalledOnce());
+    expect(testState.matrix.sendMessage.mock.calls[0]?.[2]?.body).toBe('retry me');
+  });
+
+  it('gives a claimed reply only to the slow sticker, not queued Enter', async () => {
+    const stickerSend = deferred<unknown>();
+    testState.matrix.sendEvent.mockReturnValue(stickerSend.promise);
+    render(<RoomInputHarness initialReply />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Select sticker' }));
+    await waitFor(() => expect(testState.matrix.sendEvent).toHaveBeenCalledOnce());
+    fireEvent.click(screen.getByRole('button', { name: 'Compose text' }));
+    fireEvent.keyDown(screen.getByTestId('room-input-editor'), { key: 'Enter', code: 'Enter' });
+
+    stickerSend.resolve({});
+    await waitFor(() => expect(testState.matrix.sendMessage).toHaveBeenCalledOnce());
+    expect(testState.matrix.sendEvent.mock.calls[0]?.[2]?.['m.relates_to']).toBeDefined();
+    expect(testState.matrix.sendMessage.mock.calls[0]?.[2]?.['m.relates_to']).toBeUndefined();
+  });
+
+  it('preserves a newer reply selected during a slow sticker send', async () => {
+    const stickerSend = deferred<unknown>();
+    testState.matrix.sendEvent.mockReturnValue(stickerSend.promise);
+    render(<RoomInputHarness initialReply />);
+    render(<ReplyObserver />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Select sticker' }));
+    await waitFor(() => expect(testState.matrix.sendEvent).toHaveBeenCalledOnce());
+    fireEvent.click(screen.getByRole('button', { name: 'Select newer reply' }));
+    await waitFor(() =>
+      expect(screen.getByTestId('reply-observer')).toHaveTextContent('$new-reply')
+    );
+
+    stickerSend.resolve({});
+    await waitFor(() => expect(testState.matrix.sendEvent).toHaveBeenCalledOnce());
+    expect(testState.matrix.sendEvent.mock.calls[0]?.[2]?.['m.relates_to']).toBeDefined();
+    expect(screen.getByTestId('reply-observer')).toHaveTextContent('$new-reply');
+  });
+
+  it('resets after a selection-only editor change', async () => {
+    const send = deferred<{ event_id: string }>();
+    testState.matrix.sendMessage.mockReturnValue(send.promise);
+    render(<RoomInputHarness />);
+    fireEvent.click(screen.getByRole('button', { name: 'Compose text' }));
+    const submit = screen.getByRole('button', { name: 'Send your composed Message' });
+
+    fireEvent.click(submit);
+    fireEvent.input(screen.getByTestId('room-input-editor'));
+    send.resolve({ event_id: '$event' });
+
+    await waitFor(() =>
+      expect(screen.getByTestId('room-input-editor')).toHaveAttribute('data-editor-text', '')
+    );
+  });
+
+  it('keeps an updated attachment caption after the upload completes', async () => {
+    const upload = deferred<{ content_uri: string }>();
+    const file = new File(['attachment'], 'attachment.txt', { type: 'text/plain' });
+    testState.sendIndividualAttachmentAsCaption = true;
+    testState.pendingUploads = [{ status: 'loading', file, promise: upload.promise }];
+    testState.matrix.sendMessage.mockResolvedValue({ event_id: '$event' });
+
+    render(<RoomInputHarness />);
+    fireEvent.click(screen.getByRole('button', { name: 'Prepare attachment' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Compose text' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Send your composed Message' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Compose updated text' }));
+
+    upload.resolve({ content_uri: 'mxc://example/attachment' });
+    await waitFor(() => expect(testState.matrix.sendMessage).toHaveBeenCalledOnce());
+    expect(testState.matrix.sendMessage.mock.calls[0]?.[2]?.body).toBe('retry me');
+    expect(screen.getByTestId('room-input-editor')).toHaveAttribute(
+      'data-editor-text',
+      'updated while sending'
+    );
+  });
+
+  it('finishes encryption after metadata replacement using the stable original file', async () => {
+    const encryption = deferred<{ file: File; originalFile: File; encInfo: object }>();
+    const file = new File(['attachment'], 'attachment.txt', { type: 'text/plain' });
+    testState.encrypted = true;
+    testState.encryptFile.mockReturnValue(encryption.promise);
+
+    render(<RoomInputHarness />);
+    render(<UploadObserver />);
+    await act(async () => {
+      void testState.handleFiles?.([file]);
+      await Promise.resolve();
+    });
+
+    await waitFor(() => expect(screen.getByTestId('upload-observer')).toHaveTextContent('true'));
+    fireEvent.click(screen.getByRole('button', { name: 'Update attachment metadata' }));
+    await act(async () => {
+      encryption.resolve({
+        file: new File(['encrypted'], 'attachment.txt', { type: 'text/plain' }),
+        originalFile: file,
+        encInfo: {},
+      });
+      await encryption.promise;
+    });
+
+    await waitFor(() => expect(screen.getByTestId('upload-observer')).toHaveTextContent('false'));
+    expect(screen.getByTestId('upload-observer')).toHaveTextContent('"markedAsSpoiler":true');
+  });
+
+  it('removes the current replaced item when encryption fails', async () => {
+    const encryption = deferred<never>();
+    const file = new File(['attachment'], 'attachment.txt', { type: 'text/plain' });
+    testState.encrypted = true;
+    testState.encryptFile.mockReturnValue(encryption.promise);
+
+    render(<RoomInputHarness />);
+    render(<UploadObserver />);
+    await act(async () => {
+      void testState.handleFiles?.([file]);
+      await Promise.resolve();
+    });
+
+    await waitFor(() => expect(screen.getByTestId('upload-observer')).toHaveTextContent('true'));
+    fireEvent.click(screen.getByRole('button', { name: 'Update attachment metadata' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Update attachment description' }));
+    await waitFor(() =>
+      expect(screen.getByTestId('upload-observer')).toHaveTextContent('updated description')
+    );
+    await act(async () => {
+      encryption.reject(new Error('encryption failed'));
+      await encryption.promise.catch(() => undefined);
+    });
+
+    await waitFor(() => expect(screen.getByTestId('upload-observer')).toHaveTextContent('[]'));
+    expect(screen.getByTestId('upload-observer')).not.toHaveTextContent('encrypting');
+  });
+
+  it('uses the submitted editor snapshot for an attachment reply relation', async () => {
+    const upload = deferred<{ content_uri: string }>();
+    const file = new File(['attachment'], 'attachment.txt', { type: 'text/plain' });
+    testState.pendingUploads = [{ status: 'loading', file, promise: upload.promise }];
+
+    const seed = render(<DraftSetter text="" />);
+    seed.unmount();
+    render(<RoomInputHarness initialReply />);
+    fireEvent.click(screen.getByRole('button', { name: 'Prepare attachment' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Send your composed Message' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Compose updated text' }));
+    upload.resolve({ content_uri: 'mxc://example/attachment' });
+
+    await waitFor(() => expect(testState.matrix.sendMessage).toHaveBeenCalledOnce());
+    expect(testState.matrix.sendMessage.mock.calls[0]?.[2]?.['m.relates_to']).toEqual(
+      expect.objectContaining({ 'm.in_reply_to': expect.anything() })
+    );
+  });
+
+  it('preserves the normal draft when an edited message input unmounts', async () => {
+    testState.isMobile = true;
+    testState.editingEvent = {
+      getId: () => '$original',
+      getContent: () => ({ body: 'original', msgtype: 'm.text' }),
+    };
+    const seed = render(<DraftSetter text="keep this draft" />);
+    seed.unmount();
+    const input = render(<RoomInputHarness editId="$original" initialDraft="keep this draft" />);
+    render(<DraftObserver />);
+
+    await waitFor(() => expect(screen.getByTestId('room-input-editor')).toBeInTheDocument());
+    input.unmount();
+
+    expect(screen.getByTestId('draft-observer')).toHaveTextContent('keep this draft');
   });
 
   it('does not submit mobile edits before initialization, then sends the replacement', async () => {

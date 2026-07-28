@@ -75,6 +75,14 @@ export function PersonaPicker({
   const [selectedRoomPersona, setSelectedRoomPersona] = useState<PerMessageProfile | null>(
     latchedPersona ?? null
   );
+  const mountedRef = useRef(false);
+  const profileFetchGenerationRef = useRef(0);
+  const roomSyncGenerationRef = useRef(0);
+  const globalSyncGenerationRef = useRef(0);
+  const roomSelectionGenerationRef = useRef(0);
+  const globalSelectionGenerationRef = useRef(0);
+  const selectedGlobalPersonaRef = useRef<PerMessageProfile | null>(null);
+  const selectedRoomPersonaRef = useRef<PerMessageProfile | null>(null);
   const isPickerMenuItemSelected = (persona: PerMessageProfile) => {
     const selectedPersona =
       tab === PersonaPickerTab.Global ? selectedGlobalPersona : selectedRoomPersona;
@@ -96,6 +104,18 @@ export function PersonaPicker({
     undefined
   );
 
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+      profileFetchGenerationRef.current += 1;
+      roomSyncGenerationRef.current += 1;
+      globalSyncGenerationRef.current += 1;
+      roomSelectionGenerationRef.current += 1;
+      globalSelectionGenerationRef.current += 1;
+    };
+  }, []);
+
   const clearFilterInput = () => {
     if (searchInputRef.current) {
       searchInputRef.current.value = '';
@@ -104,25 +124,80 @@ export function PersonaPicker({
   };
 
   useEffect(() => {
-    const syncProfile = async () => {
-      const syncedRoomProfile = await getCurrentlyUsedPerMessageProfileForRoom(mx, roomId);
-      if (!selectedRoomPersona) setSelectedRoomPersona(syncedRoomProfile ?? null);
+    let cancelled = false;
+    const roomSyncGeneration = ++roomSyncGenerationRef.current;
+    const globalSyncGeneration = ++globalSyncGenerationRef.current;
+    const roomSelectionGeneration = roomSelectionGenerationRef.current;
+    const globalSelectionGeneration = globalSelectionGenerationRef.current;
 
-      const syncedGlobalProfile = await getCurrentlyUsedPerMessageProfileForAccount(mx);
-      setSelectedGlobalPersona(syncedGlobalProfile ?? null);
+    const syncRoomProfile = async () => {
+      try {
+        const syncedRoomProfile = await getCurrentlyUsedPerMessageProfileForRoom(mx, roomId);
+        if (
+          cancelled ||
+          !mountedRef.current ||
+          roomSyncGeneration !== roomSyncGenerationRef.current ||
+          roomSelectionGeneration !== roomSelectionGenerationRef.current
+        ) {
+          return;
+        }
+
+        const roomProfile = syncedRoomProfile ?? null;
+        selectedRoomPersonaRef.current = roomProfile;
+        setSelectedRoomPersona(roomProfile);
+      } catch {
+        // Profile synchronization is best effort; retain the current selection on failure.
+      }
     };
-    syncProfile();
-  }, [mx, roomId, profiles, latchedPersona, selectedRoomPersona]);
 
-  const fetchProfiles = async (mx_: MatrixClient) => {
-    const fetchedProfiles = await getAllPerMessageProfiles(mx_);
-    setProfiles(fetchedProfiles);
-    setFilteredProfiles(fetchedProfiles);
-  };
+    const syncGlobalProfile = async () => {
+      try {
+        const syncedGlobalProfile = await getCurrentlyUsedPerMessageProfileForAccount(mx);
+        if (
+          cancelled ||
+          !mountedRef.current ||
+          globalSyncGeneration !== globalSyncGenerationRef.current ||
+          globalSelectionGeneration !== globalSelectionGenerationRef.current
+        ) {
+          return;
+        }
+
+        const globalProfile = syncedGlobalProfile ?? null;
+        selectedGlobalPersonaRef.current = globalProfile;
+        setSelectedGlobalPersona(globalProfile);
+      } catch {
+        // Profile synchronization is best effort; retain the current selection on failure.
+      }
+    };
+
+    void syncRoomProfile();
+    void syncGlobalProfile();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [mx, roomId, latchedPersona]);
+
+  const fetchProfiles = useCallback(async (mx_: MatrixClient) => {
+    const fetchGeneration = ++profileFetchGenerationRef.current;
+    try {
+      const fetchedProfiles = await getAllPerMessageProfiles(mx_);
+      if (!mountedRef.current || fetchGeneration !== profileFetchGenerationRef.current) {
+        return;
+      }
+      setProfiles(fetchedProfiles);
+      setFilteredProfiles(fetchedProfiles);
+    } catch {
+      // Profile loading is best effort; keep the existing list when it fails.
+    }
+  }, []);
 
   useEffect(() => {
-    fetchProfiles(mx);
-  }, [mx]);
+    void fetchProfiles(mx);
+    return () => {
+      profileFetchGenerationRef.current += 1;
+    };
+  }, [fetchProfiles, mx]);
 
   const filter = useCallback(
     (e: FormEvent) => {
@@ -221,36 +296,55 @@ export function PersonaPicker({
                     onClick={async () => {
                       const isGlobal = tab === PersonaPickerTab.Global;
                       const selectedPersona = isGlobal
-                        ? selectedGlobalPersona
-                        : selectedRoomPersona;
+                        ? selectedGlobalPersonaRef.current
+                        : selectedRoomPersonaRef.current;
                       const disabling = profile.id === selectedPersona?.id;
+                      const previousPersona = selectedPersona;
+                      const nextPersona = disabling ? null : profile;
+                      const selectionGeneration = isGlobal
+                        ? ++globalSelectionGenerationRef.current
+                        : ++roomSelectionGenerationRef.current;
 
-                      if (!disabling) {
-                        if (isGlobal) {
-                          setSelectedGlobalPersona(profile);
-                          await setCurrentlyUsedPerMessageProfileIdForAccount(mx, profile.id);
-                        } else {
-                          setSelectedRoomPersona(profile);
-                          await setCurrentlyUsedPerMessageProfileIdForRoom(mx, roomId, profile.id);
-                        }
+                      if (isGlobal) {
+                        selectedGlobalPersonaRef.current = nextPersona;
+                        setSelectedGlobalPersona(nextPersona);
                       } else {
+                        selectedRoomPersonaRef.current = nextPersona;
+                        setSelectedRoomPersona(nextPersona);
+                      }
+
+                      try {
                         if (isGlobal) {
-                          setSelectedGlobalPersona(null);
                           await setCurrentlyUsedPerMessageProfileIdForAccount(
                             mx,
+                            disabling ? undefined : profile.id,
                             undefined,
-                            undefined,
-                            true
+                            disabling
                           );
                         } else {
-                          setSelectedRoomPersona(null);
                           await setCurrentlyUsedPerMessageProfileIdForRoom(
                             mx,
                             roomId,
+                            disabling ? undefined : profile.id,
                             undefined,
-                            undefined,
-                            true
+                            disabling
                           );
+                        }
+                      } catch {
+                        if (
+                          mountedRef.current &&
+                          selectionGeneration ===
+                            (isGlobal
+                              ? globalSelectionGenerationRef.current
+                              : roomSelectionGenerationRef.current)
+                        ) {
+                          if (isGlobal) {
+                            selectedGlobalPersonaRef.current = previousPersona;
+                            setSelectedGlobalPersona(previousPersona);
+                          } else {
+                            selectedRoomPersonaRef.current = previousPersona;
+                            setSelectedRoomPersona(previousPersona);
+                          }
                         }
                       }
                     }}
@@ -315,7 +409,7 @@ export function PersonaPicker({
         onClick={(evt) => {
           // getAllPerMessageProfiles can return an empty list during initial startup.
           if (profiles?.length === 0) {
-            fetchProfiles(mx);
+            void fetchProfiles(mx);
           }
           setAddPersonaMenuAnchor(evt.currentTarget.getBoundingClientRect());
         }}
