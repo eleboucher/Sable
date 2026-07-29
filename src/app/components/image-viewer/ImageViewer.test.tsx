@@ -3,8 +3,13 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import FileSaver from 'file-saver';
 import { ImageViewer } from './ImageViewer';
+import { showToast } from '$state/toast';
 
 const downloadMedia = vi.fn<(src: string) => Promise<Blob>>();
+const toastMocks = vi.hoisted(() => ({
+  showToast: vi.fn<(text: string, durationMs?: number) => void>(),
+}));
+vi.mock('$state/toast', () => ({ showToast: toastMocks.showToast }));
 const gestureMocks = vi.hoisted(() => ({
   onPointerDown: vi.fn<(event: React.PointerEvent) => void>(),
 }));
@@ -61,6 +66,26 @@ describe('ImageViewer', () => {
       expect(downloadMedia).toHaveBeenCalledWith('https://example.org/kitten.png');
     });
     expect(FileSaver.saveAs).toHaveBeenCalledWith(expect.any(Blob), 'kitten.png');
+  });
+
+  it('shows an error toast when downloading media fails', async () => {
+    const error = new Error('network unavailable');
+    downloadMedia.mockRejectedValue(error);
+    vi.mocked(showToast).mockClear();
+
+    render(
+      <ImageViewer
+        alt="kitten.png"
+        src="https://example.org/kitten.png"
+        requestClose={vi.fn<() => void>()}
+      />
+    );
+
+    fireEvent.click(screen.getByText('Download'));
+
+    await waitFor(() => {
+      expect(showToast).toHaveBeenCalledWith('Failed to download file: network unavailable');
+    });
   });
 });
 

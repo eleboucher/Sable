@@ -19,6 +19,7 @@ import { useMenuAnchor } from '$hooks/useMenuAnchor';
 import { useDismissOnBack } from '$utils/androidBack';
 import { useSetting } from '$state/hooks/settings';
 import { isPixelatedRendering, settingsAtom } from '$state/settings';
+import { showToast } from '$state/toast';
 import { downloadMedia } from '$utils/matrix';
 import * as css from './ImageViewer.css';
 import type { IImageInfo } from '$types/matrix/common';
@@ -91,7 +92,14 @@ export const ImageViewer = as<'div', ImageViewerProps>(
     }, [isEditingZoom]);
 
     const handleDownload = async () => {
-      const fileContent = await downloadMedia(src);
+      let fileContent: Blob;
+      try {
+        fileContent = await downloadMedia(src);
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'unknown error';
+        showToast(`Failed to download file: ${message}`);
+        return;
+      }
       await saveFileToDevice(fileContent, getDownloadFilename(filename, alt, 'image'));
     };
 
