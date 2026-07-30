@@ -101,13 +101,33 @@ describe('ImageViewer', () => {
 
     renderViewer();
 
-    const download = screen.getByText('Download');
+    const download = screen.getByRole('button', { name: 'Download' });
     fireEvent.pointerDown(download, { pointerId: 1, pointerType: 'touch' });
     fireEvent.pointerUp(download, { pointerId: 1, pointerType: 'touch' });
     fireEvent.click(download);
 
     await waitFor(() => expect(downloadMedia).toHaveBeenCalledOnce());
     screenMocks.isMobile = false;
+  });
+
+  it('uses compact controls on mobile', () => {
+    screenMocks.isMobile = true;
+    try {
+      renderViewer();
+
+      expect(screen.getByRole('button', { name: 'Close' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Download' })).toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: 'Zoom In' })).not.toBeInTheDocument();
+
+      fireEvent.click(screen.getByRole('button', { name: 'More options' }));
+
+      expect(screen.getByText('Turn pixelation on')).toBeInTheDocument();
+      expect(screen.queryByText('Zoom out')).not.toBeInTheDocument();
+      expect(screen.queryByText('Zoom in')).not.toBeInTheDocument();
+      expect(screen.queryByText('Save image')).not.toBeInTheDocument();
+    } finally {
+      screenMocks.isMobile = false;
+    }
   });
 
   it('shows an error toast when downloading media fails', async () => {
@@ -124,14 +144,14 @@ describe('ImageViewer', () => {
     });
   });
 
-  it('shows the Android gallery action for trusted image media', () => {
+  it('does not duplicate the Android download action in the overflow menu', () => {
     mockPlatform('android');
 
     renderViewer({ info: { mimetype: 'image/png' } });
 
     fireEvent.contextMenu(screen.getByAltText('kitten.png'));
 
-    expect(screen.getByText('Save to Gallery')).toBeInTheDocument();
+    expect(screen.queryByText('Save to Gallery')).not.toBeInTheDocument();
   });
 
   it('labels the primary action Save to Photos on iOS without duplicating it in the overflow menu', () => {

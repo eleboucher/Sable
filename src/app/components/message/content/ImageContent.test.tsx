@@ -45,7 +45,7 @@ const imageContent = (
   <ImageContent
     url="https://example.com/image.png"
     renderImage={() => <img alt="preview" />}
-    renderViewer={() => <div>viewer</div>}
+    renderViewer={() => <button type="button">viewer</button>}
   />
 );
 

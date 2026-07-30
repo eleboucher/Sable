@@ -6,6 +6,12 @@ interface Vector2 {
   y: number;
 }
 
+type FittedSwipeOptions = {
+  onDismiss?: () => void;
+  onPrevious?: () => void;
+  onNext?: () => void;
+};
+
 // calculate pointer position relative to the image center
 //
 // use container rect & manually apply transforms as if we get two+ events quickly,
@@ -21,7 +27,13 @@ function getCursorOffsetFromImageCenter(
   };
 }
 
-export const useImageGestures = (active: boolean, step = 0.2, min = 0.1, max = 500) => {
+export const useImageGestures = (
+  active: boolean,
+  step = 0.2,
+  min = 0.1,
+  max = 500,
+  fittedSwipeOptions?: FittedSwipeOptions
+) => {
   const [transforms, setTransforms] = useState({
     zoom: 1,
     pan: { x: 0, y: 0 },
@@ -52,6 +64,11 @@ export const useImageGestures = (active: boolean, step = 0.2, min = 0.1, max = 5
   const activePointers = useRef(new Map());
   const initialDist = useRef(0);
   const lastTapRef = useRef(0);
+  const fittedSwipeRef = useRef<{
+    startX: number;
+    startY: number;
+    direction?: 'horizontal' | 'vertical';
+  }>();
 
   const prepareForTransform = useCallback(() => {
     const img = imageRef.current;
@@ -153,15 +170,19 @@ export const useImageGestures = (active: boolean, step = 0.2, min = 0.1, max = 5
       lastTapRef.current = now;
 
       activePointers.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      if (activePointers.current.size === 1 && Math.abs(transforms.zoom - fitRatio) < 0.01) {
+        fittedSwipeRef.current = { startX: e.clientX, startY: e.clientY };
+      }
       setCursor('grabbing');
 
       // Initialize pinch zoom
       if (activePointers.current.size === 2) {
+        fittedSwipeRef.current = undefined;
         const points = Array.from(activePointers.current.values());
         initialDist.current = Math.hypot(points[0].x - points[1].x, points[0].y - points[1].y);
       }
     },
-    [active, disableResizeWithWindow, prepareForTransform]
+    [active, disableResizeWithWindow, fitRatio, prepareForTransform, transforms.zoom]
   );
 
   const handlePointerMove = useCallback(
@@ -188,6 +209,15 @@ export const useImageGestures = (active: boolean, step = 0.2, min = 0.1, max = 5
 
       // Pan
       if (activePointers.current.size === 1) {
+        const fittedSwipe = fittedSwipeRef.current;
+        if (fittedSwipe) {
+          const deltaX = e.clientX - fittedSwipe.startX;
+          const deltaY = e.clientY - fittedSwipe.startY;
+          if (!fittedSwipe.direction && Math.max(Math.abs(deltaX), Math.abs(deltaY)) > 12) {
+            fittedSwipe.direction = Math.abs(deltaX) > Math.abs(deltaY) ? 'horizontal' : 'vertical';
+          }
+          return;
+        }
         setPan((p) => ({
           x: p.x + e.movementX,
           y: p.y + e.movementY,
@@ -199,7 +229,18 @@ export const useImageGestures = (active: boolean, step = 0.2, min = 0.1, max = 5
 
   const handlePointerUp = useCallback(
     (e: PointerEvent) => {
+      const fittedSwipe = fittedSwipeRef.current;
+      if (fittedSwipe && activePointers.current.size === 1) {
+        const deltaX = e.clientX - fittedSwipe.startX;
+        const deltaY = e.clientY - fittedSwipe.startY;
+        if (fittedSwipe.direction === 'vertical' && deltaY > 96) fittedSwipeOptions?.onDismiss?.();
+        if (fittedSwipe.direction === 'horizontal' && Math.abs(deltaX) > 72) {
+          if (deltaX > 0) fittedSwipeOptions?.onPrevious?.();
+          else fittedSwipeOptions?.onNext?.();
+        }
+      }
       activePointers.current.delete(e.pointerId);
+      if (activePointers.current.size === 0) fittedSwipeRef.current = undefined;
       if (activePointers.current.size === 0) {
         setCursor(active ? 'grab' : 'initial');
       }
@@ -207,7 +248,7 @@ export const useImageGestures = (active: boolean, step = 0.2, min = 0.1, max = 5
         initialDist.current = 0;
       }
     },
-    [active]
+    [active, fittedSwipeOptions]
   );
 
   useEffect(() => {

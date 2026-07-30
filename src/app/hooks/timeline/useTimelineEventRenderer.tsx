@@ -341,6 +341,7 @@ export interface TimelineEventRendererOptions {
     onDeleteFailedSend: (mEvent: MatrixEvent) => void;
     setOpenThread: (threadId: string | undefined) => void;
     handleOpenReply: MouseEventHandler<HTMLButtonElement>;
+    onOpenMedia?: (mEvent: MatrixEvent) => void;
   };
   utils: {
     htmlReactParserOptions: HTMLReactParserOptions;
@@ -389,6 +390,7 @@ export function useTimelineEventRenderer({
     onDeleteFailedSend,
     setOpenThread,
     handleOpenReply,
+    onOpenMedia,
   },
   utils: { htmlReactParserOptions, linkifyOpts, getMemberPowerTag, parseMemberEvent },
 }: TimelineEventRendererOptions) {
@@ -751,6 +753,7 @@ export function useTimelineEventRenderer({
                 outlineAttachment={messageLayout === MessageLayout.Bubble}
                 mx={mx}
                 room={room}
+                onOpenMedia={onOpenMedia}
               />
             )}
           </Message>
@@ -854,6 +857,7 @@ export function useTimelineEventRenderer({
                       renderImageContent={(props) => (
                         <ImageContent
                           {...props}
+                          onOpenViewer={() => onOpenMedia?.(mEvent)}
                           autoPlay={mediaAutoLoad}
                           renderImage={(p) => {
                             if (!autoplayStickers && p.src) {
@@ -906,6 +910,7 @@ export function useTimelineEventRenderer({
                       mEvent={mEvent}
                       mx={mx}
                       room={room}
+                      onOpenMedia={onOpenMedia}
                     />
                   );
                 }
@@ -1002,6 +1007,7 @@ export function useTimelineEventRenderer({
                 renderImageContent={(props) => (
                   <ImageContent
                     {...props}
+                    onOpenViewer={() => onOpenMedia?.(mEvent)}
                     autoPlay={mediaAutoLoad}
                     renderImage={(p) => {
                       if (!autoplayStickers && p.src) {
@@ -1162,6 +1168,7 @@ export function useTimelineEventRenderer({
                 mEvent={mEvent}
                 mx={mx}
                 room={room}
+                onOpenMedia={onOpenMedia}
               />
             )}
           </Message>

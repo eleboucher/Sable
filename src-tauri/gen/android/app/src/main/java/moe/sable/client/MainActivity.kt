@@ -15,6 +15,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.core.content.ContextCompat
 import androidx.core.content.IntentCompat
 import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 import java.io.File
 import java.io.FileOutputStream
 import java.util.UUID
@@ -153,6 +154,7 @@ class MainActivity : TauriActivity() {
 
   companion object {
     private var instance: MainActivity? = null
+    private var immersiveSystemBarsBehavior: Int? = null
 
     // Bars stay transparent (edge-to-edge plugin) so the webview strips supply the color
     // on every version; these only adapt icon contrast. setStatusBarColor/setNavigationBarColor
@@ -174,6 +176,26 @@ class MainActivity : TauriActivity() {
         val window = activity.window
         WindowCompat.getInsetsController(window, window.decorView).isAppearanceLightNavigationBars =
           isLight(color)
+      }
+    }
+
+    @JvmStatic
+    fun setImmersiveModeNative(enabled: Boolean) {
+      val activity = instance ?: return
+      activity.runOnUiThread {
+        val controller = WindowCompat.getInsetsController(activity.window, activity.window.decorView)
+        if (enabled) {
+          if (immersiveSystemBarsBehavior == null) {
+            immersiveSystemBarsBehavior = controller.systemBarsBehavior
+          }
+          controller.systemBarsBehavior =
+            androidx.core.view.WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+          controller.hide(WindowInsetsCompat.Type.systemBars())
+        } else {
+          controller.show(WindowInsetsCompat.Type.systemBars())
+          immersiveSystemBarsBehavior?.let { controller.systemBarsBehavior = it }
+          immersiveSystemBarsBehavior = null
+        }
       }
     }
 

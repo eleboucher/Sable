@@ -28,8 +28,10 @@ type ResponsiveMenuProps = {
   arrowNavigation?: 'vertical' | 'both';
   /** How the menu shows on mobile: a bottom sheet, or a centred dialog for
    *  option pickers, which a sheet makes look like an action menu. */
-  mobile?: 'sheet' | 'dialog';
+  mobile?: 'sheet' | 'dialog' | 'inline-dialog';
   surfaceColor?: string;
+  /** Raises a mobile sheet above a parent fullscreen overlay. */
+  mobileZIndex?: number;
 };
 
 function MenuDialog({
@@ -75,6 +77,7 @@ export function ResponsiveMenu({
   arrowNavigation = 'vertical',
   mobile = 'sheet',
   surfaceColor,
+  mobileZIndex,
 }: ResponsiveMenuProps) {
   // Null outside a provider, where desktop is the safe assumption.
   const isMobile = useScreenSizeOptionally() === ScreenSize.Mobile;
@@ -97,6 +100,44 @@ export function ResponsiveMenu({
   };
 
   if (isMobile) {
+    if (mobile === 'inline-dialog') {
+      return (
+        <>
+          {children}
+          {anchor && (
+            <Box
+              style={{
+                position: 'fixed',
+                inset: 0,
+                zIndex: mobileZIndex ?? 2_147_483_647,
+                background: 'transparent',
+              }}
+              onClick={requestClose}
+            >
+              <Box
+                direction="Column"
+                role="dialog"
+                aria-modal="true"
+                style={{
+                  width: 'fit-content',
+                  maxWidth: 'calc(100vw - 2rem)',
+                  maxHeight: '75vh',
+                  overflow: 'auto',
+                  borderRadius: '20px',
+                  position: 'absolute',
+                  top: Math.max(8, anchor.y + anchor.height + 8),
+                  right: Math.max(8, window.innerWidth - anchor.x - anchor.width),
+                }}
+                onClick={(event) => event.stopPropagation()}
+              >
+                {menu}
+              </Box>
+            </Box>
+          )}
+        </>
+      );
+    }
+
     const sheetStyle: CSSProperties | undefined = surfaceColor
       ? { backgroundColor: surfaceColor }
       : undefined;
@@ -110,7 +151,7 @@ export function ResponsiveMenu({
           </MenuDialog>
         )}
         {anchor && mobile === 'sheet' && (
-          <MobileSwipeDownModal requestClose={requestClose} sheetStyle={sheetStyle}>
+          <MobileSwipeDownModal requestClose={requestClose} sheetStyle={sheetStyle} zIndex={mobileZIndex}>
             {() => (
               <MobileSheetFocusTrap
                 focusTrapOptions={{

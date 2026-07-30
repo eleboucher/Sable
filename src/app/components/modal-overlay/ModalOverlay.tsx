@@ -57,6 +57,7 @@ export function ModalOverlay({
         <FocusTrap
           focusTrapOptions={{
             initialFocus: false,
+            fallbackFocus: () => contentRef?.current ?? document.body,
             escapeDeactivates,
             onDeactivate: requestClose,
           }}
@@ -64,7 +65,13 @@ export function ModalOverlay({
           <div
             ref={contentRef}
             tabIndex={-1}
-            style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column' }}
+            style={{
+              position: 'fixed',
+              inset: 0,
+              display: 'flex',
+              flexDirection: 'column',
+              background: '#000',
+            }}
           >
             {children}
           </div>
