@@ -49,7 +49,8 @@ vi.mock('$hooks/useMatrixClient', () => ({
   useMatrixClient: () => testState.matrix,
 }));
 
-vi.mock('$utils/platform', () => ({
+vi.mock('$utils/platform', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('$utils/platform')>()),
   isMobileOrTablet: () => testState.isMobile,
   isMobileTauri: () => false,
 }));

@@ -31,7 +31,7 @@ vi.mock('$state/room/roomScheduleCoordinator', () => ({
 vi.mock('@tanstack/react-query', () => ({
   useQuery: () => ({
     data: {
-      scheduled: [
+      delayed_events: [
         {
           delay_id: 'delay-1',
           room_id: '!room:example.org',

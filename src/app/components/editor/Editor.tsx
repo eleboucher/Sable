@@ -135,6 +135,7 @@ type CustomEditorProps = {
   variant?: 'Surface' | 'SurfaceVariant' | 'Background';
   enterKeyHint?: 'enter' | 'send';
   suppressBlurRefocusRef?: MutableRefObject<boolean>;
+  readOnly?: boolean;
 };
 export const CustomEditor = forwardRef<HTMLDivElement, CustomEditorProps>(
   (
@@ -157,6 +158,7 @@ export const CustomEditor = forwardRef<HTMLDivElement, CustomEditorProps>(
       variant = 'SurfaceVariant',
       enterKeyHint,
       suppressBlurRefocusRef,
+      readOnly = false,
     },
     ref
   ) => {
@@ -181,6 +183,16 @@ export const CustomEditor = forwardRef<HTMLDivElement, CustomEditorProps>(
     const multilineMeasureRetryRef = useRef(0);
     const singleLineWidthOffsetRef = useRef(0);
     const latestValueRef = useRef<Descendant[]>(editor.children);
+    // `readOnly` drops contentEditable and so blurs the editable. Read focus in the
+    // render that flips the flag, before the DOM updates, to hand it back afterwards.
+    const prevReadOnlyRef = useRef(readOnly);
+    const restoreFocusRef = useRef(false);
+    if (prevReadOnlyRef.current !== readOnly) {
+      if (readOnly) {
+        restoreFocusRef.current = !!editableRef.current?.contains(document.activeElement);
+      }
+      prevReadOnlyRef.current = readOnly;
+    }
     const isMultilineRef = useRef(false);
     const [isMultiline, setIsMultiline] = useState(false);
     const [measurementVersion, setMeasurementVersion] = useState(0);
@@ -191,6 +203,12 @@ export const CustomEditor = forwardRef<HTMLDivElement, CustomEditorProps>(
     const layoutIsMultiline = !alwaysInlineEditor && (isMultiline || forceMultilineLayout);
     const showResponsiveAfterInFooter = hasResponsiveAfter && layoutIsMultiline;
     const showResponsiveAfterInline = hasResponsiveAfter && !showResponsiveAfterInFooter;
+
+    useEffect(() => {
+      if (readOnly || !restoreFocusRef.current) return;
+      restoreFocusRef.current = false;
+      ReactEditor.focus(editor);
+    }, [readOnly, editor]);
 
     const setRootRef = useCallback(
       (node: HTMLDivElement | null) => {
@@ -516,6 +534,7 @@ export const CustomEditor = forwardRef<HTMLDivElement, CustomEditorProps>(
             >
               <Editable
                 ref={editableRef}
+                readOnly={readOnly}
                 data-editable-name={editableName}
                 className={`${css.EditorTextarea} ${alwaysInlineEditor ? css.EditorTextareaInline : ''}`}
                 placeholder={placeholder}

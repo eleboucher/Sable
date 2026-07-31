@@ -422,6 +422,9 @@ export const RoomInput = forwardRef<HTMLDivElement, RoomInputProps>(
     const isEncrypting = selectedFiles.some((f) => f.encrypting);
     const sendBusy =
       isSending || uploadSending || isEncrypting || uploadBusy || fileIngestionCount > 0;
+    // Editing during an in-flight send diverges the submitted snapshot, which makes
+    // resetInput bail out and leaves the already-sent text in the composer.
+    const composerLocked = isSending || uploadSending;
     const uploadFamilyObserverAtom = createUploadFamilyObserverAtom(
       roomUploadAtomFamily,
       selectedFiles.map((f) => f.file)
@@ -2412,6 +2415,7 @@ export const RoomInput = forwardRef<HTMLDivElement, RoomInputProps>(
           placeholder="Send a message..."
           enterKeyHint={enterForNewline ? 'enter' : 'send'}
           suppressBlurRefocusRef={suppressBlurRefocusRef}
+          readOnly={composerLocked}
           onKeyDown={handleKeyDown}
           onKeyUp={handleKeyUp}
           onChange={handleEditorChange}
